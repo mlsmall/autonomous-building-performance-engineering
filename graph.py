@@ -10,11 +10,10 @@ from agents import llm_agent, research_agent, ashrae_lookup_agent, recommendatio
 from tools import calculation_tool
 from models import llm_gemini, llm_gpt
 from schemas import AgentState, Recommendation, SupervisorState, members
+from database import building_data, get_user_history
 
 llm = llm_gpt
 
-
-# If you call them agents instead of workers, it doens't work.
 # system_prompt = (
 #     f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
 #     Given the following user request, respond with the worker to act next. Each worker will perform a task and respond 
@@ -25,60 +24,93 @@ llm = llm_gpt
 #         - Window area (ft²)
 #         - U-value
 #         - City
-#         If validation returns:
-#         - Valid: [no] or Missing/Invalid values: proceed to next step
-#         - Valid: [yes]: wait for user to provide corrected values
 
-#     2. After validation:
-#         - Send validated input to ashrae_lookup
+#     2. After validation, send validated input to ashrae_lookup
 #         - When you see ashrae_data in the state, route to utility to get local electricity rates
 
 #     3. After utility rates are found:
-#         - Route to calculation for user's window values
-#         - Route to calculation again for ASHRAE baseline values
+#         - First route to calculation for proposed design (using user's U-value)
+#         - Then route to calculation again for baseline design (using ASHRAE U-value)
+#         - Both calculations must be complete before proceeding
 
-#     4. Send both results to recommendation agent for comparison
+#     4. Only after BOTH calculations are complete:
+#         - Route to recommendation for comparison
+#         - Then route to FINISH
 
 #     Route to llm only for general building questions, never for calculations or data lookups.
-#     FINISH only when analysis and recommendations are complete.
 #     """
 # )
-system_prompt = (
-    f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
-    Given the following user request, respond with the worker to act next. Each worker will perform a task and respond 
-    with their results and status. When finished, respond with FINISH.
 
-    1. Send all inputs to input_validation to check:
-        - SHGC (0-1)
-        - Window area (ft²)
-        - U-value
-        - City
+system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
 
-    2. After validation, send validated input to ashrae_lookup
-        - When you see ashrae_data in the state, route to utility to get local electricity rates
+For User ID: {{user_id}}
+Status: {{status}}
+{{previous_data}}
 
-    3. After utility rates are found:
-        - First route to calculation for proposed design (using user's U-value)
-        - Then route to calculation again for baseline design (using ASHRAE U-value)
-        - Both calculations must be complete before proceeding
+Given the following user request, respond with the worker to act next. Each worker will perform a task and respond 
+with their results and status. When finished, respond with FINISH.
 
-    4. Only after BOTH calculations are complete:
-        - Route to recommendation for comparison
-        - Then route to FINISH
+1. For new users or incomplete data, send all inputs to input_validation to check:
+    - SHGC (0-1)
+    - Window area (ft²)
+    - U-value
+    - City
 
-    Route to llm only for general building questions, never for calculations or data lookups.
-    """
-)
+2. After validation, send validated input to ashrae_lookup
+    - When you see ashrae_data in the state, route to utility to get local electricity rates
 
-# Nodes
-# The supervisor is an LLM node that decides what node to execute next
+3. After utility rates are found:
+    - First route to calculation for proposed design (using user's U-value)
+    - Then route to calculation again for baseline design (using ASHRAE U-value)
+    - Both calculations must be complete before proceeding
+
+4. Only after BOTH calculations are complete:
+    - Route to recommendation for comparison
+    - Then route to FINISH
+
+For existing users with complete data:
+- Use stored values unless user specifically requests changes
+- Allow updates to individual values without requiring complete revalidation
+- Show previous analysis results if requested
+
+Route to llm only for general building questions, never for calculations or data lookups.
+"""
+# # Nodes
+# # The supervisor is an LLM node that decides what node to execute next
+# def supervisor_node(state: AgentState) -> AgentState:
+#     print("------------------ SUPERVISOR NODE START ------------------\n")
+#     messages = [{"role": "system", "content": system_prompt}] + state["messages"]
+#     response = llm.with_structured_output(SupervisorState).invoke(messages)
+#     next1 = response.next
+#     if next1 == "FINISH":
+#         next1 = END
+
+#     print(f"Routing to {next1}")
+#     print("\n------------------ SUPERVISOR NODE END ------------------\n")
+#     return {"next": next1}
+
+# Supervisor node
 def supervisor_node(state: AgentState) -> AgentState:
     print("------------------ SUPERVISOR NODE START ------------------\n")
-    messages = [{"role": "system", "content": system_prompt}] + state["messages"]
+    
+    status = "EXISTING USER - Data Found" if state.get('existing_data') else "NEW USER - No Previous Data"
+    previous_data = f'Previous Analysis Found: {state.get("existing_data")}' if state.get('existing_data') else 'No previous analysis available.'
+    
+    formatted_prompt = system_prompt.format(
+        user_id=state.get('user_id'),
+        status=status,
+        previous_data=previous_data
+    )
+    
+    messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
     response = llm.with_structured_output(SupervisorState).invoke(messages)
     next1 = response.next
     if next1 == "FINISH":
         next1 = END
+
+    # Store state before returning
+    if state.get("user_id"):
+        building_data(state["user_id"], state)
 
     print(f"Routing to {next1}")
     print("\n------------------ SUPERVISOR NODE END ------------------\n")
@@ -101,6 +133,7 @@ def input_validation_node(state: AgentState) -> AgentState:
         state["u_value"] = float(user_input.split("u-value =")[1].split("city")[0].strip())
     
     state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
+    
     return state
 
 
@@ -125,6 +158,7 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
     state["ashrae_shgc"] = float(shgc_value)
 
     state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
+    
     return state
 
 # def utility_node(state: AgentState) -> AgentState:
@@ -144,6 +178,7 @@ def utility_node(state: AgentState) -> AgentState:
     # Extract and store just the value
     print("Extracted utility rate:", result["messages"][-1].content)
     state["utility_rate"] = float(result["messages"][-1].content)  # Get just the content
+    
     return state
 
 def calculation_node(state: AgentState) -> AgentState:
@@ -199,6 +234,7 @@ cost = annual_cost(energy, {state["utility_rate"]})
         state["baseline_cost"] = annual_cost
 
     state["messages"] = [HumanMessage(content=result, name="calculation")]
+    
     return state
 
 # def recommendation_node(state: AgentState) -> AgentState:
@@ -257,6 +293,7 @@ Analyze these values and provide recommendations using the recommendation_tool."
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
     
     state["messages"] = [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]
+    
     return state
 
 # Build graph
@@ -292,7 +329,36 @@ graph = builder.compile(checkpointer=memory) # This is where the memory is integ
 graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
 
 # Create a main loop
+# def main_loop():
+#     print("Welcome! Please enter your email as your user ID")
+#     user_id = input("user ID: ")
+#     existing_data = get_user_history(user_id)
+
+#     print("----INITIAL MESSAGE-----")
+#     print("Hello, I'm your building energy analyst. I need these inputs:")
+#     print("* Window area (ft²)")
+#     print("* SHGC value (0-1)")
+#     print("* U-value")
+#     print("* Building location (city)")
+
+#     while True:
+#         user_input = input(">> ")
+#         if user_input.lower() in ["exit", "quit", "q"]:
+#             print("See you Later. Have a great day!")
+#             break
+
+        
+#         for state in graph.stream({"messages": [("user", user_input)], config=config):
+#             print(state)
+#             if 'recommendation' in state:
+#                 recs = json.loads(state['recommendation']['messages'][0].content)
+#                 print("\n" + "\n".join(recs['recommendations']) + "\n")
+
 def main_loop():
+    print("Welcome! Please enter your email as your user ID")
+    user_id = input("User ID: ")
+    existing_data = get_user_history(user_id)
+    
     print("----INITIAL MESSAGE-----")
     print("Hello, I'm your building energy analyst. I need these inputs:")
     print("* Window area (ft²)")
@@ -306,13 +372,16 @@ def main_loop():
             print("See you Later. Have a great day!")
             break
 
-        
-        for state in graph.stream({"messages": [("user", user_input)]}, config=config): 
+        for state in graph.stream({
+            "messages": [("user", user_input)],
+            "next": "",
+            "user_id": user_id,
+            "existing_data": existing_data
+        }, config=config): 
             print(state)
             if 'recommendation' in state:
                 recs = json.loads(state['recommendation']['messages'][0].content)
                 print("\n" + "\n".join(recs['recommendations']) + "\n")
-
 # Run the main loop
 if __name__ == "__main__":
     main_loop()

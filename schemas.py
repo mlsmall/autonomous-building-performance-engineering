@@ -8,6 +8,7 @@ class AgentState(MessagesState):
     # The 'next' field indicates where to route to next
     next: str
     # Input data
+    user_id: str = None 
     city: str = None
     window_area: float = None
     shgc: float = None

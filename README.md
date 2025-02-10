@@ -35,7 +35,7 @@ AI: "Well, since your current building design has an SHGC of 0.28, lowering it t
 
 ### Scenario 2: Energy Cost Reduction
 
-User: "Need to cut energy costs"
+User: "I need to cut my energy costs"
 
 AI: "Let me look at your 72,000 sqft Houston medical center. Here's what we can do:
 
