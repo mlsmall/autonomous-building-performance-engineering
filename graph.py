@@ -91,29 +91,39 @@ Route to llm only for general building questions, never for calculations or data
 
 # Supervisor node
 def supervisor_node(state: AgentState) -> AgentState:
-    print("------------------ SUPERVISOR NODE START ------------------\n")
-    
+    print("\n=== SUPERVISOR NODE START ===")
     status = "EXISTING USER - Data Found" if state.get('existing_data') else "NEW USER - No Previous Data"
     previous_data = f'Previous Analysis Found: {state.get("existing_data")}' if state.get('existing_data') else 'No previous analysis available.'
+    
+    print("Formatting prompt with:", {  # Debug 2
+        'user_id': state.get('user_id'),
+        'status': status,
+        'previous_data': previous_data
+    })
     
     formatted_prompt = system_prompt.format(
         user_id=state.get('user_id'),
         status=status,
         previous_data=previous_data
     )
-    
+
     messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
     response = llm.with_structured_output(SupervisorState).invoke(messages)
+
+    
     next1 = response.next
     if next1 == "FINISH":
         next1 = END
 
-    # Store state before returning
+    # Store in MongoDB at ASHRAE lookup and end of analysis
     if state.get("user_id"):
-        building_data(state["user_id"], state)
+        print("Storing state in MongoDB...")  
+        if next1 == "ashrae_lookup" or next1 == END:
+            building_data(state["user_id"], state)
 
-    print(f"Routing to {next1}")
-    print("\n------------------ SUPERVISOR NODE END ------------------\n")
+
+    print(f"Routing to: {next1}")
+    print("=== SUPERVISOR NODE END ===\n")
     return {"next": next1}
                                     
 def llm_node(state: AgentState) -> AgentState:
@@ -171,7 +181,7 @@ def utility_node(state: AgentState) -> AgentState:
     query = f"Find an estimated value for the commercial utility rates ($/kWh) in {city}. \
         Please provide only a numeric estimated utility rate value without any additional text."
     result = research_agent.invoke({"messages": [HumanMessage(content=query)]})
-    print("UTILITY RESPONSE", result)
+    #print("UTILITY RESPONSE", result)
     # Store full response in messages
     state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="utility")]
     
@@ -278,22 +288,24 @@ cost = annual_cost(energy, {state["utility_rate"]})
 #     return state
 
 def recommendation_node(state: AgentState) -> AgentState:
-    message = f"""Compare these window performance values:
-proposed_heat_gain: {state['proposed_heat_gain']} vs baseline_heat_gain: {state['baseline_heat_gain']} BTU/hr
-proposed_cooling_energy: {state['proposed_cooling_energy']} vs baseline_cooling_energy: {state['baseline_cooling_energy']} kWh/year
-proposed_cost: {state['proposed_cost']} vs baseline_cost: {state['baseline_cost']}
-shgc: {state['shgc']} vs ashrae_shgc: {state['ashrae_shgc']}
-u_value: {state['u_value']} vs ashrae_u_factor: {state['ashrae_u_factor']}
+    message = f"""proposed_heat_gain: {state['proposed_heat_gain']}
+    baseline_heat_gain: {state['baseline_heat_gain']}
+    proposed_cooling_energy: {state['proposed_cooling_energy']}
+    baseline_cooling_energy: {state['baseline_cooling_energy']}
+    proposed_cost: {state['proposed_cost']}
+    baseline_cost: {state['baseline_cost']}
+    shgc: {state['shgc']}
+    ashrae_shgc: {state['ashrae_shgc']}
+    u_value: {state['u_value']}
+    ashrae_u_factor: {state['ashrae_u_factor']}"""
 
-Analyze these values and provide recommendations using the recommendation_tool."""
 
+    print("\n=== RECOMMENDATION NODE: Sending message to agent ===")
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
-    print("REACT AGENT RESPONSE:", agent_response) 
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
     
     state["messages"] = [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]
-    
     return state
 
 # Build graph
@@ -326,7 +338,7 @@ memory = MemorySaver() # Checkpointer for short-term (within-thread) memory
 graph = builder.compile(checkpointer=memory) # This is where the memory is integrated to the graph
 
 # Draw the graph
-graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
+#graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
 
 # Create a main loop
 # def main_loop():

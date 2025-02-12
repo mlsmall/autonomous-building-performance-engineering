@@ -27,10 +27,16 @@ ashrae_lookup_agent = create_react_agent(
     state_modifier="You look up requested information from ASHRAE documents using RAG."
 )
 
+# recommendation_agent = create_react_agent(
+#     llm,
+#     tools=[recommendation_tool],
+#     state_modifier="""You analyze building component performance and provide clear recommendations.
+#     You receive performance comparisons and create helpful insights.
+#     Keep recommendations clear and direct."""
+# )
+
 recommendation_agent = create_react_agent(
     llm,
     tools=[recommendation_tool],
-    state_modifier="""You analyze building component performance and provide clear recommendations.
-    You receive performance comparisons and create helpful insights.
-    Keep recommendations clear and direct."""
+    state_modifier="You receive building data, pass it to the recommendation_tool, and return the recommendations."
 )
