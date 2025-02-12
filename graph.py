@@ -92,40 +92,34 @@ Route to llm only for general building questions, never for calculations or data
 # Supervisor node
 def supervisor_node(state: AgentState) -> AgentState:
     print("\n=== SUPERVISOR NODE START ===")
-    status = "EXISTING USER - Data Found" if state.get('existing_data') else "NEW USER - No Previous Data"
-    previous_data = f'Previous Analysis Found: {state.get("existing_data")}' if state.get('existing_data') else 'No previous analysis available.'
     
-    print("Formatting prompt with:", {  # Debug 2
-        'user_id': state.get('user_id'),
-        'status': status,
-        'previous_data': previous_data
-    })
-    
-    formatted_prompt = system_prompt.format(
-        user_id=state.get('user_id'),
-        status=status,
-        previous_data=previous_data
-    )
+    if USE_DATABASE:
+        status = "EXISTING USER - Data Found" if state.get('existing_data') else "NEW USER - No Previous Data"
+        previous_data = f'Previous Analysis Found: {state.get("existing_data")}' if state.get('existing_data') else 'No previous analysis available.'
+        formatted_prompt = system_prompt.format(
+            user_id=state.get('user_id'),
+            status=status,
+            previous_data=previous_data
+        )
+    else:
+        formatted_prompt = system_prompt
 
     messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
     response = llm.with_structured_output(SupervisorState).invoke(messages)
-
     
     next1 = response.next
     if next1 == "FINISH":
         next1 = END
 
-    # Store in MongoDB at ASHRAE lookup and end of analysis
-    if state.get("user_id"):
-        print("Storing state in MongoDB...")  
+    # Store in MongoDB only if enabled
+    if USE_DATABASE and state.get("user_id"):
         if next1 == "ashrae_lookup" or next1 == END:
             building_data(state["user_id"], state)
-
 
     print(f"Routing to: {next1}")
     print("=== SUPERVISOR NODE END ===\n")
     return {"next": next1}
-                                    
+
 def llm_node(state: AgentState) -> AgentState:
     result = llm_agent.invoke(state) # We're passing the state here to the "create_react_agent" 
     return {"messages": [HumanMessage(content=result["messages"][-1].content, name="llm_node")]}
@@ -258,35 +252,6 @@ cost = annual_cost(energy, {state["utility_rate"]})
 #     state["messages"] = [HumanMessage(content=response.model_dump_json(), name="recommendation")]
 #     return state
 
-# def recommendation_node(state: AgentState) -> AgentState:
-#     # Prepare the input data for the recommendation_tool
-#     print("STARTING TO ACCESS STATE VARIABLES")
-#     query = {
-#         "proposed_heat_gain": state["proposed_heat_gain"],
-#         "baseline_heat_gain": state["baseline_heat_gain"],
-#         "proposed_cooling_energy": state["proposed_cooling_energy"],
-#         "baseline_cooling_energy": state["baseline_cooling_energy"],
-#         "proposed_cost": state["proposed_cost"],
-#         "baseline_cost": state["baseline_cost"],
-#         "shgc": state["shgc"],
-#         "ashrae_shgc": state["ashrae_shgc"],
-#         "u_value": state["u_value"],
-#         "ashrae_u_factor": state["ashrae_u_factor"],
-#     }
-
-#     # Convert the query to a string to pass to the agent
-    
-#     print("QUERY PROCESSED", query)
-#     result = recommendation_agent.invoke({"messages": [("user", query)]})
-#     agent_response = result["messages"][-1].content
-#     print("REACT AGENT RESPONSE:", agent_response)  
-#     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
-    
-#     # Return the structured response
-#     state["messages"] = [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]
-
-#     return state
-
 def recommendation_node(state: AgentState) -> AgentState:
     message = f"""proposed_heat_gain: {state['proposed_heat_gain']}
     baseline_heat_gain: {state['baseline_heat_gain']}
@@ -305,6 +270,8 @@ def recommendation_node(state: AgentState) -> AgentState:
     
     state["messages"] = [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]
     return state
+
+
 
 # Build graph
 builder = StateGraph(AgentState)
@@ -364,11 +331,18 @@ graph = builder.compile(checkpointer=memory) # This is where the memory is integ
 #                 recs = json.loads(state['recommendation']['messages'][0].content)
 #                 print("\n" + "\n".join(recs['recommendations']) + "\n")
 
+ 
+USE_DATABASE = False  # Toggle to True/False to enable/disable database
+
 def main_loop():
-    print("Welcome! Please enter your email as your user ID")
-    user_id = input("User ID: ")
-    existing_data = get_user_history(user_id)
-    
+    if USE_DATABASE:
+        print("Welcome! Please enter your email as your user ID")
+        user_id = input("User ID: ")
+        existing_data = get_user_history(user_id)
+    else:
+        user_id = "test_user"
+        existing_data = None
+
     print("----INITIAL MESSAGE-----")
     print("Hello, I'm your building energy analyst. I need these inputs:")
     print("* Window area (ft²)")
@@ -385,21 +359,14 @@ def main_loop():
         for state in graph.stream({
             "messages": [("user", user_input)],
             "next": "",
-            "user_id": user_id,
-            "existing_data": existing_data
+            "user_id": user_id if USE_DATABASE else None,
+            "existing_data": existing_data if USE_DATABASE else None
         }, config=config): 
             print(state)
             if 'recommendation' in state:
                 recs = json.loads(state['recommendation']['messages'][0].content)
                 print("\n" + "\n".join(recs['recommendations']) + "\n")
+
 # Run the main loop
 if __name__ == "__main__":
     main_loop()
-    
-    # Add debug here to see state history
-    # print("\n=== DEBUG: STATE HISTORY ===")
-    # for state in graph.get_state_history(config):
-    #     print("\nMessages:", len(state.values["messages"]))
-    #     print("Last message:", state.values["messages"][-1].content if state.values["messages"] else "No messages")
-    #     print("Next node:", state.next)
-    #     print("-" * 80)
