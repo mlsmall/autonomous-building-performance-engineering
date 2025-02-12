@@ -12,7 +12,7 @@ from models import llm_gemini, llm_gpt
 from schemas import AgentState, Recommendation, SupervisorState, members
 from database import building_data, get_user_history
 
-llm = llm_gpt
+llm = llm_gpt # llm_gemini gives recource exhausted
 
 # system_prompt = (
 #     f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
@@ -231,7 +231,7 @@ cost = annual_cost(energy, {state["utility_rate"]})
     annual_energy = parsed_values['annual_energy']
     annual_cost = parsed_values['annual_cost']
     
-    print('PARSED VALUES CHECK: Heat gain:', heat_gain, "annual energy", annual_energy, "annual cost", annual_cost)
+    # print('PARSED VALUES CHECK: Heat gain:', heat_gain, "annual energy", annual_energy, "annual cost", annual_cost)
     
     # Store results
     if calculation_type == "proposed":
@@ -299,8 +299,6 @@ def recommendation_node(state: AgentState) -> AgentState:
     u_value: {state['u_value']}
     ashrae_u_factor: {state['ashrae_u_factor']}"""
 
-
-    print("\n=== RECOMMENDATION NODE: Sending message to agent ===")
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
