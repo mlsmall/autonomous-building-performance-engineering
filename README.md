@@ -108,16 +108,16 @@ Get professional engineering analysis in seconds, with personalized design guida
       │        └────┬─────┘         │              │         └────┬─────┘        │
       │             │               │              │              │              │
       ▼             ▼               ▼              ▼              ▼              ▼
-    ┌────────────────────────────────────────────────────────────────────────────────┐
-    │                               State Management                                 │
-    │                             (LangGraph Workflow)                               │
-    └────────────────────────────────────────────────────────────────────────────────┘
+    ┌──────────────────────────────────────────────────────────────────────────────┐
+    │                               State Management                               │
+    │                             (LangGraph Workflow)                             │
+    └──────────────────────────────────────────────────────────────────────────────┘
                                             ▲
                                             │
                                             ▼
-    ┌────────────────────────────────────────────────────────────────────────────────┐
-    │                               Supervisor Agent                                 │
-    └────────────────────────────────────────────────────────────────────────────────┘
+    ┌──────────────────────────────────────────────────────────────────────────────┐
+    │                               Supervisor Agent                               │
+    └──────────────────────────────────────────────────────────────────────────────┘
                                             ▲
                                             │
                                     ┌───────┴───────┐
@@ -132,7 +132,7 @@ Agent Framework:
 - Stateful agent design using LangGraph's StateGraph:
   - MemorySaver maintains agent's internal state (building specs, calculations, results)
   - Agents use different prompts based on their current state
-  - ReAct Supervisor agent uses LLM to determine control flow between other agents
+  - ReAct Supervisor agent (GPT-4) determines control flow between other agents
   - Human-in-the-loop to approve report format
 - ReAct (Reasoning + Action) pattern implementation:
   - Thought: Analyze current state and requirements
@@ -142,24 +142,23 @@ Agent Framework:
 
 Specialized Agents:
 - Input Validation Agent: Checks and validates building input data
-- Knowledge Retrieval Agent: Queries vector store for relevant engineering data
-- Resource Research Agent: Retrieves climate data and utility rates using Tavily Search tool and vector store
-- Calc Agent: Executes building performance calculations via Python REPL tool
+- Knowledge Retrieval Agent: Queries vector store for building codes, standards, and design guides
+- Resource Research Agent: Retrieves utility rates via Tavily Search tool and climate data from vector stores
+- Calculation Agent: Executes building performance calculations via Python REPL tool
 - Recommendation Agent: Compares results to benchmarks, analyzes building, and proposes design improvements
 - Technical Report Agent: Formats analysis results into structured graphs, tables, and reports
 
 State Management:
 - Supervisor agent directs routes between agents based on conversation state
-- Short-term memory via MemorySaver checkpoints and thread IDs to save conversation state during session
-- Long-term persistence of state fields in database
+- Short-term memory via MemorySaver checkpoints during session
+- Long-term persistent storage of agent state data
 - Pydantic models to enforce input and output state structure
 
 Data Infrastructure:
 - MongoDB stores user and building data
 - Chroma vector database with text embeddings
-- RAG retrieves relevant documents for LLMs
+- RAG retrieves documents for LLM use
 
-The system combines RAG with multi-agent orchestration to ensure recommendations are based on science rather than generic responses.
 
 ## License
 Copyright © 2025 Mauro Small
