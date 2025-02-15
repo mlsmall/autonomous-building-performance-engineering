@@ -22,6 +22,7 @@ venv.bak/
 
 # Files
 tools.py
+ashrae_data.py
 
 # Data
 data/

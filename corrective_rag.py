@@ -218,17 +218,17 @@ graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph_flow.png")
 
 
 # Run
-inputs = {"question": "What is the SHGC for Vertical Fenestration 0%–40% of Wall (for all frame types) \
-in climate zone 6 according to Building Envelope Requirements? \
-Please provide only the numeric SHGC value without any additional text."}
+# inputs = {"question": "What is the SHGC for Vertical Fenestration 0%–40% of Wall (for all frame types) \
+# in climate zone 6 according to Building Envelope Requirements? \
+# Please provide only the numeric SHGC value without any additional text."}
 
-# Run the graph and print outputs
-for output in graph.stream(inputs):
-    for key, value in output.items():
-        # Node
-        print(f"Node '{key}':")
-    print("-------------------")
+# # Run the graph and print outputs
+# for output in graph.stream(inputs):
+#     for key, value in output.items():
+#         # Node
+#         print(f"Node '{key}':")
+#     print("-------------------")
 
-# Final generation
-print("Final output:")
-print(value["generation"])
+# # Final generation
+# print("Final output:")
+# print(value["generation"])

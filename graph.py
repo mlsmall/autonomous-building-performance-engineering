@@ -81,7 +81,6 @@ llm = llm_gpt # llm_gpt preferred
 system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
 
 For User ID: {{user_id}}
-Status: {{status}}
 {{previous_data}}
 
 Given the following user request, respond with the worker to act next. Each worker will perform a task and respond 
@@ -132,11 +131,12 @@ def supervisor_node(state: AgentState) -> AgentState:
     print("\n=== SUPERVISOR NODE START ===")
     
     if USE_DATABASE:
-        status = "EXISTING USER - Data Found" if state.get('existing_data') else "NEW USER - No Previous Data"
-        previous_data = f'Previous Analysis Found: {state.get("existing_data")}' if state.get('existing_data') else 'No previous analysis available.'
+        user_id = state.get('user_id')
+        existing_data = state.get('existing_data')
+        previous_data = f'Building Information: {existing_data}' if existing_data else 'No previous building data'
+        
         formatted_prompt = system_prompt.format(
-            user_id=state.get('user_id'),
-            status=status,
+            user_id=user_id,
             previous_data=previous_data
         )
     else:
@@ -190,8 +190,8 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
     zone_value = tool_message.split("Climate Zone=")[1].split("\n")[0].strip()
     u_value = tool_message.split("U-value=")[1].split("\n")[0].strip()
     shgc_value = tool_message.split("SHGC=")[1].strip()
-    #print("\nASHARE tool response values")
-    #print(f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_value}\nU-value={u_value}\nSHGC={shgc_value}\n")
+    print("\nASHARE tool response values")
+    print(f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_value}\nU-value={u_value}\nSHGC={shgc_value}\n")
     
     # Store in state
     state["ashrae_to"] = float(to_value)
@@ -204,17 +204,13 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
     
     return state
 
-# def utility_node(state: AgentState) -> AgentState:
-    # city = state["city"] # Get city from state
-    # query = f"Find the current electricity utility rates ($/kWh) for {city}"
-    # result = research_agent.invoke({"messages": [HumanMessage(content=query)]})
-    # return {"messages": [HumanMessage(content=result["messages"][-1].content, name="utility")]}
 def utility_node(state: AgentState) -> AgentState:
     city = state["city"]
     query = f"Find an estimated value for the commercial utility rates ($/kWh) in {city}. \
         Please provide only a numeric estimated utility rate value without any additional text."
     result = research_agent.invoke({"messages": [HumanMessage(content=query)]})
     #print("UTILITY RESPONSE", result)
+    
     # Store full response in messages
     state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="utility")]
     
@@ -227,13 +223,22 @@ def utility_node(state: AgentState) -> AgentState:
 def calculation_node(state: AgentState) -> AgentState:
     # Set values based on whether it's proposed or baseline
     if "proposed_heat_gain" not in state:  # Check if key exists in state:
+        #print("\n=== PROPOSED DESIGN CALCULATION ===")
         calculation_type = "proposed"
         shgc = state["shgc"]
         u = state["u_value"]
     else:
+        #print("\n=== BASELINE DESIGN CALCULATION ===")
         calculation_type = "baseline"
         shgc = state["ashrae_shgc"]
         u = state["ashrae_u_factor"]
+
+    # print(f"Using values:")
+    # print(f"Area: {state['window_area']} ft²")
+    # print(f"SHGC: {shgc}")
+    # print(f"U-value: {u}")
+    # print(f"To: {state['ashrae_to']}")
+    # print(f"CDD: {state['ashrae_cdd']}")
 
     # Run calculations
     query = f"""
@@ -241,7 +246,6 @@ heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, U={u}, To
 energy = annual_cooling_energy(heat_gain, {state["ashrae_cdd"]})
 cost = annual_cost(energy, {state["utility_rate"]})
     """
-    print("CALCULATION TOOL query:", query)
     result = calculation_tool.invoke(query)
 
     # Parse the output from the calculation tool
@@ -264,8 +268,14 @@ cost = annual_cost(energy, {state["utility_rate"]})
     annual_energy = parsed_values['annual_energy']
     annual_cost = parsed_values['annual_cost']
     
-    # print('PARSED VALUES CHECK: Heat gain:', heat_gain, "annual energy", annual_energy, "annual cost", annual_cost)
-    
+
+    # After calculation:
+    # print(f"\nResults:")
+    # print(f"Heat Gain: {heat_gain} BTU/hr")
+    # print(f"Annual Energy: {annual_energy} kWh")
+    # print(f"Annual Cost: ${annual_cost}")
+    # print(f"\n=== {calculation_type} DESIGN CALCULATION END ===\n")
+
     # Store results
     if calculation_type == "proposed":
         state["proposed_heat_gain"] = heat_gain
