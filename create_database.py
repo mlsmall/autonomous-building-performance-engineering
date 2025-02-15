@@ -8,11 +8,12 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_core.documents import Document
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from models import embedding_google
 
 import warnings
 warnings.filterwarnings("ignore")  # Suppress all warnings
 
-embedding = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", task_type="retrieval_document")
+embedding = embedding_google
 
 from langchain_chroma import Chroma
 vector_store = Chroma(
@@ -21,7 +22,7 @@ vector_store = Chroma(
     persist_directory="./vector_database"
 )
 # retriever = vector_store.as_retriever(search_type = "mmr", search_kwargs={"k": 10, "fetch_k": 50})
-retriever = vector_store.as_retriever(search_kwargs={"k": 10})
+retriever = vector_store.as_retriever(search_kwargs={"k": 3})
 
 if __name__ == "__main__":
     chunk_size = 2048

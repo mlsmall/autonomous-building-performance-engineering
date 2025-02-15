@@ -3,13 +3,13 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from create_database import retriever
-from models import llm_gemini, llm_gpt, llm_deep, llm_deep15
+from models import llm_gemini, llm_gpt, llm_llama, llm_cohere
 
-llm = llm_gemini
+llm = llm_cohere
 
 # Load the prompt
 prompt = hub.pull("rlm/rag-prompt")
-# print(f"---Prompt--- {prompt}")
+# print(f"Prompt from hub ---> {prompt}")
 
 # Post-processing
 def format_docs(docs):
@@ -71,13 +71,15 @@ def retrieve(state):
     question = state["question"]
     documents = retriever.invoke(question)
 
-    #Add these debug prints
-    # print(f"Documents retrieved: {len(documents)}")
-    # print("\nFULL Content of Retrieved Documents:")
-    # for i, doc in enumerate(documents):
-    #     print(f"\nDocument {i+1}:")
-    #     print(doc.page_content)
-    #     print("-" * 50)
+    # Add these debug prints
+    print("\n=== RETRIEVAL DEBUG ===")
+    print("Input question:", question)
+    print(f"\nDocuments retrieved: {len(documents)}")
+    print("\nFULL Content of Retrieved Documents:")
+    for i, doc in enumerate(documents):
+        print(f"\nDocument {i+1}:")
+        print(doc.page_content)
+        print("-" * 50)
     
     return {"documents": documents, "question": question}
 
@@ -112,6 +114,9 @@ def generate(state):
     documents = state["documents"]
 
     generation = rag_chain.invoke({"context": documents, "question": question})
+
+    print("\n=== GENERATION DEBUG ===")
+    print("Generation output:", generation)
 
     return {"documents": documents, "question": question, "generation": generation}
 
@@ -212,20 +217,18 @@ graph = workflow.compile()
 graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph_flow.png")
 
 
-# # Run
-# inputs = {"question": "From Table D Climatic Data What is the cooling design dry-bulb temperature (To) and cooling degree days (CDD10)\
-#         in Montreal according to ASHRAE ?\
-#         Please provide only the numeric values in the format:\
-#         To = [value]\
-#         CDD10 = [value]?"}
+# Run
+inputs = {"question": "What is the SHGC for Vertical Fenestration 0%–40% of Wall (for all frame types) \
+in climate zone 6 according to Building Envelope Requirements? \
+Please provide only the numeric SHGC value without any additional text."}
 
-# # Run the graph and print outputs
-# for output in graph.stream(inputs):
-#     for key, value in output.items():
-#         # Node
-#         print(f"Node '{key}':")
-#     print("-------------------")
+# Run the graph and print outputs
+for output in graph.stream(inputs):
+    for key, value in output.items():
+        # Node
+        print(f"Node '{key}':")
+    print("-------------------")
 
-# # Final generation
-# print("Final output:")
-# print(value["generation"])
+# Final generation
+print("Final output:")
+print(value["generation"])

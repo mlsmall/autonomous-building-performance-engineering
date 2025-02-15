@@ -178,7 +178,6 @@ def input_validation_node(state: AgentState) -> AgentState:
     
     return state
 
-
 def ashrae_lookup_node(state: AgentState) -> AgentState:
     city = state["city"]
     city_message = HumanMessage(content=city)
@@ -191,6 +190,8 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
     zone_value = tool_message.split("Climate Zone=")[1].split("\n")[0].strip()
     u_value = tool_message.split("U-value=")[1].split("\n")[0].strip()
     shgc_value = tool_message.split("SHGC=")[1].strip()
+    #print("\nASHARE tool response values")
+    #print(f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_value}\nU-value={u_value}\nSHGC={shgc_value}\n")
     
     # Store in state
     state["ashrae_to"] = float(to_value)
@@ -373,7 +374,7 @@ def main_loop():
             "user_id": user_id if USE_DATABASE else None,
             "existing_data": existing_data if USE_DATABASE else None
         }, config=config): 
-            print(state)
+            #print(state)
             if 'recommendation' in state:
                 recs = json.loads(state['recommendation']['messages'][0].content)
                 print("\n" + "\n".join(recs['recommendations']) + "\n")
