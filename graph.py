@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 load_dotenv()
-import json, os
+import json
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
@@ -12,7 +12,7 @@ from models import llm_gemini, llm_gpt
 from schemas import AgentState, Recommendation, SupervisorState, members
 from database import building_data, get_user_history
 
-llm = llm_gpt # llm_gemini gives recource exhausted
+llm = llm_gpt # llm_gpt preferred
 
 # system_prompt = (
 #     f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
@@ -41,6 +41,43 @@ llm = llm_gpt # llm_gemini gives recource exhausted
 #     """
 # )
 
+# THIS ONE WORKS
+# system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
+
+# For User ID: {{user_id}}
+# Status: {{status}}
+# {{previous_data}}
+
+# Given the following user request, respond with the worker to act next. Each worker will perform a task and respond 
+# with their results and status. When finished, respond with FINISH.
+
+# 1. For new users or incomplete data, send all inputs to input_validation to check:
+#     - SHGC (0-1)
+#     - Window area (ft²)
+#     - U-value
+#     - City
+
+# 2. After validation, send validated input to ashrae_lookup
+#     - When you see ashrae_data in the state, route to utility to get local electricity rates
+
+# 3. After utility rates are found:
+#     - First route to calculation for proposed design (using user's U-value)
+#     - Then route to calculation again for baseline design (using ASHRAE U-value)
+#     - Both calculations must be complete before proceeding
+
+# 4. Only after BOTH calculations are complete:
+#     - Route to recommendation for comparison
+#     - Then route to FINISH
+
+# For existing users with complete data:
+# - Use stored values unless user specifically requests changes
+# - Allow updates to individual values without requiring complete revalidation
+# - Show previous analysis results if requested
+
+# Route to llm only for general building questions, never for calculations or data lookups.
+# """
+
+
 system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
 
 For User ID: {{user_id}}
@@ -50,31 +87,32 @@ Status: {{status}}
 Given the following user request, respond with the worker to act next. Each worker will perform a task and respond 
 with their results and status. When finished, respond with FINISH.
 
-1. For new users or incomplete data, send all inputs to input_validation to check:
-    - SHGC (0-1)
-    - Window area (ft²)
-    - U-value
-    - City
+If previous_data contains building information:
+    - Use those values for calculations
+    - Skip asking for inputs we already have
 
-2. After validation, send validated input to ashrae_lookup
-    - When you see ashrae_data in the state, route to utility to get local electricity rates
+If no previous_data:
+    1. Send all inputs to input_validation to check:
+        - SHGC (0-1)
+        - Window area (ft²)
+        - U-value
+        - City
 
-3. After utility rates are found:
-    - First route to calculation for proposed design (using user's U-value)
-    - Then route to calculation again for baseline design (using ASHRAE U-value)
-    - Both calculations must be complete before proceeding
+    2. After validation, send validated input to ashrae_lookup
+        - When you see ashrae_data in the state, route to utility to get local electricity rates
 
-4. Only after BOTH calculations are complete:
-    - Route to recommendation for comparison
-    - Then route to FINISH
+    3. After utility rates are found:
+        - First route to calculation for proposed design (using user's U-value)
+        - Then route to calculation again for baseline design (using ASHRAE U-value)
+        - Both calculations must be complete before proceeding
 
-For existing users with complete data:
-- Use stored values unless user specifically requests changes
-- Allow updates to individual values without requiring complete revalidation
-- Show previous analysis results if requested
+    4. Only after BOTH calculations are complete:
+        - Route to recommendation for comparison
+        - Then route to FINISH
 
 Route to llm only for general building questions, never for calculations or data lookups.
 """
+
 # # Nodes
 # # The supervisor is an LLM node that decides what node to execute next
 # def supervisor_node(state: AgentState) -> AgentState:
@@ -305,35 +343,7 @@ graph = builder.compile(checkpointer=memory) # This is where the memory is integ
 # Draw the graph
 #graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
 
-# Create a main loop
-# def main_loop():
-#     print("Welcome! Please enter your email as your user ID")
-#     user_id = input("user ID: ")
-#     existing_data = get_user_history(user_id)
-
-#     print("----INITIAL MESSAGE-----")
-#     print("Hello, I'm your building energy analyst. I need these inputs:")
-#     print("* Window area (ft²)")
-#     print("* SHGC value (0-1)")
-#     print("* U-value")
-#     print("* Building location (city)")
-
-#     while True:
-#         user_input = input(">> ")
-#         if user_input.lower() in ["exit", "quit", "q"]:
-#             print("See you Later. Have a great day!")
-#             break
-
-        
-#         for state in graph.stream({"messages": [("user", user_input)], config=config):
-#             print(state)
-#             if 'recommendation' in state:
-#                 recs = json.loads(state['recommendation']['messages'][0].content)
-#                 print("\n" + "\n".join(recs['recommendations']) + "\n")
-
- 
 USE_DATABASE = False  # Toggle to True/False to enable/disable database
-
 def main_loop():
     if USE_DATABASE:
         print("Welcome! Please enter your email as your user ID")
@@ -344,7 +354,7 @@ def main_loop():
         existing_data = None
 
     print("----INITIAL MESSAGE-----")
-    print("Hello, I'm your building energy analyst. I need these inputs:")
+    print("Hello, I'm your building performance analyst and engineer. Please enter these inputs:")
     print("* Window area (ft²)")
     print("* SHGC value (0-1)")
     print("* U-value")
@@ -355,7 +365,8 @@ def main_loop():
         if user_input.lower() in ["exit", "quit", "q"]:
             print("See you Later. Have a great day!")
             break
-
+        
+        # for state in graph.stream({"messages": [("user", user_input)]}, config=config):
         for state in graph.stream({
             "messages": [("user", user_input)],
             "next": "",

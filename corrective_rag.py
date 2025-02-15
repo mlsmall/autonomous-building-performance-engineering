@@ -3,7 +3,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from create_database import retriever
-from models import llm_gemini, llm_gpt
+from models import llm_gemini, llm_gpt, llm_deep, llm_deep15
 
 llm = llm_gemini
 
@@ -24,7 +24,6 @@ rag_chain = prompt | llm | StrOutputParser()
 
 class GradeDocuments(BaseModel):
     """Binary score for relevance check on retrieved documents"""
-
     binary_score: str = Field(description="Are documents relevant to the question, 'yes' or 'no'?")
 
 # LLM with function call
@@ -72,9 +71,9 @@ def retrieve(state):
     question = state["question"]
     documents = retriever.invoke(question)
 
-    # Add these debug prints
-    # print("\nContent Retrieved from Vector Store:")
-
+    #Add these debug prints
+    # print(f"Documents retrieved: {len(documents)}")
+    # print("\nFULL Content of Retrieved Documents:")
     # for i, doc in enumerate(documents):
     #     print(f"\nDocument {i+1}:")
     #     print(doc.page_content)
@@ -148,7 +147,8 @@ def web_search(state):
     # Perform web search and update document keys with web results
     
     docs = web_search_tool.invoke(question)
-    web_results = "\n".join(docs)
+    # web_results = "\n".join(docs)
+    web_results = "\n".join(doc['content'] for doc in docs)
     web_results = Document(page_content=web_results)
     documents.append(web_results)
 
@@ -212,20 +212,18 @@ graph = workflow.compile()
 graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph_flow.png")
 
 
-# Run
-inputs = {"question": "What are the outdoor design temperature (To) and cooling degree days (CDD10)\
-        in Montreal according to ASHRAE Table D Climate Design Data?\
-        Please provide only the numeric values in the format:\
-        To = [value]\
-        CDD10 = [value]?"}
+# # Run
+# inputs = {"question": "From Table D Climatic Data What is the cooling design dry-bulb temperature (To) and cooling degree days (CDD10)\
+#         in Montreal according to ASHRAE ?\
+#         Please provide only the numeric values in the format:\
+#         To = [value]\
+#         CDD10 = [value]?"}
 
-# Run the graph and print outputs
+# # Run the graph and print outputs
 # for output in graph.stream(inputs):
 #     for key, value in output.items():
 #         # Node
 #         print(f"Node '{key}':")
-#         # Optional: print full state at each node
-#         #pprint(value, indent=2, width=80, depth=None)
 #     print("-------------------")
 
 # # Final generation

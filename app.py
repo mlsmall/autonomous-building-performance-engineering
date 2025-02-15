@@ -1,12 +1,11 @@
 import streamlit as st
 from streamlit_extras.stylable_container import stylable_container
-from graph import main_loop, graph
+from graph import graph, USE_DATABASE
 import json
 
-print("DEBUG 0: Starting Streamlit app")
-
+# Rest of the code remains the same, and remove the USE_DATABASE = False line since we're importing it
 # Premium look settings
-st.set_page_config(layout="wide", page_title="Building Energy Analyzer")
+st.set_page_config(layout="wide", page_title="Building Performance Assistant")
 
 # Custom CSS for premium feel
 st.markdown("""
@@ -23,68 +22,69 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-print("DEBUG 1: Initialized Streamlit settings")
+# Clean, minimal sidebar
+with st.sidebar:
+    st.title("Energy Analysis")
+    st.markdown("---")
+    st.markdown("### Quick Guide")
+    st.markdown("Enter your building details in this format:")
+    st.code("window area = 10000 ft2\nshgc = 0.40\nu-value = 0.9\ncity = Montreal")
+    st.markdown("---")
+    st.markdown("Made with 🏗️ by Kalevi Productions")
 
 # Initialize session state for chat
 if 'messages' not in st.session_state:
     st.session_state.messages = []
-    st.session_state.user_id = None
-    print("DEBUG 2: Initialized session state")
+    st.session_state.user_id = None if USE_DATABASE else "test_user"
+    # Add initial message
+    st.session_state.messages.append({
+        "role": "assistant", 
+        "content": """Hello, I'm your building performance analyst and engineer. Please enter these inputs:
+* Window area (ft²)
+* SHGC value (0-1)
+* U-value
+* Building location (city)"""
+    })
 
 # Main content
-st.title("Building Energy Performance Analyzer")
+st.title("Building Performance Assistant")
 
-# User ID Input (if not already provided)
-if not st.session_state.user_id:
-    print("DEBUG 3: Asking for user ID")
+# User ID Input (only if using database)
+if USE_DATABASE and not st.session_state.user_id:
     user_id = st.text_input("Please enter your email as user ID:")
     if st.button("Start Analysis"):
-        print(f"DEBUG 4: Got user ID: {user_id}")
         st.session_state.user_id = user_id
         st.rerun()
 
 # Chat Interface
 if st.session_state.user_id:
-    print("DEBUG 5: Starting chat interface")
-    # Display chat messages
-    print("DEBUG 6: Displaying existing messages:", len(st.session_state.messages))
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
-            st.write(message["content"])
-            print(f"DEBUG 7: Displayed message - Role: {message['role']}")
+            if message["role"] == "assistant" and "%" in message["content"]:
+                formatted_content = message["content"].replace("• ", "\n• ").replace("\n", "\n\n")
+            else:
+                formatted_content = message["content"]
+            st.markdown(formatted_content)
 
     # Chat input
     if prompt := st.chat_input("Enter your building details:"):
-        print(f"DEBUG 8: Got new input: {prompt}")
         # Add user message to chat
         st.session_state.messages.append({"role": "user", "content": prompt})
-        print("DEBUG 9: Added user message to session")
         
-        print("DEBUG 10: Starting graph stream")
         for state in graph.stream({
             "messages": [("user", prompt)],
             "next": "",
             "user_id": st.session_state.user_id,
             "existing_data": None
         }, config={"configurable": {"thread_id": "1"}}):
-            print(f"DEBUG 11: Processing state: {state.keys()}")
             st.write(state)
-            print("DEBUG 12: Wrote state to Streamlit")
             
             if 'recommendation' in state:
-                print("DEBUG 13: Found recommendations")
                 try:
                     recs = json.loads(state['recommendation']['messages'][0].content)
-                    print("DEBUG 14: Parsed recommendations JSON")
                     recommendations = "\n".join(recs['recommendations'])
-                    print(f"DEBUG 15: Formatted recommendations: {recommendations}")
                     st.session_state.messages.append({"role": "assistant", "content": recommendations})
-                    print("DEBUG 16: Added recommendations to session")
                 except Exception as e:
-                    print(f"DEBUG ERROR: Failed to process recommendations: {e}")
+                    print(f"Failed to process recommendations: {e}")
                     
-        print("DEBUG 17: Graph stream completed")
         st.rerun()
-        print("DEBUG 18: Triggered Streamlit rerun")
-
-print("DEBUG 19: Streamlit app loop completed")

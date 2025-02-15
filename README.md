@@ -39,7 +39,7 @@ User: "I need to cut my energy costs"
 
 AI: "Let me look at your 72,000 sqft Houston medical center. Here's what we can do:
 
-Quick wins with fast payback:
+Quick wins:
 - Upgrading your current glass (SHGC 0.38) to low-e glass (SHGC 0.25) saves $18,500/year
 - Adding CO2 sensors and demand controls saves $22,000/year in ventilation costs
 - Total investment: $165,000, payback in 4.1 years
@@ -90,8 +90,78 @@ AI: "Here are three approaches, ranked by impact:
 - Reduces natural light significantly
 - Minimal impact on equipment sizing"
 
+## Why It Matters
+Get professional engineering analysis in seconds, with personalized design guidance and recommendations from concept to completion.
+
+## System Architecture
+   ┌────────────────────────────────────────────────────────────────────────────────┐
+   │                            Autonomous Agent Network                            │
+┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐
+│  Input    │  │ Knowledge │  │ Resource  │  │   Calc.   │  │   Rec.    │  │ Technical │
+│ Validation│  │ Retrieval │  │ Research  │  │   Agent   │  │   Agent   │  │  Report   │
+└─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
+      │              │              │              │              │              │
+      │              ▼              │              │              ▼              │
+      │        ┌──────────┐         │              │         ┌──────────┐        │
+      │        │  Vector  │         │              │         │  Vector  │        │
+      │        │  Store   │         │              │         │  Store   │        │
+      │        └────┬─────┘         │              │         └────┬─────┘        │
+      │             │               │              │              │              │
+      ▼             ▼               ▼              ▼              ▼              ▼
+    ┌────────────────────────────────────────────────────────────────────────────────┐
+    │                               State Management                                 │
+    │                             (LangGraph Workflow)                               │
+    └────────────────────────────────────────────────────────────────────────────────┘
+                                            ▲
+                                            │
+                                            ▼
+    ┌────────────────────────────────────────────────────────────────────────────────┐
+    │                               Supervisor Agent                                 │
+    └────────────────────────────────────────────────────────────────────────────────┘
+                                            ▲
+                                            │
+                                    ┌───────┴───────┐
+                                    │   MongoDB     │
+                                    │  Persistence  │
+                                    └───────────────┘
+## Technical Implementation
+
+This system implements a multi-agent architecture using LangGraph for agent orchestration and state management:
+
+Agent Framework:
+- Stateful agent design using LangGraph's StateGraph:
+  - MemorySaver maintains agent's internal state (building specs, calculations, results)
+  - Agents use different prompts based on their current state
+  - ReAct Supervisor agent uses LLM to determine control flow between other agents
+  - Human-in-the-loop to approve report format
+- ReAct (Reasoning + Action) pattern implementation:
+  - Thought: Analyze current state and requirements
+  - Action: Choose appropriate tool/calculation
+  - Observation: Analyzes tool outputs and responses
+  - Final Answer: Return structured response
+
+Specialized Agents:
+- Input Validation Agent: Checks and validates building input data
+- Knowledge Retrieval Agent: Queries vector store for relevant engineering data
+- Resource Research Agent: Retrieves climate data and utility rates using Tavily Search tool and vector store
+- Calc Agent: Executes building performance calculations via Python REPL tool
+- Recommendation Agent: Compares results to benchmarks, analyzes building, and proposes design improvements
+- Technical Report Agent: Formats analysis results into structured graphs, tables, and reports
+
+State Management:
+- Supervisor agent directs routes between agents based on conversation state
+- Short-term memory via MemorySaver checkpoints and thread IDs to save conversation state during session
+- Long-term persistence of state fields in database
+- Pydantic models to enforce input and output state structure
+
+Data Infrastructure:
+- MongoDB stores user and building data
+- Chroma vector database with text embeddings
+- RAG retrieves relevant documents for LLMs
+
+The system combines RAG with multi-agent orchestration to ensure recommendations are based on science rather than generic responses.
 
 ## License
-Copyright (c) 2025 Mauro Small
+Copyright © 2025 Mauro Small
 This project is proprietary and confidential. See the [LICENSE](LICENSE) file for details.
 Viewing and forking for personal reference only. No commercial use, distribution, or modification permitted.

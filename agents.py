@@ -3,7 +3,7 @@ from langgraph.prebuilt import create_react_agent
 from tools import tavily_tool, input_validation_tool, ashrae_lookup_tool, recommendation_tool, llm_tool
 from models import llm_gemini, llm_gpt
 
-llm = llm_gemini
+llm = llm_gemini # llm_gemini recommended
 
 # Agents
 llm_agent = create_react_agent(
