@@ -94,36 +94,41 @@ AI: "Here are three approaches, ranked by impact:
 Get professional engineering analysis in seconds, with personalized design guidance and recommendations from concept to completion.
 
 ## System Architecture
-   ┌────────────────────────────────────────────────────────────────────────────────┐
-   │                            Autonomous Agent Network                            │
+
+```ascii
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│                               Autonomous Agent Network                             │
+└────────────────────────────────────────────────────────────────────────────────────┘
+
 ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐
-│  Input    │  │ Knowledge │  │ Resource  │  │   Calc.   │  │   Rec.    │  │ Technical │
-│ Validation│  │ Retrieval │  │ Research  │  │   Agent   │  │   Agent   │  │  Report   │
+│   Input   │  │ Knowledge │  │ Resource  │  │   Calc.   │  │   Rec.    │  │ Technical │
+│Validation │  │ Retrieval │  │ Research  │  │   Agent   │  │   Agent   │  │  Report   │
 └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
-      │              │              │              │              │              │
-      │              ▼              │              │              ▼              │
-      │        ┌──────────┐         │              │         ┌──────────┐        │
-      │        │  Vector  │         │              │         │  Vector  │        │
-      │        │  Store   │         │              │         │  Store   │        │
-      │        └────┬─────┘         │              │         └────┬─────┘        │
-      │             │               │              │              │              │
-      ▼             ▼               ▼              ▼              ▼              ▼
-    ┌──────────────────────────────────────────────────────────────────────────────┐
-    │                               State Management                               │
-    │                             (LangGraph Workflow)                             │
-    └──────────────────────────────────────────────────────────────────────────────┘
-                                            ▲
-                                            │
-                                            ▼
-    ┌──────────────────────────────────────────────────────────────────────────────┐
-    │                               Supervisor Agent                               │
-    └──────────────────────────────────────────────────────────────────────────────┘
-                                            ▲
-                                            │
-                                    ┌───────┴───────┐
-                                    │   MongoDB     │
-                                    │  Persistence  │
-                                    └───────────────┘
+      │              │              │              │              │              │    
+      │              ▼              │              │              ▼              │    
+      │        ┌──────────┐         │              │         ┌──────────┐        │    
+      │        │  Vector  │         │              │         │  Vector  │        │    
+      │        │  Store   │         │              │         │  Store   │        │    
+      │        └────┬─────┘         │              │         └────┬─────┘        │    
+      │             │               │              │              │              │    
+      ▼             ▼               ▼              ▼              ▼              ▼    
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                                   State Management                                   │
+│                                 (LangGraph Workflow)                                 │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+                                          ▲                                        
+                                          │                                        
+                                          ▼                                        
+      ┌────────────────────────────────────────────────────────────────────────────┐
+      │                             Supervisor Agent                               │
+      └────────────────────────────────────────────────────────────────────────────┘
+                                          ▲                                        
+                                          │                                        
+                                   ┌──────┴──────┐                                
+                                   │   MongoDB   │                                
+                                   │ Persistence │                                
+                                   └─────────────┘                                
+```
 ## Technical Implementation
 
 This system implements a multi-agent architecture using LangGraph for agent orchestration and state management:
