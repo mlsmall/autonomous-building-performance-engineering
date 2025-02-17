@@ -273,6 +273,8 @@ cost = annual_cost(energy, {state["utility_rate"]})
 #     return state
 
 def recommendation_node(state: AgentState) -> AgentState:
+    """Analyzes performance differences between proposed and baseline values"""
+    
     message = f"""proposed_heat_gain: {state['proposed_heat_gain']}
     baseline_heat_gain: {state['baseline_heat_gain']}
     proposed_cooling_energy: {state['proposed_cooling_energy']}
@@ -283,11 +285,11 @@ def recommendation_node(state: AgentState) -> AgentState:
     ashrae_shgc: {state['ashrae_shgc']}
     u_value: {state['u_value']}
     ashrae_u_factor: {state['ashrae_u_factor']}"""
-
+    
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
-    recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
     
+    recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
     state["messages"] = [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]
     return state
 
@@ -325,7 +327,7 @@ graph = builder.compile(checkpointer=memory) # This is where the memory is integ
 # Draw the graph
 #graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
 
-USE_DATABASE = True  # Toggle to True/False to enable/disable database
+USE_DATABASE = False  # Toggle to True/False to enable/disable database
 def main_loop():
     if USE_DATABASE:
         print("Welcome! Please enter your email as your user ID")
@@ -336,7 +338,7 @@ def main_loop():
         user_data = None
 
     if user_data:
-        print(f"Welcome to your personal building performance analyst and engineer {user_id}!")
+        print(f"Welcome to your personal building performance engineer {user_id}!")
         print("Your existing building data has been found:")
         print(f"* Window area: {user_data['window_area']} ft²")
         print(f"* SHGC: {user_data['shgc']}")
@@ -345,7 +347,7 @@ def main_loop():
         print("\nType 'go' to see your analysis, or enter new inputs to recalculate.")
     else:
         print("----INITIAL MESSAGE-----")
-        print("Hello, I'm your personal building performance analyst and engineer. Please enter these inputs:")
+        print("Hello, I'm your personal building performance engineer. Please enter these inputs:")
         print("* Window area (ft²)")
         print("* SHGC value (0-1)")
         print("* U-value")

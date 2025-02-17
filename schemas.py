@@ -37,16 +37,27 @@ class BuildingInput(BaseModel):
     city: str = Field(min_length=1, description="Building location")
 
 # Forces output format
+# class Recommendation(BaseModel):
+#     """Structure for window performance comparison"""
+#     performance_delta: float = Field(description="Percentage difference from baseline")
+#     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
+#         First line: 'Your glass choice means:' \
+#         Then bullet points showing ABSOLUTE DIFFERENCES between baseline and proposed: \
+#         * {abs(baseline - proposed):,.0f} {'more' if proposed > baseline else 'less'} BTU/hr heat gain \
+#         * {abs(baseline - proposed):,.0f} {'more' if proposed > baseline else 'less'} kWh/year \
+#         * ${abs(baseline - proposed):,.2f} {'more' if proposed > baseline else 'less'} in cooling costs \
+#         Last line: Shows performance_delta as percent better/worse than baseline")
+
 class Recommendation(BaseModel):
     """Structure for window performance comparison"""
     performance_delta: float = Field(description="Percentage difference from baseline")
     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
         First line: 'Your glass choice means:' \
         Then bullet points showing ABSOLUTE DIFFERENCES between baseline and proposed: \
-        • {abs(baseline - proposed):,.0f} {'more' if proposed > baseline else 'less'} BTU/hr heat gain \
-        • {abs(baseline - proposed):,.0f} {'more' if proposed > baseline else 'less'} kWh/year \
-        • ${abs(baseline - proposed):,.2f} {'more' if proposed > baseline else 'less'} in cooling costs \
-        Last line: Shows performance_delta as percent better/worse than baseline")
+        • {abs(heat_gain_diff):,.0f} {'more' if heat_gain_diff < 0 else 'less'} BTU/hr heat gain \
+        • {abs(energy_diff):,.0f} {'more' if energy_diff < 0 else 'less'} kWh/year \
+        • ${abs(cost_diff):,.2f} {'more' if cost_diff < 0 else 'less'} in cooling costs \
+        Last line: Shows performance_delta as percent {'worse' if performance_delta < 0 else 'better'} than baseline")
 
 members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility"] # Agent names
 options = members + ["FINISH"]

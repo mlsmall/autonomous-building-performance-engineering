@@ -41,8 +41,15 @@ ashrae_lookup_agent = create_react_agent(
 #     state_modifier="You receive building data, pass it to the recommendation_tool, and return the recommendations."
 # )
 
+# recommendation_agent = create_react_agent(
+#     llm,
+#     tools=[recommendation_tool],
+#     state_modifier="Pass the input data directly to recommendation_tool without modifying it. Then return the recommendations from the tool."
+# )
+
 recommendation_agent = create_react_agent(
     llm,
     tools=[recommendation_tool],
-    state_modifier="Pass the input data directly to recommendation_tool without modifying it. The return the and return the recommendations from the tool."
+    state_modifier="Pass the input data directly to recommendation_tool without modifying it. \
+        Then return the result from the tool, without modifying it."
 )

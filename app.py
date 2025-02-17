@@ -5,22 +5,45 @@ import json
 
 # Rest of the code remains the same, and remove the USE_DATABASE = False line since we're importing it
 # Premium look settings
-st.set_page_config(layout="wide", page_title="Building Performance Assistant")
+st.set_page_config(
+    layout="wide", 
+    page_title="Building Performance Assistant",
+    page_icon="🏢"
+)
 
 # Custom CSS for premium feel
 st.markdown("""
 <style>
+    /* Clean background */
     .main {
         background-color: #f8f9fa;
+        padding: 2rem;
     }
-    .stApp {
-        background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+    
+    /* Message styling */
+    .chat-message {
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
-    .css-1d391kg {
-        padding: 3rem 1rem;
+    
+    /* Header area */
+    .header {
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid #dee2e6;
+    }      
+
+    [data-testid="stChatMessageAvatarAssistant"],
+    [data-testid="stChatMessageAvatarUser"] {
+        display: none !important;
     }
+         
 </style>
 """, unsafe_allow_html=True)
+
 
 # Clean, minimal sidebar
 with st.sidebar:
@@ -39,12 +62,15 @@ if 'messages' not in st.session_state:
     # Add initial message
     st.session_state.messages.append({
         "role": "assistant", 
-        "content": """Hello, I'm your building performance analyst and engineer. Please enter these inputs:
+        "content": """Hello, I'm your building performance engineer. Please enter these inputs:
 * Window area (ft²)
 * SHGC value (0-1)
 * U-value
 * Building location (city)"""
     })
+# At the start, when you append the initial message
+print("INITIAL MESSAGE FORMAT:")
+print(st.session_state.messages[0]["content"])
 
 # Main content
 st.title("Building Performance Assistant")
@@ -56,9 +82,13 @@ if USE_DATABASE and not st.session_state.user_id:
         st.session_state.user_id = user_id
         st.rerun()
 
-# Chat Interface
+
+# And in your chat loop
 if st.session_state.user_id:
     for message in st.session_state.messages:
+        print(f"\nMESSAGE CONTENT:")
+        print(repr(message["content"]))
+        # Rest of your code...
         with st.chat_message(message["role"]):
             if message["role"] == "assistant" and "%" in message["content"]:
                 formatted_content = message["content"].replace("• ", "\n• ").replace("\n", "\n\n")
