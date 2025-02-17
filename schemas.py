@@ -1,5 +1,5 @@
 from langgraph.graph import MessagesState
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Literal
 
 # This agent state is the input to each node in the graph
@@ -53,11 +53,22 @@ class Recommendation(BaseModel):
     performance_delta: float = Field(description="Percentage difference from baseline")
     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
         First line: 'Your glass choice means:' \
-        Then bullet points showing ABSOLUTE DIFFERENCES between baseline and proposed: \
-        • {abs(heat_gain_diff):,.0f} {'more' if heat_gain_diff < 0 else 'less'} BTU/hr heat gain \
-        • {abs(energy_diff):,.0f} {'more' if energy_diff < 0 else 'less'} kWh/year \
-        • ${abs(cost_diff):,.2f} {'more' if cost_diff < 0 else 'less'} in cooling costs \
-        Last line: Shows performance_delta as percent {'worse' if performance_delta < 0 else 'better'} than baseline")
+        Then bullet points showing the diffs: \
+        * {abs(heat_gain_diff):,.0f} {'more' if heat_gain_diff is negative else 'less'} BTU/hr heat gain \
+        * {abs(energy_diff):,.0f} {'more' if energy_diff is negative else 'less'} kWh/year \
+        * ${abs(cost_diff):,.2f} {'more' if cost_diff is negative else 'less'} in cooling costs \
+        Last line: Shows performance_delta as percent {'worse' if performance_delta is negative else 'better'} than baseline")
+    
+    @model_validator(mode='before')
+    def format_recommendations(cls, values):
+        print("\nSCHEMA VALIDATOR:")
+        print(f"Raw values type: {type(values)}")
+        print(f"Raw values: {values}")
+        if isinstance(values, dict):
+            print(f"heat_gain_diff: {values.get('heat_gain_diff')}")
+            print(f"energy_diff: {values.get('energy_diff')}")
+            print(f"cost_diff: {values.get('cost_diff')}")
+        return values
 
 members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility"] # Agent names
 options = members + ["FINISH"]

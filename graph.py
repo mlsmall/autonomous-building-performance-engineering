@@ -288,12 +288,11 @@ def recommendation_node(state: AgentState) -> AgentState:
     
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
-    
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
+    
+    print("\nLLM OUTPUT:", recommendation)
     state["messages"] = [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]
     return state
-
-
 
 # Build graph
 builder = StateGraph(AgentState)

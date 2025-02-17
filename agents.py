@@ -51,5 +51,5 @@ recommendation_agent = create_react_agent(
     llm,
     tools=[recommendation_tool],
     state_modifier="Pass the input data directly to recommendation_tool without modifying it. \
-        Then return the result from the tool, without modifying it."
+        Then return the recommendations result from the tool, without modifying it."
 )

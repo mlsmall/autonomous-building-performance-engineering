@@ -68,9 +68,6 @@ if 'messages' not in st.session_state:
 * U-value
 * Building location (city)"""
     })
-# At the start, when you append the initial message
-print("INITIAL MESSAGE FORMAT:")
-print(st.session_state.messages[0]["content"])
 
 # Main content
 st.title("Building Performance Assistant")
@@ -82,19 +79,11 @@ if USE_DATABASE and not st.session_state.user_id:
         st.session_state.user_id = user_id
         st.rerun()
 
-
-# And in your chat loop
 if st.session_state.user_id:
     for message in st.session_state.messages:
-        print(f"\nMESSAGE CONTENT:")
-        print(repr(message["content"]))
-        # Rest of your code...
-        with st.chat_message(message["role"]):
-            if message["role"] == "assistant" and "%" in message["content"]:
-                formatted_content = message["content"].replace("• ", "\n• ").replace("\n", "\n\n")
-            else:
-                formatted_content = message["content"]
-            st.markdown(formatted_content)
+        with st.chat_message(message["role"]):  # Explicitly set avatar=None
+            formatted_content = message["content"]
+            st.markdown(formatted_content, unsafe_allow_html=True)  # Let Streamlit handle markdown
 
     # Chat input
     if prompt := st.chat_input("Enter your building details:"):
