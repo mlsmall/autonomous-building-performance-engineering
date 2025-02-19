@@ -48,28 +48,28 @@ class BuildingInput(BaseModel):
 #         * ${abs(baseline - proposed):,.2f} {'more' if proposed > baseline else 'less'} in cooling costs \
 #         Last line: Shows performance_delta as percent better/worse than baseline")
 
+# class Recommendation(BaseModel):
+#     """Structure for window performance comparison"""
+#     performance_delta: float = Field(description="Percentage difference from baseline")
+#     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
+#         First line: 'Your glass choice means:' \
+#         Then bullet points showing the diffs: \
+#         * {abs(heat_gain_diff):,.0f} {'more' if heat_gain_diff is negative else 'less'} BTU/hr heat gain \
+#         * {abs(energy_diff):,.0f} {'more' if energy_diff is negative else 'less'} kWh/year \
+#         * ${abs(cost_diff):,.2f} {'more' if cost_diff is negative else 'less'} in cooling costs \
+#         Last line: Shows performance_delta as percent {'worse' if performance_delta is negative else 'better'} than baseline")
+    
 class Recommendation(BaseModel):
     """Structure for window performance comparison"""
     performance_delta: float = Field(description="Percentage difference from baseline")
     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
         First line: 'Your glass choice means:' \
         Then bullet points showing the diffs: \
-        * {abs(heat_gain_diff):,.0f} {'more' if heat_gain_diff is negative else 'less'} BTU/hr heat gain \
-        * {abs(energy_diff):,.0f} {'more' if energy_diff is negative else 'less'} kWh/year \
-        * ${abs(cost_diff):,.2f} {'more' if cost_diff is negative else 'less'} in cooling costs \
-        Last line: Shows performance_delta as percent {'worse' if performance_delta is negative else 'better'} than baseline")
+        * {abs(heat_gain_diff):,.0f} {'less' if heat_gain_diff > 0 else 'more'} BTU/hr heat gain     <span style='color: #43a047'>✓</span> \
+        * {abs(energy_diff):,.0f} {'less' if energy_diff > 0 else 'more'} kWh/year                   <span style='color: #43a047'>✓</span> \
+        * ${abs(cost_diff):,.2f} {'less' if cost_diff > 0 else 'more'} in cooling costs              <span style='color: #43a047'>✓</span> \
+        Last line: Shows performance_delta as percent {'worse' if performance_delta < 0 else 'better'} than baseline")
     
-    @model_validator(mode='before')
-    def format_recommendations(cls, values):
-        print("\nSCHEMA VALIDATOR:")
-        print(f"Raw values type: {type(values)}")
-        print(f"Raw values: {values}")
-        if isinstance(values, dict):
-            print(f"heat_gain_diff: {values.get('heat_gain_diff')}")
-            print(f"energy_diff: {values.get('energy_diff')}")
-            print(f"cost_diff: {values.get('cost_diff')}")
-        return values
-
 members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility"] # Agent names
 options = members + ["FINISH"]
 
