@@ -36,41 +36,30 @@ class BuildingInput(BaseModel):
     u_value: float = Field(gt=0, description="U-value")
     city: str = Field(min_length=1, description="Building location")
 
-# Forces output format
-# class Recommendation(BaseModel):
-#     """Structure for window performance comparison"""
-#     performance_delta: float = Field(description="Percentage difference from baseline")
-#     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
-#         First line: 'Your glass choice means:' \
-#         Then bullet points showing ABSOLUTE DIFFERENCES between baseline and proposed: \
-#         * {abs(baseline - proposed):,.0f} {'more' if proposed > baseline else 'less'} BTU/hr heat gain \
-#         * {abs(baseline - proposed):,.0f} {'more' if proposed > baseline else 'less'} kWh/year \
-#         * ${abs(baseline - proposed):,.2f} {'more' if proposed > baseline else 'less'} in cooling costs \
-#         Last line: Shows performance_delta as percent better/worse than baseline")
-
+# Forces output format    
 # class Recommendation(BaseModel):
 #     """Structure for window performance comparison"""
 #     performance_delta: float = Field(description="Percentage difference from baseline")
 #     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
 #         First line: 'Your glass choice means:' \
 #         Then bullet points showing the diffs: \
-#         * {abs(heat_gain_diff):,.0f} {'more' if heat_gain_diff is negative else 'less'} BTU/hr heat gain \
-#         * {abs(energy_diff):,.0f} {'more' if energy_diff is negative else 'less'} kWh/year \
-#         * ${abs(cost_diff):,.2f} {'more' if cost_diff is negative else 'less'} in cooling costs \
-#         Last line: Shows performance_delta as percent {'worse' if performance_delta is negative else 'better'} than baseline")
-    
+#         * {abs(heat_gain_diff):,.0f} {'less' if heat_gain_diff > 0 else 'more'} BTU/hr heat gain <span style='color: #43a047'>✓</span> \
+#         * {abs(energy_diff):,.0f} {'less' if energy_diff > 0 else 'more'} kWh/year <span style='color: #43a047'>✓</span> \
+#         * ${abs(cost_diff):,.2f} {'less' if cost_diff > 0 else 'more'} in cooling costs <span style='color: #43a047'>✓</span> \
+#         Last line: Shows performance_delta as percent {'worse' if performance_delta < 0 else 'better'} than baseline")
 class Recommendation(BaseModel):
     """Structure for window performance comparison"""
     performance_delta: float = Field(description="Percentage difference from baseline")
     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
         First line: 'Your glass choice means:' \
         Then bullet points showing the diffs: \
-        * {abs(heat_gain_diff):,.0f} {'less' if heat_gain_diff > 0 else 'more'} BTU/hr heat gain     <span style='color: #43a047'>✓</span> \
-        * {abs(energy_diff):,.0f} {'less' if energy_diff > 0 else 'more'} kWh/year                   <span style='color: #43a047'>✓</span> \
-        * ${abs(cost_diff):,.2f} {'less' if cost_diff > 0 else 'more'} in cooling costs              <span style='color: #43a047'>✓</span> \
-        Last line: Shows performance_delta as percent {'worse' if performance_delta < 0 else 'better'} than baseline")
-    
-members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility"] # Agent names
+        * {abs(heat_gain_diff):,.0f} {'less' if heat_gain_diff > 0 else 'more'} BTU/hr heat gain &nbsp; &emsp; <span style='color: #43a047'>✓</span>\n \
+        * {abs(energy_diff):,.0f} {'less' if energy_diff > 0 else 'more'} kWh/year &nbsp; &emsp; &emsp; <span style='color: #43a047'>✓</span>\n \
+        * ${abs(cost_diff):,.2f} {'less' if cost_diff > 0 else 'more'} in cooling costs &emsp; <span style='color: #43a047'>✓</span>\n \
+        Performance is {abs(performance_delta):.1f}% {'worse' if performance_delta < 0 else 'better'} than baseline.")
+
+
+members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility"] # Current Agents
 options = members + ["FINISH"]
 
 # Our team supervisor is an LLM node. It picks the next agent to process and decides when the work is completed

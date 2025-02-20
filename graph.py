@@ -286,6 +286,7 @@ def recommendation_node(state: AgentState) -> AgentState:
     u_value: {state['u_value']}
     ashrae_u_factor: {state['ashrae_u_factor']}"""
     
+    print("Input to the recommendation agent")
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
     #print("Recommendation schema input:", agent_response)

@@ -79,7 +79,7 @@ with st.sidebar:
     st.title("Energy Analysis")
     st.markdown("---")
     st.markdown("### Quick Guide")
-    st.markdown("Enter your building details in this format:")
+    st.markdown("Enter each building detail followed by a space in this form:")
     st.code("window area = 10000 ft2\nshgc = 0.40\nu-value = 0.9\ncity = Montreal")
     st.markdown("---")
     st.markdown("Made with ❤️ by Kalevi Productions")

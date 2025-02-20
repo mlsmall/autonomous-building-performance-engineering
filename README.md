@@ -1,4 +1,4 @@
-# Autonomous Multi-Agent Generative AI System for Real-Time Building Performance Engineering
+# Autonomous Multi-Agent System for Real-Time Building Performance Engineering
 
 This agentic network marks a significant shift in building performance modeling: the first autonomous multi-agent system that combines engineering calculations with generative AI to automate complex engineering decisions.
 
