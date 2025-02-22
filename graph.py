@@ -13,7 +13,7 @@ from models import llm_gemini, llm_gpt
 from schemas import AgentState, Recommendation, SupervisorState, members
 from database import building_data, get_user_history
 
-llm = llm_gpt # llm_gpt preferred
+llm = llm_gemini # llm_gpt preferred
 
 # system_prompt = (
 #     f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
