@@ -137,10 +137,7 @@ def llm_node(state: AgentState) -> AgentState:
 
 
 def input_validation_node(state: AgentState) -> AgentState:
-    print("HERE BE THE STATE", state)
-    result = input_validation_agent.invoke(state)
-    print("IDIOT AGENT SAYS")
-    print(result["messages"][-1].content)
+    result = input_validation_agent.invoke({"messages": state['messages'][-1].content})
     if "Valid input" in result["messages"][-1].content:
         user_input = state["messages"][0].content
         return {
@@ -276,7 +273,7 @@ builder.add_conditional_edges("supervisor", lambda state: state["next"]) # Pass 
 
 # ADD SHORT TERM MEMORY
 # Set the configuration needed for the state
-#config = {"configurable": {"thread_id": "1"}} # passed to the StateGraph constructor to identiy our threads
+config = {"configurable": {"thread_id": "1"}} # passed to the StateGraph constructor to identiy our threads
 memory = MemorySaver() # Checkpointer for short-term (within-thread) memory
 
 # Compile graph with memory
@@ -317,9 +314,9 @@ def main_loop():
             print("See you Later. Have a great day!")
             break
 
-        # INSIDE THE while True: LOOP (where you get user input)
-        thread_id = str(uuid.uuid4())  # New unique ID each input
-        config = {"configurable": {"thread_id": thread_id}}  # Use it here
+        # # Create a new thread ID for each input
+        thread_id = str(uuid.uuid4())  
+        config = {"configurable": {"thread_id": thread_id}}  
 
         stream_state = {
             "messages": [("user", user_input)],
