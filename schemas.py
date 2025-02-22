@@ -68,11 +68,11 @@ class Recommendation(BaseModel):
     performance_delta: float = Field(description="Percentage difference from baseline")
     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
         First line: '<span style='color: #1a237e; font-weight: 600; font-size: 1.1em; display: block; margin: 0px; padding: 0px; line-height: 1;'>PERFORMANCE ANALYSIS</span>\
-        <div style='border-bottom: 1px solid #dee2e6; width: 200px; margin: 12px; padding: 0px;'></div>\
-        &emsp; <span style='display: inline-block; width: 120px;'>Heat Gain</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; {abs(diff):,.0f} {('less' if diff > 0 else 'more')} BTU/hr\n \
+        <div style='border-bottom: 1px solid #dee2e6; width: 200px; margin: 15px 0; padding: 0px;'></div>\
+        &emsp; <span style='display: inline-block; width: 120px;'>Peak Heat Gain</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; {abs(diff):,.0f} {('less' if diff > 0 else 'more')} BTU/hr\n \
         &emsp; <span style='display: inline-block; width: 120px;'>Energy Usage</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; {abs(diff):,.0f} {('less' if diff > 0 else 'more')} kWh/year\n \
-        &emsp; <span style='display: inline-block; width: 120px;'>Cost Impact</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; ${abs(diff):,.2f} {('less' if diff > 0 else 'more')}\n\n \
-        <div style='margin-top: 16px;'>Overall Performance: &nbsp;<span style='color: {'#43a047' if performance_delta > 0 else '#b71c1c'}'>{abs(performance_delta):.1f}%</span>&nbsp;{('better' if performance_delta > 0 else 'less')} than baseline</div>")
+        &emsp; <span style='display: inline-block; width: 120px;'>Cooling Costs</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; ${abs(diff):,.2f} {('less' if diff > 0 else 'more')}\n\n \
+        <div style='margin-top: 16px;'>Overall Performance: &nbsp;<span style='color: {'#43a047' if performance_delta > 0 else '#b71c1c'}'>{abs(performance_delta):.1f}%</span>&nbsp;{('better' if performance_delta > 0 else 'worse')} than baseline</div>")
 
 
 members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility"] # Current Agents
