@@ -1,5 +1,5 @@
 from langgraph.graph import MessagesState
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 from typing import Literal
 
 # This agent state is the input to each node in the graph
