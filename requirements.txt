@@ -1,4 +1,5 @@
 aiofiles==24.1.0
+cohere
 backports.tarfile==1.2.0
 datasets==3.2.0
 eval-type-backport==0.2.2
