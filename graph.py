@@ -1,10 +1,12 @@
 from dotenv import load_dotenv
 load_dotenv()
 import json
+import uuid
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
+from langgraph.graph.message import add_messages
 
 from agents import llm_agent, research_agent, ashrae_lookup_agent, recommendation_agent, input_validation_agent
 from tools import calculation_tool
@@ -136,17 +138,20 @@ def llm_node(state: AgentState) -> AgentState:
 
 def input_validation_node(state: AgentState) -> AgentState:
     result = input_validation_agent.invoke(state)
-
+    # print("INPUT VALIDATION AGENT SAYS:\n", result['messages'][1].content)
     # If validation passes, parse and store values in state
-    if "valid" in result["messages"][-1].content.lower():
+    if "Valid input" in result["messages"][-1].content:
         user_input = state["messages"][0].content
         state["city"] = user_input.split("city =")[1].strip()
         state["window_area"] = int(user_input.split("window area =")[1].split("ft2")[0].strip().replace(",", ""))
         state["shgc"] = float(user_input.split("shgc =")[1].split()[0].strip())
         state["u_value"] = float(user_input.split("u-value =")[1].split("city")[0].strip())
-    
-    state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
-    
+        state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
+    else:
+        error_message = result["messages"][-1].content + "\nPlease enter your building details again:"
+        state["messages"] = [HumanMessage(content=error_message, name="input_validation")]
+        state["next"] = START  # Route back to start for new input
+        
     return state
 
 def ashrae_lookup_node(state: AgentState) -> AgentState:
@@ -286,10 +291,10 @@ def recommendation_node(state: AgentState) -> AgentState:
     u_value: {state['u_value']}
     ashrae_u_factor: {state['ashrae_u_factor']}"""
     
-    print("Input to the recommendation agent")
+    print("Input to the recommendation agent", message)
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
-    #print("Recommendation schema input:", agent_response)
+    print("Recommendation schema input:", agent_response)
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
     #print("\nLLM OUTPUT:", recommendation)
     state["messages"] = [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]
@@ -318,7 +323,7 @@ builder.add_conditional_edges("supervisor", lambda state: state["next"]) # Pass 
 
 # ADD SHORT TERM MEMORY
 # Set the configuration needed for the state
-config = {"configurable": {"thread_id": "1"}} # passed to the StateGraph constructor to identiy our threads
+#config = {"configurable": {"thread_id": "1"}} # passed to the StateGraph constructor to identiy our threads
 memory = MemorySaver() # Checkpointer for short-term (within-thread) memory
 
 # Compile graph with memory
@@ -358,6 +363,10 @@ def main_loop():
         if user_input.lower() in ["exit", "quit", "q"]:
             print("See you Later. Have a great day!")
             break
+
+        # INSIDE THE while True: LOOP (where you get user input)
+        thread_id = str(uuid.uuid4())  # New unique ID each input
+        config = {"configurable": {"thread_id": thread_id}}  # Use it here
         
         stream_state = {
             "messages": [("user", user_input)],
@@ -371,7 +380,13 @@ def main_loop():
                     stream_state[key] = value
 
         for state in graph.stream(stream_state, config=config):
-            #print(state)
+            i = 0
+            if 'input_validation' in state and "Valid input" not in state['input_validation']['messages'][0].content:
+                    print("I =", i, state['input_validation']['messages'])
+                    i += 1
+                    print("------------------------------------------------------")
+                    print("\n" + state['input_validation']['messages'][0].content + "\n")
+                    break  #  breaks stream, returns to input loop
             if 'recommendation' in state:
                 recs = json.loads(state['recommendation']['messages'][0].content)
                 print("\n" + "\n".join(recs['recommendations']) + "\n")
