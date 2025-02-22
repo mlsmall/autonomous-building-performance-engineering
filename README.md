@@ -93,7 +93,7 @@ AI: "Here are three approaches, ranked by impact:
 ## Why It Matters
 Get professional engineering analysis in seconds, with personalized design guidance and recommendations from concept to completion.
 
-## Current System Architecture
+## Preliminary System Architecture
 *System developing - Additional nodes to be implemented*
 
 ```ascii
