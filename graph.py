@@ -137,65 +137,50 @@ def llm_node(state: AgentState) -> AgentState:
 
 
 def input_validation_node(state: AgentState) -> AgentState:
+    print("HERE BE THE STATE", state)
     result = input_validation_agent.invoke(state)
-    # print("INPUT VALIDATION AGENT SAYS:\n", result['messages'][1].content)
-    # If validation passes, parse and store values in state
+    print("IDIOT AGENT SAYS")
+    print(result["messages"][-1].content)
     if "Valid input" in result["messages"][-1].content:
         user_input = state["messages"][0].content
-        state["city"] = user_input.split("city =")[1].strip()
-        state["window_area"] = int(user_input.split("window area =")[1].split("ft2")[0].strip().replace(",", ""))
-        state["shgc"] = float(user_input.split("shgc =")[1].split()[0].strip())
-        state["u_value"] = float(user_input.split("u-value =")[1].split("city")[0].strip())
-        state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
+        return {
+            "city": user_input.split("city =")[1].strip(),
+            "window_area": int(user_input.split("window area =")[1].split("ft2")[0].strip().replace(",", "")),
+            "shgc": float(user_input.split("shgc =")[1].split()[0].strip()),
+            "u_value": float(user_input.split("u-value =")[1].split("city")[0].strip()),
+            "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
+        }
     else:
-        error_message = result["messages"][-1].content + "\nPlease enter your building details again:"
-        state["messages"] = [HumanMessage(content=error_message, name="input_validation")]
-        state["next"] = START  # Route back to start for new input
-        
-    return state
+        error_message  = result["messages"][-1].content + "\nPlease enter your building details again:"
+        return {
+            "messages": [HumanMessage(content=error_message, name="input_validation")],
+            "next": START
+        }
 
 def ashrae_lookup_node(state: AgentState) -> AgentState:
     city = state["city"]
-    city_message = HumanMessage(content=city)
-    result = ashrae_lookup_agent.invoke({"messages": [city_message]})
+    result = ashrae_lookup_agent.invoke({"messages": [HumanMessage(content=city)]})
     tool_message = result["messages"][2].content
     
-    # Parse values
-    to_value = tool_message.split("To=")[1].split("\n")[0].strip()
-    cdd_value = tool_message.split("CDD=")[1].split("\n")[0].strip()
-    zone_value = tool_message.split("Climate Zone=")[1].split("\n")[0].strip()
-    u_value = tool_message.split("U-value=")[1].split("\n")[0].strip()
-    shgc_value = tool_message.split("SHGC=")[1].strip()
-    print("\nASHARE tool response values")
-    print(f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_value}\nU-value={u_value}\nSHGC={shgc_value}\n")
-    
-    # Store in state
-    state["ashrae_to"] = float(to_value)
-    state["ashrae_cdd"] = float(cdd_value)
-    state["ashrae_climate_zone"] = int(zone_value)
-    state["ashrae_u_factor"] = float(u_value)
-    state["ashrae_shgc"] = float(shgc_value)
-
-    state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
-    
-    return state
+    return {
+        "ashrae_to": float(tool_message.split("To=")[1].split("\n")[0].strip()),
+        "ashrae_cdd": float(tool_message.split("CDD=")[1].split("\n")[0].strip()),
+        "ashrae_climate_zone": int(tool_message.split("Climate Zone=")[1].split("\n")[0].strip()),
+        "ashrae_u_factor": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
+        "ashrae_shgc": float(tool_message.split("SHGC=")[1].strip()),
+        "messages": [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
+    }
 
 def utility_node(state: AgentState) -> AgentState:
     city = state["city"]
     query = f"Find an estimated value for the commercial utility rates ($/kWh) in {city}. \
         Please provide only a numeric estimated utility rate value without any additional text."
     result = research_agent.invoke({"messages": [HumanMessage(content=query)]})
-    #print("UTILITY RESPONSE", result)
-    
-    # Store full response in messages
-    state["messages"] = [HumanMessage(content=result["messages"][-1].content, name="utility")]
-    
-    # Extract and store just the value
-    print("Extracted utility rate:", result["messages"][-1].content)
-    state["utility_rate"] = float(result["messages"][-1].content)  # Get just the content
-    
-    return state
+    return {
+        "utility_rate": float(result["messages"][-1].content),
+        "messages": [HumanMessage(content=result["messages"][-1].content, name="utility")]
 
+    }
 def calculation_node(state: AgentState) -> AgentState:
     # Set values based on whether it's proposed or baseline
     if "proposed_heat_gain" not in state:  # Check if key exists in state:
@@ -209,14 +194,6 @@ def calculation_node(state: AgentState) -> AgentState:
         shgc = state["ashrae_shgc"]
         u = state["ashrae_u_factor"]
 
-    # print(f"Using values:")
-    # print(f"Area: {state['window_area']} ft²")
-    # print(f"SHGC: {shgc}")
-    # print(f"U-value: {u}")
-    # print(f"To: {state['ashrae_to']}")
-    # print(f"CDD: {state['ashrae_cdd']}")
-
-    # Run calculations
     query = f"""
 heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, U={u}, To={state["ashrae_to"]})
 energy = annual_cooling_energy(heat_gain, {state["ashrae_cdd"]})
@@ -239,33 +216,13 @@ cost = annual_cost(energy, {state["utility_rate"]})
             key, value = line.split('=', 1)
             parsed_values[key.strip()] = float(value.strip())
 
-    # Now parsed_values contains your heat_gain, annual_energy, and annual_cost
-    heat_gain = parsed_values['heat_gain']
-    annual_energy = parsed_values['annual_energy']
-    annual_cost = parsed_values['annual_cost']
-    
-
-    # After calculation:
-    # print(f"\nResults:")
-    # print(f"Heat Gain: {heat_gain} BTU/hr")
-    # print(f"Annual Energy: {annual_energy} kWh")
-    # print(f"Annual Cost: ${annual_cost}")
-    # print(f"\n=== {calculation_type} DESIGN CALCULATION END ===\n")
-
-    # Store results
-    if calculation_type == "proposed":
-        state["proposed_heat_gain"] = heat_gain
-        state["proposed_cooling_energy"] = annual_energy
-        state["proposed_cost"] = annual_cost
-    else:
-        state["baseline_heat_gain"] = heat_gain
-        state["baseline_cooling_energy"] = annual_energy
-        state["baseline_cost"] = annual_cost
-
-    state["messages"] = [HumanMessage(content=result, name="calculation")]
-    
-    return state
-
+    key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
+    return {
+        f"{key_prefix}_heat_gain": parsed_values["heat_gain"],
+        f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
+        f"{key_prefix}_cost": parsed_values["annual_cost"],
+        "messages": [HumanMessage(content=result, name="calculation")]
+    }
 # def recommendation_node(state: AgentState) -> AgentState:
 #     # First use React agent to get analysis
 #     result = recommendation_agent.invoke(state)
@@ -279,7 +236,7 @@ cost = annual_cost(energy, {state["utility_rate"]})
 
 def recommendation_node(state: AgentState) -> AgentState:
     """Analyzes performance differences between proposed and baseline values"""
-    
+
     message = f"""proposed_heat_gain: {state['proposed_heat_gain']}
     baseline_heat_gain: {state['baseline_heat_gain']}
     proposed_cooling_energy: {state['proposed_cooling_energy']}
@@ -290,15 +247,11 @@ def recommendation_node(state: AgentState) -> AgentState:
     ashrae_shgc: {state['ashrae_shgc']}
     u_value: {state['u_value']}
     ashrae_u_factor: {state['ashrae_u_factor']}"""
-    
-    print("Input to the recommendation agent", message)
+
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
-    print("Recommendation schema input:", agent_response)
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
-    #print("\nLLM OUTPUT:", recommendation)
-    state["messages"] = [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]
-    return state
+    return {"messages": [HumanMessage(content=recommendation.model_dump_json(),name="recommendation")]}
 
 # Build graph
 builder = StateGraph(AgentState)
@@ -367,7 +320,7 @@ def main_loop():
         # INSIDE THE while True: LOOP (where you get user input)
         thread_id = str(uuid.uuid4())  # New unique ID each input
         config = {"configurable": {"thread_id": thread_id}}  # Use it here
-        
+
         stream_state = {
             "messages": [("user", user_input)],
             "next": "",
@@ -380,11 +333,7 @@ def main_loop():
                     stream_state[key] = value
 
         for state in graph.stream(stream_state, config=config):
-            i = 0
             if 'input_validation' in state and "Valid input" not in state['input_validation']['messages'][0].content:
-                    print("I =", i, state['input_validation']['messages'])
-                    i += 1
-                    print("------------------------------------------------------")
                     print("\n" + state['input_validation']['messages'][0].content + "\n")
                     break  #  breaks stream, returns to input loop
             if 'recommendation' in state:
