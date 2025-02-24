@@ -4,8 +4,8 @@ from report_generator import generate_performance_report
 import json
 import os
 
-# Port for
-port = int(os.environ.get("PORT", 8501))
+print("Current directory:", os.getcwd())
+print("Files in directory:", os.listdir())
 
 st.set_page_config(
     layout="wide", 
