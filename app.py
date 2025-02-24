@@ -1,11 +1,13 @@
+import git
+repo = git.Repo('.')
+repo.git.submodule('init')
+repo.git.submodule('update')
+
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
 import json
 import os
-
-print("Current directory:", os.getcwd())
-print("Files in directory:", os.listdir())
 
 st.set_page_config(
     layout="wide", 
