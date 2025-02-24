@@ -7,7 +7,6 @@ import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
 import json
-import os
 
 st.set_page_config(
     layout="wide", 
