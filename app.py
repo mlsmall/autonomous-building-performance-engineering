@@ -1,19 +1,15 @@
-print("TESTING IF THIS RUNS AT ALL")
 from dotenv import load_dotenv
 load_dotenv()
-print("LOADING DOTENV LOADED")
-
 import os, base64, subprocess
-print("Starting git-crypt unlock...")
+
+print("TESTING IF THIS RUNS AT ALL")
 key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
-print("Key decoded, writing to temp file...")
+print(f"Key length: {len(key)}")  # Let's see how many bytes we got
+print(f"First few bytes: {key[:10]}")  # And what they look like
 with open("temp.key", "wb") as f:
     f.write(key)
-print("Running git-crypt unlock...")
 subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], check=True)
-print("Removing temp file...")
 os.remove("temp.key")
-print("Done!")
 
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
