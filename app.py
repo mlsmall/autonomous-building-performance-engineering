@@ -5,16 +5,25 @@ from cryptography.fernet import Fernet
 import streamlit as st
 from pathlib import Path
 
+print("Starting decryption process...")
 key = st.secrets["DECRYPT_KEY"].encode()
+print(f"Using key: {key.decode()}")
 cipher = Fernet(key)
 
 decrypted_files = {}
 for file in Path('core_engine').glob('*.py'):
+    print(f"\nProcessing: {file}")
     with open(file, 'rb') as f:
-        decrypted_data = cipher.decrypt(f.read())
+        encrypted = f.read()
+        print(f"Read {len(encrypted)} bytes")
+        print(f"First few bytes: {encrypted[:50]}")
+        decrypted_data = cipher.decrypt(encrypted)
+        print(f"Decrypted first line: {decrypted_data.decode().split('\n')[0]}")
     decrypted_files[file.name] = decrypted_data.decode()
 
-for code in decrypted_files.values():
+for name, code in decrypted_files.items():
+    print(f"\nExecuting: {name}")
+    print(f"First line: {code.split('\n')[0]}")
     exec(code)
 
 import streamlit as st
