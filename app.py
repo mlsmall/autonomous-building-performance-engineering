@@ -14,9 +14,12 @@ with open("temp.key", "wb") as f:
     f.write(key)
 
 print("Running git-crypt unlock...")
-result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], 
-                       capture_output=True, 
-                       text=True)
+# For Linux (Streamlit):
+# result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], capture_output=True, text=True)
+
+# For Windows:
+result = subprocess.run(["git-crypt", "unlock", "temp.key"], capture_output=True, text=True)
+
 print(f"STDOUT: {result.stdout}")
 print(f"STDERR: {result.stderr}")
 
@@ -24,8 +27,6 @@ if os.path.exists("temp.key"):
     print("Removing temp file...")
     os.remove("temp.key")
 print("Done!")
-
-# This is the main file where the Streamlit app will be built.
 
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
