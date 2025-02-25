@@ -2,13 +2,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os, base64, subprocess
-
+print("Starting git-crypt unlock...")
 key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
+print("Key decoded, writing to temp file...")
 with open("temp.key", "wb") as f:
     f.write(key)
+print("Running git-crypt unlock...")
 subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], check=True)
+print("Removing temp file...")
 os.remove("temp.key")
-
+print("Done!")
 
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
