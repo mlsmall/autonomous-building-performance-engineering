@@ -1,28 +1,24 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-import os, base64, subprocess
+from cryptography.fernet import Fernet
+import os
 
-print("TESTING IF THIS RUNS AT ALL")
+key = os.getenv("DECRYPT_KEY")
+f = Fernet(key)
 
-key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
-print(f"Key length: {len(key)}")
-print(f"First few bytes: {key[:10]}")
+# Decrypt all .py files in core_engine
+for root, dirs, files in os.walk('core_engine'):
+    for file in files:
+        if file.endswith('.py'):
+            filepath = os.path.join(root, file)
+            print(f"Decrypting: {filepath}")
+            
+            with open(filepath, 'rb') as file:
+                decrypted = f.decrypt(file.read())
+            exec(decrypted)
 
-print("Writing key to temp file...")
-with open("temp.key", "wb") as f:
-    f.write(key)
-
-print("Running git-crypt unlock...")
-result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], capture_output=True, text=True)
-print(f"STDOUT: {result.stdout}")
-print(f"STDERR: {result.stderr}")
-
-if os.path.exists("temp.key"):
-    print("Removing temp file...")
-    os.remove("temp.key")
-print("Done!")
-
+            
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report

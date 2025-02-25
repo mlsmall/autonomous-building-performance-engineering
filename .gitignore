@@ -23,6 +23,7 @@ venv.bak/
 
 # Files
 scratch.py
+encrypt.py
 
 # Data
 data/
