@@ -1,5 +1,7 @@
+print("TESTING IF THIS RUNS AT ALL")
 from dotenv import load_dotenv
 load_dotenv()
+print("LOADING DOTENV LOADED")
 
 import os, base64, subprocess
 print("Starting git-crypt unlock...")
