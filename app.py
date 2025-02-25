@@ -7,7 +7,7 @@ st.set_page_config(
 
 from dotenv import load_dotenv
 load_dotenv()
-# Text
+
 from cryptography.fernet import Fernet
 import streamlit as st
 from pathlib import Path
