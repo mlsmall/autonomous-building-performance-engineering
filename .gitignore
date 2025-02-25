@@ -22,8 +22,6 @@ env.bak/
 venv.bak/
 
 # Files
-tools.py
-ashrae_data.py
 scratch.py
 
 # Data
