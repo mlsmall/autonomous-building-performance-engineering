@@ -1,29 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-import os, base64, subprocess
 
-print("TESTING IF THIS RUNS AT ALL")
-
-key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
-print(f"Key length: {len(key)}")
-print(f"First few bytes: {key[:10]}")
-
-print("Writing key to temp file...")
-with open("temp.key", "wb") as f:
-    f.write(key)
-
-print("Running git-crypt unlock...")
-result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], 
-                       capture_output=True, 
-                       text=True)
-print(f"STDOUT: {result.stdout}")
-print(f"STDERR: {result.stderr}")
-
-if os.path.exists("temp.key"):
-    print("Removing temp file...")
-    os.remove("temp.key")
-print("Done!")
 
 # This is the main file where the Streamlit app will be built.
 
