@@ -1,23 +1,36 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-
 import os, base64, subprocess
 
 print("TESTING IF THIS RUNS AT ALL")
 
-# Remove git lock if it exists
-if os.path.exists('/mount/src/autonomous-building-performance-engineering/.git/index.lock'):
-    print("Removing git lock file...")
-    os.remove('/mount/src/autonomous-building-performance-engineering/.git/index.lock')
+# Remove ALL possible git lock files
+git_locks = [
+    '/mount/src/autonomous-building-performance-engineering/.git/index.lock',
+    '/mount/src/autonomous-building-performance-engineering/.git/refs/heads/main.lock'
+]
+
+for lock in git_locks:
+    if os.path.exists(lock):
+        print(f"Removing lock file: {lock}")
+        os.remove(lock)
 
 key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
 print(f"Key length: {len(key)}")
 print(f"First few bytes: {key[:10]}")
+
+print("Writing key to temp file...")
 with open("temp.key", "wb") as f:
     f.write(key)
+
 print("Running git-crypt unlock...")
-subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], check=True)
+result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], 
+                       capture_output=True, 
+                       text=True)
+print(f"STDOUT: {result.stdout}")
+print(f"STDERR: {result.stderr}")
+
 print("Removing temp file...")
 os.remove("temp.key")
 print("Done!")
