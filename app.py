@@ -1,40 +1,49 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import streamlit as st
+from cryptography.fernet import Fernet
+from pathlib import Path
+
+print("\n=== Starting Decryption Process ===")
+print(f"Looking for files in: {Path('core_engine').absolute()}")
+
+key = st.secrets["DECRYPT_KEY"].encode()
+print(f"Using key: {key.decode()}")
+cipher = Fernet(key)
+
+# First decrypt everything
+print("\n=== Decrypting Files ===")
+decrypted_files = {}
+for file in Path('core_engine').glob('*.py'):
+    print(f"\nProcessing: {file}")
+    with open(file, 'rb') as f:
+        encrypted = f.read()
+        print(f"Read {len(encrypted)} bytes")
+        print(f"First few encrypted bytes: {encrypted[:50]}")
+        decrypted = cipher.decrypt(encrypted).decode()
+        print(f"Decrypted first line: {decrypted.split('\n')[0]}")
+        decrypted_files[file.name] = decrypted
+
+print(f"\n=== Found {len(decrypted_files)} files to execute ===")
+print(f"Files in order: {sorted(decrypted_files.keys())}")
+
+# Execute in order
+print("\n=== Executing Files ===")
+for name in sorted(decrypted_files.keys()):
+    print(f"\nExecuting: {name}")
+    print(f"First line: {decrypted_files[name].split('\n')[0]}")
+    exec(decrypted_files[name])
+    print(f"Finished executing: {name}")
+
+print("\n=== Decryption and Execution Complete ===")
+
+
 st.set_page_config(
     layout="wide", 
     page_title="Building Performance Assistant",
     page_icon="🏢"
 )
-
-from dotenv import load_dotenv
-load_dotenv()
-
-from cryptography.fernet import Fernet
-import streamlit as st
-from pathlib import Path
-
-print("Starting decryption process...")
-key = st.secrets["DECRYPT_KEY"].encode()
-print(f"Using key: {key.decode()}")
-cipher = Fernet(key)
-
-decrypted_files = {}
-for file in Path('core_engine').glob('*.py'):
-    print(f"Processing: {file}")
-    with open(file, 'rb') as f:
-        encrypted = f.read()
-        print(f"Read {len(encrypted)} bytes")
-        print(f"First few bytes: {encrypted[:50]}")
-        decrypted_data = cipher.decrypt(encrypted)
-        first_line = decrypted_data.decode().split('\n')[0]
-        print(f"Decrypted first line: {first_line}")
-    decrypted_files[file.name] = decrypted_data.decode()
-
-for name, code in decrypted_files.items():
-    print(f"Executing: {name}")
-    first_line = code.split('\n')[0]
-    print(f"First line: {first_line}")
-    exec(code)
-
 
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
