@@ -20,11 +20,12 @@ result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"],
 print(f"STDOUT: {result.stdout}")
 print(f"STDERR: {result.stderr}")
 
-if os.path.exists("temp.key"):  # Only try to remove if it exists
+if os.path.exists("temp.key"):
     print("Removing temp file...")
     os.remove("temp.key")
 print("Done!")
 
+# This is the main file where the Streamlit app will be built.
 
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
