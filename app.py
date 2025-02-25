@@ -2,23 +2,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from cryptography.fernet import Fernet
-import os
+import streamlit as st
+from pathlib import Path
 
-key = os.getenv("DECRYPT_KEY")
-f = Fernet(key)
+key = st.secrets["DECRYPT_KEY"].encode()
+cipher = Fernet(key)
 
-# Decrypt all .py files in core_engine
-for root, dirs, files in os.walk('core_engine'):
-    for file in files:
-        if file.endswith('.py'):
-            filepath = os.path.join(root, file)
-            print(f"Decrypting: {filepath}")
-            
-            with open(filepath, 'rb') as file:
-                decrypted = f.decrypt(file.read())
-            exec(decrypted)
+decrypted_files = {}
+for file in Path('core_engine').glob('*.py'):
+    with open(file, 'rb') as f:
+        decrypted_data = cipher.decrypt(f.read())
+    decrypted_files[file.name] = decrypted_data.decode()
 
-            
+for code in decrypted_files.values():
+    exec(code)
+
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
