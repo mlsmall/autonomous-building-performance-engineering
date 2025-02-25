@@ -29,6 +29,12 @@ for file in Path('core_engine').glob('*.py'):
 print(f"\n=== Found {len(decrypted_files)} files to execute ===")
 print(f"Files in order: {sorted(decrypted_files.keys())}")
 
+print("\nDEBUG - Content of decrypted_files:")
+for name, content in decrypted_files.items():
+    print(f"\nFile: {name}")
+    print(f"Content type: {type(content)}")
+    print(f"First 50 chars: {content[:50]}")
+
 # Execute in order
 print("\n=== Executing Files ===")
 for name in sorted(decrypted_files.keys()):
