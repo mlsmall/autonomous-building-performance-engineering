@@ -14,12 +14,7 @@ with open("temp.key", "wb") as f:
     f.write(key)
 
 print("Running git-crypt unlock...")
-# For Linux (Streamlit):
-# result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], capture_output=True, text=True)
-
-# For Windows:
-result = subprocess.run(["git-crypt", "unlock", "temp.key"], capture_output=True, text=True)
-
+result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], capture_output=True, text=True)
 print(f"STDOUT: {result.stdout}")
 print(f"STDERR: {result.stderr}")
 
