@@ -1,7 +1,21 @@
-import git
-repo = git.Repo('.')
-repo.git.submodule('init')
-repo.git.submodule('update')
+import os, base64, subprocess
+
+def unlock_git_crypt():
+    key_b64 = os.getenv("GIT_CRYPT_KEY")
+    if not key_b64:
+        raise Exception("GIT_CRYPT_KEY not set!")
+    # Decode the base64 key
+    key = base64.b64decode(key_b64)
+    # Write to a temporary file
+    with open("temp_git_crypt.key", "wb") as f:
+        f.write(key)
+    # Attempt to unlock git-crypt
+    ret = os.system("git-crypt unlock temp_git_crypt.key")
+    os.remove("temp_git_crypt.key")
+    if ret != 0:
+        raise Exception("git-crypt unlock failed!")
+
+unlock_git_crypt()
 
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
