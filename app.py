@@ -1,15 +1,26 @@
 from dotenv import load_dotenv
 load_dotenv()
+
+
 import os, base64, subprocess
 
 print("TESTING IF THIS RUNS AT ALL")
+
+# Remove git lock if it exists
+if os.path.exists('/mount/src/autonomous-building-performance-engineering/.git/index.lock'):
+    print("Removing git lock file...")
+    os.remove('/mount/src/autonomous-building-performance-engineering/.git/index.lock')
+
 key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
-print(f"Key length: {len(key)}")  # Let's see how many bytes we got
-print(f"First few bytes: {key[:10]}")  # And what they look like
+print(f"Key length: {len(key)}")
+print(f"First few bytes: {key[:10]}")
 with open("temp.key", "wb") as f:
     f.write(key)
+print("Running git-crypt unlock...")
 subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], check=True)
+print("Removing temp file...")
 os.remove("temp.key")
+print("Done!")
 
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
