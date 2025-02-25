@@ -1,3 +1,3 @@
 [submodule "core_engine"]
 	path = core_engine
-	url = https://oauth2:${GITHUB_TOKEN}@github.com/mlsmall/core-engine.git
+	url = https://github.com/mlsmall/core_engine.git
