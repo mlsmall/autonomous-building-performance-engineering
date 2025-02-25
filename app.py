@@ -1,21 +1,16 @@
 import streamlit as st
-from graph import graph, USE_DATABASE, get_user_history
-from report_generator import generate_performance_report
-import json
-from dotenv import load_dotenv
-load_dotenv()
-
-
-from cryptography.fernet import Fernet
-from pathlib import Path
-
 st.set_page_config(
     layout="wide", 
     page_title="Building Performance Assistant",
     page_icon="🏢"
 )
 
-
+from dotenv import load_dotenv
+load_dotenv()
+# Text
+from cryptography.fernet import Fernet
+import streamlit as st
+from pathlib import Path
 
 print("Starting decryption process...")
 key = st.secrets["DECRYPT_KEY"].encode()
@@ -41,6 +36,9 @@ for name, code in decrypted_files.items():
     exec(code)
 
 
+from graph import graph, USE_DATABASE, get_user_history
+from report_generator import generate_performance_report
+import json
 
 
 st.markdown("""
