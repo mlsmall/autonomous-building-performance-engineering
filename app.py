@@ -33,8 +33,9 @@ print(f"Files in order: {sorted(decrypted_files.keys())}")
 print("\n=== Executing Files ===")
 for name in sorted(decrypted_files.keys()):
     print(f"\nExecuting: {name}")
-    first_line = decrypted.split('\n')[0]
+    first_line = decrypted_files[name].split('\n')[0]
     print(f"Decrypted first line: {first_line}")
+    exec(decrypted_files[name])
     print(f"Finished executing: {name}")
 
 print("\n=== Decryption and Execution Complete ===")
