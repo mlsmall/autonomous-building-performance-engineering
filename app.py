@@ -3,21 +3,13 @@ load_dotenv()
 
 import os, base64, subprocess
 
-print("Starting git-crypt unlock process...")
-git_crypt_key = os.getenv("GIT_CRYPT_KEY")
-print(f"Key type: {type(git_crypt_key)}")
-print(f"Key value: {git_crypt_key}")
-
-# Stash any changes before unlock
-subprocess.run(["git", "stash"], check=True)
-
-print("Decoding git-crypt key...")
-key = base64.b64decode(git_crypt_key)
+key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
 with open("temp.key", "wb") as f:
     f.write(key)
-
 subprocess.run(["./bin/git-crypt", "unlock", "temp.key"], check=True)
 os.remove("temp.key")
+
+
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
