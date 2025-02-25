@@ -22,7 +22,8 @@ for file in Path('core_engine').glob('*.py'):
         print(f"Read {len(encrypted)} bytes")
         print(f"First few encrypted bytes: {encrypted[:50]}")
         decrypted = cipher.decrypt(encrypted).decode()
-        print(f"Decrypted first line: {decrypted.split('\n')[0]}")
+        first_line = decrypted.split('\n')[0]
+        print(f"Decrypted first line: {first_line}")
         decrypted_files[file.name] = decrypted
 
 print(f"\n=== Found {len(decrypted_files)} files to execute ===")
