@@ -12,18 +12,20 @@ cipher = Fernet(key)
 
 decrypted_files = {}
 for file in Path('core_engine').glob('*.py'):
-    print(f"\nProcessing: {file}")
+    print(f"Processing: {file}")
     with open(file, 'rb') as f:
         encrypted = f.read()
         print(f"Read {len(encrypted)} bytes")
         print(f"First few bytes: {encrypted[:50]}")
         decrypted_data = cipher.decrypt(encrypted)
-        print(f"Decrypted first line: {decrypted_data.decode().split('\n')[0]}")
+        first_line = decrypted_data.decode().split('\n')[0]
+        print(f"Decrypted first line: {first_line}")
     decrypted_files[file.name] = decrypted_data.decode()
 
 for name, code in decrypted_files.items():
-    print(f"\nExecuting: {name}")
-    print(f"First line: {code.split('\n')[0]}")
+    print(f"Executing: {name}")
+    first_line = code.split('\n')[0]
+    print(f"First line: {first_line}")
     exec(code)
 
 import streamlit as st
