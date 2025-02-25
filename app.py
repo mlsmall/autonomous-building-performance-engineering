@@ -5,16 +5,9 @@ import os, base64, subprocess
 
 print("TESTING IF THIS RUNS AT ALL")
 
-# Remove ALL possible git lock files
-git_locks = [
-    '/mount/src/autonomous-building-performance-engineering/.git/index.lock',
-    '/mount/src/autonomous-building-performance-engineering/.git/refs/heads/main.lock'
-]
-
-for lock in git_locks:
-    if os.path.exists(lock):
-        print(f"Removing lock file: {lock}")
-        os.remove(lock)
+# Try to stash any changes
+print("Stashing any changes...")
+subprocess.run(["git", "stash"], capture_output=True)
 
 key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
 print(f"Key length: {len(key)}")
@@ -31,9 +24,11 @@ result = subprocess.run(["./bin/git-crypt", "unlock", "temp.key"],
 print(f"STDOUT: {result.stdout}")
 print(f"STDERR: {result.stderr}")
 
-print("Removing temp file...")
-os.remove("temp.key")
+if os.path.exists("temp.key"):  # Only try to remove if it exists
+    print("Removing temp file...")
+    os.remove("temp.key")
 print("Done!")
+
 
 import streamlit as st
 from graph import graph, USE_DATABASE, get_user_history
