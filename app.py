@@ -5,10 +5,6 @@ import os, base64, subprocess
 
 print("TESTING IF THIS RUNS AT ALL")
 
-# Try to stash any changes
-print("Stashing any changes...")
-subprocess.run(["git", "stash"], capture_output=True)
-
 key = base64.b64decode(os.getenv("GIT_CRYPT_KEY"))
 print(f"Key length: {len(key)}")
 print(f"First few bytes: {key[:10]}")
