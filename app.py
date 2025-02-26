@@ -12,41 +12,35 @@ key = st.secrets["DECRYPT_KEY"].encode()
 print(f"Using key: {key.decode()}")
 cipher = Fernet(key)
 
-# First decrypt everything
-print("\n=== Decrypting Files ===")
-decrypted_files = {}
+# Decrypt and write back to files
 for file in Path('core_engine').glob('*.py'):
     print(f"\nProcessing: {file}")
+    
+    # Read encrypted
     with open(file, 'rb') as f:
         encrypted = f.read()
-        print(f"Read {len(encrypted)} bytes")
-        print(f"First few encrypted bytes: {encrypted[:50]}")
-        decrypted = cipher.decrypt(encrypted).decode()
-        first_line = decrypted.split('\n')[0]
-        print(f"Decrypted first line: {first_line}")
-        decrypted_files[file.name] = decrypted
-
-print(f"\n=== Found {len(decrypted_files)} files to execute ===")
-print(f"Files in order: {sorted(decrypted_files.keys())}")
-
-print("\nDEBUG - Content of decrypted_files:")
-for name, content in decrypted_files.items():
-    print(f"\nFile: {name}")
-    print(f"Content type: {type(content)}")
-    print(f"First 50 chars: {content[:50]}")
-
-# Execute in order
-print("\n=== Executing Files ===")
-for name in sorted(decrypted_files.keys()):
-    print(f"\nExecuting: {name}")
-    code_to_exec = decrypted_files[name]
-    print("About to execute:")
-    print(code_to_exec[:100])  # Show first 100 chars of what we're about to exec
-    exec(code_to_exec)
-    print(f"Finished executing: {name}")
+    print(f"Read {len(encrypted)} bytes")
+    print(f"First few encrypted bytes: {encrypted[:50]}")
     
-print("\n=== Decryption and Execution Complete ===")
+    # Decrypt
+    decrypted = cipher.decrypt(encrypted).decode()
+    print(f"Decrypted first line: {decrypted.split('\n')[0]}")
+    
+    # Write back
+    print(f"Writing decrypted content back to: {file}")
+    with open(file, 'w') as f:
+        f.write(decrypted)
+    print(f"Write complete for: {file}")
+    
+    # Verify write
+    with open(file, 'r') as f:
+        verify = f.read()
+    print(f"Verified first line: {verify.split('\n')[0]}")
 
+print("\n=== Decryption Complete ===")
+
+# Now import normally
+from graph import graph, USE_DATABASE, get_user_history
 
 st.set_page_config(
     layout="wide", 
