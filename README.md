@@ -13,7 +13,7 @@ This isn't just another:
 
 This module represents the first phase of a comprehensive building performance engineering system. 
 
-It Currently implements window/glazing analysis:
+Currently implements window/ glazing analysis:
 - SHGC and U-value performance
 - ASHRAE compliance checking
 - Energy cost calculations
