@@ -8,6 +8,21 @@ This isn't just another:
 - Static building energy calculator 
 - Basic performance metrics tool
 
+## Try It Now
+🚀 [Building Performance Assistant Demo](https://building-performance-assistant.streamlit.app/)
+
+This module represents the first phase of a comprehensive building performance engineering system. 
+
+It Currently implements window/glazing analysis:
+- SHGC and U-value performance
+- ASHRAE compliance checking
+- Energy cost calculations
+- Automated recommendations
+- PDF report generation
+
+> Note: The first load may take a moment (30 - 45 seconds) as the application initializes.
+
+
 ## What Makes It Different:
 - Engineering calculations based on science, not rule of thumbs or LLM guesses
 - Multi-agent system that explains how building design choices affect energy use, costs, and performance

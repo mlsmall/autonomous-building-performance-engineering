@@ -5,46 +5,27 @@ import streamlit as st
 from cryptography.fernet import Fernet
 from pathlib import Path
 
-print("=== Starting Decryption Process ===")
-print(f"Looking for files in: {Path('core_engine').absolute()}")
-
 key = st.secrets["DECRYPT_KEY"].encode()
-print(f"Using key: {key.decode()}")
 cipher = Fernet(key)
 
 # First collect all decrypted content
-print("\n=== Reading and Decrypting Files ===")
 decrypted_files = {}
 for file in Path('core_engine').glob('*.py'):
-    print(f"\nReading: {file}")
     with open(file, 'rb') as f:
         content = f.read()
-    print(f"Read {len(content)} bytes")
-    print(f"First few bytes: {content[:50]}")
-    
     # Check if content looks encrypted (starts with 'gAAAAA')
     if content.startswith(b'gAAAAA'):
-        print("Content appears encrypted, decrypting...")
         decrypted = cipher.decrypt(content).decode()
     else:
-        print("Content already decrypted, using as-is...")
         decrypted = content.decode()
         
     first_line = decrypted.split('\n')[0]
     print(f"First line: {first_line}")
     decrypted_files[file] = decrypted
 
-print("\n=== Writing All Files ===")
 for file, content in decrypted_files.items():
-    print(f"\nWriting to: {file}")
     with open(file, 'w') as f:
         f.write(content)
-    print(f"Write complete: {file}")
-
-print("\n=== All Files Written ===")
-
-# Now import normally
-from graph import graph, USE_DATABASE, get_user_history
 
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
