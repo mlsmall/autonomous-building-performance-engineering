@@ -18,13 +18,20 @@ decrypted_files = {}
 for file in Path('core_engine').glob('*.py'):
     print(f"\nReading: {file}")
     with open(file, 'rb') as f:
-        encrypted = f.read()
-    print(f"Read {len(encrypted)} bytes")
-    print(f"First few encrypted bytes: {encrypted[:50]}")
+        content = f.read()
+    print(f"Read {len(content)} bytes")
+    print(f"First few bytes: {content[:50]}")
     
-    decrypted = cipher.decrypt(encrypted).decode()
+    # Check if content looks encrypted (starts with 'gAAAAA')
+    if content.startswith(b'gAAAAA'):
+        print("Content appears encrypted, decrypting...")
+        decrypted = cipher.decrypt(content).decode()
+    else:
+        print("Content already decrypted, using as-is...")
+        decrypted = content.decode()
+        
     first_line = decrypted.split('\n')[0]
-    print(f"Decrypted first line: {first_line}")
+    print(f"First line: {first_line}")
     decrypted_files[file] = decrypted
 
 print("\n=== Writing All Files ===")
@@ -33,15 +40,11 @@ for file, content in decrypted_files.items():
     with open(file, 'w') as f:
         f.write(content)
     print(f"Write complete: {file}")
-    
-    # Verify write
-    with open(file, 'r') as f:
-        verify = f.read()
-        first_line = verify.split('\n')[0]
-        print(f"Verified first line: {first_line}")
 
 print("\n=== All Files Written ===")
 
+# Now import normally
+from graph import graph, USE_DATABASE, get_user_history
 
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
