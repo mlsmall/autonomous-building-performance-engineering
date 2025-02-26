@@ -24,7 +24,8 @@ for file in Path('core_engine').glob('*.py'):
     
     # Decrypt
     decrypted = cipher.decrypt(encrypted).decode()
-    print(f"Decrypted first line: {decrypted.split('\n')[0]}")
+    first_line = decrypted.split('\n')[0]  # Split outside f-string
+    print(f"Decrypted first line: {first_line}")
     
     # Write back
     print(f"Writing decrypted content back to: {file}")
@@ -35,7 +36,8 @@ for file in Path('core_engine').glob('*.py'):
     # Verify write
     with open(file, 'r') as f:
         verify = f.read()
-    print(f"Verified first line: {verify.split('\n')[0]}")
+        first_line = verify.split('\n')[0]  # Split outside f-string
+        print(f"Verified first line: {first_line}")
 
 print("\n=== Decryption Complete ===")
 
