@@ -5,55 +5,54 @@ import streamlit as st
 from cryptography.fernet import Fernet
 from pathlib import Path
 
-print("\n=== Starting Decryption Process ===")
+print("=== Starting Decryption Process ===")
 print(f"Looking for files in: {Path('core_engine').absolute()}")
 
 key = st.secrets["DECRYPT_KEY"].encode()
 print(f"Using key: {key.decode()}")
 cipher = Fernet(key)
 
-# Decrypt and write back to files
+# First collect all decrypted content
+print("\n=== Reading and Decrypting Files ===")
+decrypted_files = {}
 for file in Path('core_engine').glob('*.py'):
-    print(f"\nProcessing: {file}")
-    
-    # Read encrypted
+    print(f"\nReading: {file}")
     with open(file, 'rb') as f:
         encrypted = f.read()
     print(f"Read {len(encrypted)} bytes")
     print(f"First few encrypted bytes: {encrypted[:50]}")
     
-    # Decrypt
     decrypted = cipher.decrypt(encrypted).decode()
-    first_line = decrypted.split('\n')[0]  # Split outside f-string
+    first_line = decrypted.split('\n')[0]
     print(f"Decrypted first line: {first_line}")
-    
-    # Write back
-    print(f"Writing decrypted content back to: {file}")
+    decrypted_files[file] = decrypted
+
+print("\n=== Writing All Files ===")
+for file, content in decrypted_files.items():
+    print(f"\nWriting to: {file}")
     with open(file, 'w') as f:
-        f.write(decrypted)
-    print(f"Write complete for: {file}")
+        f.write(content)
+    print(f"Write complete: {file}")
     
     # Verify write
     with open(file, 'r') as f:
         verify = f.read()
-        first_line = verify.split('\n')[0]  # Split outside f-string
+        first_line = verify.split('\n')[0]
         print(f"Verified first line: {first_line}")
 
-print("\n=== Decryption Complete ===")
+print("\n=== All Files Written ===")
 
-# Now import normally
+
 from graph import graph, USE_DATABASE, get_user_history
+from report_generator import generate_performance_report
+import json
+
 
 st.set_page_config(
     layout="wide", 
     page_title="Building Performance Assistant",
     page_icon="🏢"
 )
-
-from graph import graph, USE_DATABASE, get_user_history
-from report_generator import generate_performance_report
-import json
-
 
 st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
