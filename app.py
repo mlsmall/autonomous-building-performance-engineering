@@ -39,11 +39,12 @@ for name, content in decrypted_files.items():
 print("\n=== Executing Files ===")
 for name in sorted(decrypted_files.keys()):
     print(f"\nExecuting: {name}")
-    first_line = decrypted_files[name].split('\n')[0]
-    print(f"Decrypted first line: {first_line}")
-    exec(decrypted_files[name])
+    code_to_exec = decrypted_files[name]
+    print("About to execute:")
+    print(code_to_exec[:100])  # Show first 100 chars of what we're about to exec
+    exec(code_to_exec)
     print(f"Finished executing: {name}")
-
+    
 print("\n=== Decryption and Execution Complete ===")
 
 
