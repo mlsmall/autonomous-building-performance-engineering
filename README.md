@@ -11,7 +11,7 @@ This isn't just another:
 ## Try It Now
 🚀 [Building Performance Assistant Demo](https://building-performance-assistant.streamlit.app/)
 
-This module represents the first phase of a comprehensive building performance engineering system. 
+> ⚠️ **Development Notice**: This demo is currently in active development and may experience intermittent issues. It represents only the initial phase of a comprehensive building performance engineering system.
 
 Currently implements window/ glazing analysis:
 - SHGC and U-value performance
