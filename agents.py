@@ -4,6 +4,7 @@ from schemas import BuildingInput
 from core_engine.tools import tavily_tool, input_validation_tool, ashrae_lookup_tool, recommendation_tool, llm_tool
 from models import llm_gemini, llm_gpt
 
+
 llm = llm_gemini # llm_gemini recommended
 
 # Agents
@@ -22,14 +23,18 @@ research_agent = create_react_agent(
 #     state_modifier="You are an input validator. Check if SHGC (0-1), window area (ft²), U-value, and city are provided and valid."
 # )
 
-# print("BUILDING INPUT BASEMODEL", BuildingInput.model_json_schema())
-input_validation_agent = create_react_agent(llm, tools=[input_validation_tool],
-    state_modifier=f"""You are an input validator. Use these exact validation rules from BuildingInput:
-    {BuildingInput.model_json_schema()}
+# # print("BUILDING INPUT BASEMODEL", BuildingInput.model_json_schema())
+
+input_validation_agent = create_react_agent(
+    llm,
+    tools=[input_validation_tool],
+    state_modifier=f"""You are an input validator. Use these exact validation rules from BuildingInput: {BuildingInput.model_json_schema()}
     
     Provide clear, professional feedback if values are invalid.
-    If all values are valid, just say 'Valid input.'"""
+    If all values are valid, just say 'Valid input'."""
 )
+
+
 
 ashrae_lookup_agent = create_react_agent(
     llm, 

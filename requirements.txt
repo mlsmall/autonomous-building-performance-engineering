@@ -46,3 +46,4 @@ streamlit-option-menu==0.4.0
 streamlit-toggle-switch==1.0.2
 streamlit-vertical-slider==2.5.5
 cryptography
+langchain_mistralai

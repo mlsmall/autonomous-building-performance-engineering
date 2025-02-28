@@ -15,34 +15,6 @@ from database import building_data, get_user_history
 
 llm = llm_gpt # llm_gpt preferred
 
-# system_prompt = (
-#     f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
-#     Given the following user request, respond with the worker to act next. Each worker will perform a task and respond 
-#     with their results and status. When finished, respond with FINISH.
-
-#     1. Send all inputs to input_validation to check:
-#         - SHGC (0-1)
-#         - Window area (ft²)
-#         - U-value
-#         - City
-
-#     2. After validation, send validated input to ashrae_lookup
-#         - When you see ashrae_data in the state, route to utility to get local electricity rates
-
-#     3. After utility rates are found:
-#         - First route to calculation for proposed design (using user's U-value)
-#         - Then route to calculation again for baseline design (using ASHRAE U-value)
-#         - Both calculations must be complete before proceeding
-
-#     4. Only after BOTH calculations are complete:
-#         - Route to recommendation for comparison
-#         - Then route to FINISH
-
-#     Route to llm only for general building questions, never for calculations or data lookups.
-#     """
-# )
-
-# THIS PROMPT WORKS
 system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
 
 For User ID: {{user_id}}
@@ -137,6 +109,7 @@ def llm_node(state: AgentState) -> AgentState:
 
 def input_validation_node(state: AgentState) -> AgentState:
     result = input_validation_agent.invoke({"messages": state['messages'][-1].content})
+    print("AGENT VALIDATION SAID", result["messages"][-1].content)
     if "Valid input" in result["messages"][-1].content:
         user_input = state["messages"][0].content
         return {
@@ -155,7 +128,9 @@ def input_validation_node(state: AgentState) -> AgentState:
 
 def ashrae_lookup_node(state: AgentState) -> AgentState:
     city = state["city"]
+    print("DEBUG - City being sent to ashrae_lookup_agent:", city)
     result = ashrae_lookup_agent.invoke({"messages": [HumanMessage(content=city)]})
+    print("MESSAGE ITS RECEIVING", result)
     tool_message = result["messages"][2].content
     
     return {

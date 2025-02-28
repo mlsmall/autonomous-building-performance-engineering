@@ -21,9 +21,12 @@ ENV/
 env.bak/
 venv.bak/
 
-# Files
+# Files & Folders
 scratch.py
 encrypt.py
+.streamlit/
+core engine files/
+working_app.py
 
 # Data
 data/
