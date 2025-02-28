@@ -15,15 +15,15 @@ for file in Path('core_engine').glob('*.py'):
         content = f.read()
     # Check if content looks encrypted (starts with 'gAAAAA')
     if content.startswith(b'gAAAAA'):
-        decrypted = cipher.decrypt(content).decode()
-        
-    first_line = decrypted.split('\n')[0]
-    print(f"First line: {first_line}")
-    decrypted_files[file] = decrypted
+        decrypted = cipher.decrypt(content).decode()    
+        first_line = decrypted.split('\n')[0]
+        print(f"First line: {first_line}")
+        decrypted_files[file] = decrypted
 
-for file, content in decrypted_files.items():
-    with open(file, 'w') as f:
-        f.write(content)
+if decrypted_files:
+    for file, content in decrypted_files.items():
+        with open(file, 'w') as f:
+            f.write(content)
 
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
