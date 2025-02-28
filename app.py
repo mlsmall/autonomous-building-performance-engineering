@@ -8,18 +8,22 @@ from pathlib import Path
 key = st.secrets["DECRYPT_KEY"].encode()
 cipher = Fernet(key)
 
-# Decrypt files that are encrypted
+# Decrypt encrypted files
+decrypted_files = {}
 for file in Path('core_engine').glob('*.py'):
     with open(file, 'rb') as f:
         content = f.read()
-        # Process if encrypted
-        if content.startswith(b'gAAAAA'):
-            decrypted = cipher.decrypt(content).decode()
-            with open(file, 'w') as f:
-                f.write(decrypted)
-            print(f"Decrypted: {file}")
-        else:
-            print(f"No encryption detected: {file}")
+    # Check if content looks encrypted (starts with 'gAAAAA')
+    if content.startswith(b'gAAAAA'):
+        decrypted = cipher.decrypt(content).decode()
+        
+    first_line = decrypted.split('\n')[0]
+    print(f"First line: {first_line}")
+    decrypted_files[file] = decrypted
+
+for file, content in decrypted_files.items():
+    with open(file, 'w') as f:
+        f.write(content)
 
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
