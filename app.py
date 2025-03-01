@@ -6,27 +6,27 @@ import streamlit as st
 from cryptography.fernet import Fernet
 from pathlib import Path
 
-# key = st.secrets["DECRYPT_KEY"].encode()
-# cipher = Fernet(key)
+key = st.secrets["DECRYPT_KEY"].encode()
+cipher = Fernet(key)
 
-# Collect all e content
-# decrypted_files = {}
-# for file in Path('core_engine').glob('*.py'):
-#     with open(file, 'rb') as f:
-#         content = f.read()
-#     # Check if content looks encrypted (starts with 'gAAAAA')
-#     if content.startswith(b'gAAAAA'):
-#         decrypted = cipher.decrypt(content).decode()
-#     else:
-#         decrypted = content.decode()
+# Collect all encrypted content
+decrypted_files = {}
+for file in Path('core_engine').glob('*.py'):
+    with open(file, 'rb') as f:
+        content = f.read()
+    # Check if content looks encrypted (starts with 'gAAAAA')
+    if content.startswith(b'gAAAAA'):
+        decrypted = cipher.decrypt(content).decode()
+    else:
+        decrypted = content.decode()
         
-#     first_line = decrypted.split('\n')[0]
-#    # print(f"First line: {first_line}")
-#     decrypted_files[file] = decrypted
+    first_line = decrypted.split('\n')[0]
+   # print(f"First line: {first_line}")
+    decrypted_files[file] = decrypted
 
-# for file, content in decrypted_files.items():
-#     with open(file, 'w') as f:
-#         f.write(content)
+for file, content in decrypted_files.items():
+    with open(file, 'w') as f:
+        f.write(content)
 
 
 import uuid
