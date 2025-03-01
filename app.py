@@ -286,6 +286,7 @@ if prompt:
                         "user_id": st.session_state.user_id,
                         "existing_data": None
                     }, config={"configurable": {"thread_id": str(uuid.uuid4())}}):
+                        st.write(state)
 
                         # Validate input
                         if 'input_validation' in state:
