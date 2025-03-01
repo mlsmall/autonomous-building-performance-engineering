@@ -40,7 +40,7 @@ st.set_page_config(
     page_icon="🏢"
 )
 
-# Set up custom styles
+# Set up custom styles -> f0f7ff light blue chat background
 st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -216,12 +216,12 @@ if prompt:
             else:
                 st.session_state.messages.append({
                     "role": "assistant",
-                    "content": "Window area must be greater than 0. Try again:"
+                    "content": "The window area must be greater than 0. Try again:"
                 })
         except ValueError:
             st.session_state.messages.append({
                 "role": "assistant",
-                "content": "Please enter a valid number for window area:"
+                "content": "Please enter a number greater than zero for the window area:"
             })
 
     elif st.session_state.current_input == 'shgc':
@@ -237,8 +237,9 @@ if prompt:
             else:
                 st.session_state.messages.append({
                     "role": "assistant",
-                    "content": "SHGC must be between 0 and 1. Try again:"
+                    "content": "The Solar Heat Gain Coefficient must be between 0 and 1. Try again:"
                 })
+
         except ValueError:
             st.session_state.messages.append({
                 "role": "assistant",
@@ -258,7 +259,7 @@ if prompt:
             else:
                 st.session_state.messages.append({
                     "role": "assistant",
-                    "content": "U-value must be between 0 and 10. Try again:"
+                    "content": "The U-value must be between 0 and 10. Try again:"
                 })
         except ValueError:
             st.session_state.messages.append({
@@ -269,6 +270,7 @@ if prompt:
     elif st.session_state.current_input == 'city':
         # City input stage
         if prompt.strip():
+            st.info(f"Processing data for {prompt.strip()}")
             # Prepare user input for graph processing
             formatted_input = (
                 f"window area = {int(st.session_state.building_data['window_area'])} ft2 "
@@ -295,18 +297,30 @@ if prompt:
                                 
                                 # Display building inputs
                                 inputs = formatted_input.split()
-                                formatted_list = "Your Proposed Building Inputs:\n\n"
-                                i = 0
-                                while i < len(inputs):
-                                    if inputs[i] in ['area', 'shgc', 'u-value', 'city']:
-                                        value = inputs[i+2] 
-                                        unit = ' ft2' if inputs[i] == 'area' else ''
-                                        formatted_list += f"* {inputs[i]} = {value}{unit}\n"
-                                    i += 1
-                                
+                            
+                                formatted_list = """
+                                <div style='background-color: #fafaff; padding: 1.1rem; border-radius: 8px; border-left: 2.5px solid #1a237e; margin: 1rem 0; width: 52%; max-width: 52%;'>
+                                    <div style='font-size: 1.1em; font-weight: 500; color: #1a237e; margin-bottom: 0.8rem;'>
+                                        Your Proposed Building Inputs
+                                    </div>
+                                    <div style='font-family: "Inter", sans-serif; font-size: 0.9em;'>
+                                        • Glass area = <span style='font-weight: normal'>{} ft²</span><br>
+                                        • SHGC = <span style='font-weight: normal'>{}</span><br>
+                                        • U-value = <span style='font-weight: normal'>{}</span><br>
+                                        • City = <span style='font-weight: normal'>{}</span>
+                                    </div>
+                                </div>
+                                """.format(
+                                    f"{int(st.session_state.building_data['window_area']):,}",
+                                    st.session_state.building_data['shgc'],
+                                    st.session_state.building_data['u_value'],
+                                    prompt.strip()
+                                )
+
+                                # Then modify how you append it to messages:
                                 st.session_state.messages.append({
                                     "role": "assistant",
-                                    "content": f"```\n{formatted_list}\n```"
+                                    "content": formatted_list
                                 })
                                 
                                 # Store validated data in last_state for final reporting

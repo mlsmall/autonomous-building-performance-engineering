@@ -36,7 +36,7 @@ class BuildingInput(BaseModel):
     u_value: float = Field(gt=0, lt=20, description="The u-value must be between 0 and 20")
     city: str = Field(description=(
         "It MUST be the name of a city from anywhere in the world."
-        "It must NOT be a country, province or state")
+        "It must NOT be a country, province, state, fruit, animal, plant, or vegtable")
     )
                        
 
