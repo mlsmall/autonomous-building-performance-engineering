@@ -128,19 +128,31 @@ def input_validation_node(state: AgentState) -> AgentState:
 
 def ashrae_lookup_node(state: AgentState) -> AgentState:
     city = state["city"]
-    print("DEBUG - City being sent to ashrae_lookup_agent:", city)
+    print("DEBUG - City being sent:", city)
     result = ashrae_lookup_agent.invoke({"messages": [HumanMessage(content=city)]})
     print("MESSAGE ITS RECEIVING", result)
-    tool_message = result["messages"][2].content
-    
-    return {
-        "ashrae_to": float(tool_message.split("To=")[1].split("\n")[0].strip()),
-        "ashrae_cdd": float(tool_message.split("CDD=")[1].split("\n")[0].strip()),
-        "ashrae_climate_zone": int(tool_message.split("Climate Zone=")[1].split("\n")[0].strip()),
-        "ashrae_u_factor": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
-        "ashrae_shgc": float(tool_message.split("SHGC=")[1].strip()),
-        "messages": [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
-    }
+    tool_message = result["messages"][2].content  # 0 - HumanMessage, 1 - AIMessage, 2 - ToolMessage
+
+    # Check if the message contains ASHRAE data
+    if "To=" in tool_message  and "CDD=" in tool_message :
+        return {
+            "ashrae_to": float(tool_message.split("To=")[1].split("\n")[0].strip()),
+            "ashrae_cdd": float(tool_message.split("CDD=")[1].split("\n")[0].strip()),
+            "ashrae_climate_zone": int(tool_message.split("Climate Zone=")[1].split("\n")[0].strip()),
+            "ashrae_u_factor": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
+            "ashrae_shgc": float(tool_message.split("SHGC=")[1].strip()),
+            "messages": [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
+        }
+    else:
+        # Handle invalid city
+        return {
+            "messages": [HumanMessage(
+                content=f"ASHRAE data not found for '{city}'", 
+                name="ashrae_lookup"
+            )],
+            "city": None,  # Clear city
+            "next": "input_validation"  # Re-validate
+        }
 
 def utility_node(state: AgentState) -> AgentState:
     city = state["city"]
