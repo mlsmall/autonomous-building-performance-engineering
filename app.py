@@ -1,4 +1,9 @@
+"""
+Streamlit interface for Building Performance Assistant (BPA).
+Handles UI, user input collection, and integration with multi-agent system.
+"""
 import json
+import uuid
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -6,6 +11,7 @@ import streamlit as st
 from cryptography.fernet import Fernet
 from pathlib import Path
 
+# Decrypt and load core engine files
 key = st.secrets["DECRYPT_KEY"].encode()
 cipher = Fernet(key)
 
@@ -29,18 +35,19 @@ for file, content in decrypted_files.items():
         f.write(content)
 
 
-import uuid
+
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
 
-# Configure Streamlit page
+
+# UI Configuration
 st.set_page_config(
     layout="wide", 
     page_title="Building Performance Assistant",
     page_icon="🏢"
 )
 
-# Set up custom styles -> f0f7ff light blue chat background
+# Set up custom UI styles and fonts -> f0f7ff light blue chat background
 st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -112,7 +119,7 @@ with st.sidebar:
     st.title("Energy Analysis")
     st.markdown("---")
     st.markdown("### Quick Guide")
-    st.markdown("Enter each building details in this form:")
+    st.markdown("Enter each building detail. You can try these sample values:")
     st.code("window area = 10000 ft2\nshgc = 0.40\nu-value = 0.9\ncity = Montreal")
     st.markdown("<div style='margin: 0.5rem 0 0 0;'><hr style='margin: 8px 0;'></div>", unsafe_allow_html=True)
     st.markdown("<p style='margin: 0.5rem 0 0.5rem 0; font-size: 0.9em;'>Made with ❤️ by Kalevi Productions</p>", unsafe_allow_html=True)
@@ -142,7 +149,7 @@ with st.sidebar:
     if USE_DATABASE and st.session_state.user_id:
         st.markdown("---")
         with st.expander("📊 Previous Analyses"):
-            # Retrieve prior user analyses from the database
+            # Retrieve prior user building data from the database
             user_history = get_user_history(st.session_state.user_id)
             if user_history:
                 for calc in user_history:
@@ -170,10 +177,10 @@ if 'building_data' not in st.session_state:
     }
     st.session_state.current_input = 'window_area'
 
-# Initialize messages with a welcome message
+# Initialize messages with a welcome message and track conversation state
 if 'messages' not in st.session_state:
     st.session_state.messages = []
-    # If there's no DB, assign a test user
+    # Initialize user ID for database tracking or testing
     st.session_state.user_id = None if USE_DATABASE else "test_user"
     
     # Intro messages
@@ -198,6 +205,7 @@ for message in st.session_state.messages:
 
 # Chat input box
 prompt = st.chat_input("Enter value:")
+# Input handling and validation loop
 if prompt:
     # Show user's entered message
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -224,10 +232,11 @@ if prompt:
                 "content": "Please enter a number greater than zero for the window area:"
             })
 
+    # Validate and process SHGC input
     elif st.session_state.current_input == 'shgc':
         try:
             shgc = float(prompt)
-            if 0 <= shgc <= 1:
+            if 0 <= shgc <= 1: # Check SHGC is within valid range (0-1)
                 st.session_state.building_data['shgc'] = shgc
                 st.session_state.current_input = 'u_value'
                 st.session_state.messages.append({
@@ -295,9 +304,7 @@ if prompt:
                             if "Valid input" in state['input_validation']['messages'][0].content:
                                 st.session_state.building_data['city'] = prompt.strip()
                                 
-                                # Display building inputs
-                                inputs = formatted_input.split()
-                            
+                                # Display building inputs in formatted box
                                 formatted_list = """
                                 <div style='background-color: #fafaff; padding: 1.1rem; border-radius: 8px; border-left: 2.5px solid #1a237e; margin: 1rem 0; width: 52%; max-width: 52%;'>
                                     <div style='font-size: 1.1em; font-weight: 500; color: #1a237e; margin-bottom: 0.8rem;'>
@@ -348,7 +355,7 @@ if prompt:
                                 'ashrae_u_factor': state['ashrae_lookup'].get('ashrae_u_factor')
                             })
 
-                        # Collect calculation data if present
+                        # Store calculation results for report generation
                         if 'calculation' in state:
                             if 'proposed_heat_gain' in state['calculation']:
                                 st.session_state.last_state.update({
@@ -363,7 +370,7 @@ if prompt:
                                     'baseline_cost': state['calculation'].get('baseline_cost')
                                 })
 
-                        # If recommendations exist, show them
+                        # Handle agent recommendations and update UI
                         if 'recommendation' in state:
                             try:
                                 recs = json.loads(state['recommendation']['messages'][0].content)
@@ -373,7 +380,7 @@ if prompt:
                             except Exception:
                                 pass
 
-            # Reset for the next analysis
+            # Reset state data for the new analysis
             st.session_state.building_data = {
                 'window_area': None,
                 'shgc': None,
@@ -394,7 +401,7 @@ if prompt:
     st.rerun()
 
 # If the last_state with validated values is present, show button for generating final PDF report
-if 'last_state' in st.session_state: 
+if 'last_state' in st.session_state:  # Custom styling for report download button
     st.markdown("""
         <style>
         div[data-testid="stButton"] button {
@@ -413,10 +420,10 @@ if 'last_state' in st.session_state:
         </style>
     """, unsafe_allow_html=True)
 
+    # Generate performance report (PDF)
     if st.button("Generate Report", key="generate_report"):
         with st.spinner("Generating report..."):  
             try:
-                # Generate performance report (PDF)
                 pdf_data = generate_performance_report(st.session_state.last_state)
                 st.download_button(
                     "Download PDF",
