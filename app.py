@@ -12,27 +12,27 @@ from cryptography.fernet import Fernet
 from pathlib import Path
 
 # Decrypt and load core engine files
-key = st.secrets["DECRYPT_KEY"].encode()
-cipher = Fernet(key)
+# key = st.secrets["DECRYPT_KEY"].encode()
+# cipher = Fernet(key)
 
-# Collect all encrypted content
-decrypted_files = {}
-for file in Path('core_engine').glob('*.py'):
-    with open(file, 'rb') as f:
-        content = f.read()
-    # Check if content looks encrypted (starts with 'gAAAAA')
-    if content.startswith(b'gAAAAA'):
-        decrypted = cipher.decrypt(content).decode()
-    else:
-        decrypted = content.decode()
+# # Collect all encrypted content
+# decrypted_files = {}
+# for file in Path('core_engine').glob('*.py'):
+#     with open(file, 'rb') as f:
+#         content = f.read()
+#     # Check if content looks encrypted (starts with 'gAAAAA')
+#     if content.startswith(b'gAAAAA'):
+#         decrypted = cipher.decrypt(content).decode()
+#     else:
+#         decrypted = content.decode()
         
-    first_line = decrypted.split('\n')[0]
-   # print(f"First line: {first_line}")
-    decrypted_files[file] = decrypted
+#     first_line = decrypted.split('\n')[0]
+#    # print(f"First line: {first_line}")
+#     decrypted_files[file] = decrypted
 
-for file, content in decrypted_files.items():
-    with open(file, 'w') as f:
-        f.write(content)
+# for file, content in decrypted_files.items():
+#     with open(file, 'w') as f:
+#         f.write(content)
 
 
 
@@ -119,11 +119,11 @@ with st.sidebar:
     st.title("Energy Analysis")
     st.markdown("---")
     st.markdown("### Quick Guide")
-    st.markdown("Enter each building detail. You can try these sample values:")
+    st.markdown("Enter each building detail.\nTry these sample values:")
     st.code("window area = 10000 ft2\nshgc = 0.40\nu-value = 0.9\ncity = Montreal")
-    st.markdown("<div style='margin: 0.5rem 0 0 0;'><hr style='margin: 8px 0;'></div>", unsafe_allow_html=True)
-    st.markdown("<p style='margin: 0.5rem 0 0.5rem 0; font-size: 0.9em;'>Made with ❤️ by Kalevi Productions</p>", unsafe_allow_html=True)
-    st.markdown("<div style='margin: 0 0 0.5rem 0;'><hr style='margin: 8px 0;'></div>", unsafe_allow_html=True)
+    # st.markdown("<div style='margin: 0.5rem 0 0 0;'><hr style='margin: 8px 0;'></div>", unsafe_allow_html=True)
+    # st.markdown("<p style='margin: 0.5rem 0 0.5rem 0; font-size: 0.9em;'>Made with ❤️ by Kalevi Productions</p>", unsafe_allow_html=True)
+    # st.markdown("<div style='margin: 0 0 0.5rem 0;'><hr style='margin: 8px 0;'></div>", unsafe_allow_html=True)
     st.markdown("<div style='margin-top: -0.5rem;'>", unsafe_allow_html=True)
     
     # Methodology expander
@@ -195,7 +195,7 @@ if 'messages' not in st.session_state:
     })
     st.session_state.messages.append({
         "role": "assistant",
-        "content": """<div style='font-weight: 500;'>Enter the building total window area (ft²) in the input box below. &nbsp; <span style='color: #1a237e; font-size: 1.4em;'>↓</span></div>"""
+        "content": """<div style='font-weight: 500;'>Enter the total building window area (ft²) in the input box below. &nbsp; <span style='color: #1a237e; font-size: 1.4em;'>↓</span></div>"""
     })
 
 # Display chat history

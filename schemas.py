@@ -21,6 +21,8 @@ class AgentState(MessagesState):
     ashrae_shgc: float = None
     # Utility data
     utility_rate: float = None
+    # Solar radiation data
+    radiation: float = None
     # Calculation results
     proposed_heat_gain: float = None
     proposed_cooling_energy: float = None
@@ -39,18 +41,16 @@ class BuildingInput(BaseModel):
         "It must NOT be a country, province, state, fruit, animal, plant, or vegtable")
     )
                        
-
-
-# class Recommendation(BaseModel):
-#     """Structure for window performance comparison"""
-#     performance_delta: float = Field(description="Percentage difference from baseline")
-#     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
-#         First line: 'Your glass choice means:' \
-#         Then bullet points showing the diffs (negative diff means proposed value is higher than baseline): \
-#         * {abs(diff):,.0f} {'more' if diff < 0 else 'less'} BTU/hr heat gain &nbsp; &emsp; <span style='color: #43a047'>✓</span>\n \
-#         * {abs(diff):,.0f} {'more' if diff < 0 else 'less'} kWh/year &nbsp; &emsp; &emsp; <span style='color: #43a047'>✓</span>\n \
-#         * ${abs(diff):,.2f} {'more' if diff < 0 else 'less'} in cooling costs &emsp; <span style='color: #43a047'>✓</span>\n \
-#         Performance is {abs(performance_delta):.1f}% {'less' if performance_delta < 0 else 'better'} than baseline.")
+class Recommendation(BaseModel):
+    """Structure for window performance comparison"""
+    performance_delta: float = Field(description="Percentage difference from baseline")
+    recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
+        First line: 'Your glass choice means:' \
+        Then bullet points showing the diffs: \
+        * {abs(heat_gain_diff):,.0f} {'less' if heat_gain_diff > 0 else 'more'} BTU/hr heat gain     <span style='color: #43a047'>✓</span> \
+        * {abs(energy_diff):,.0f} {'less' if energy_diff > 0 else 'more'} kWh/year                   <span style='color: #43a047'>✓</span> \
+        * ${abs(cost_diff):,.2f} {'less' if cost_diff > 0 else 'more'} in cooling costs              <span style='color: #43a047'>✓</span> \
+        Last line: Shows performance_delta as percent {'worse' if performance_delta < 0 else 'better'} than baseline")
     
 # class Recommendation(BaseModel):
 #     """Structure for window performance comparison"""
@@ -63,19 +63,19 @@ class BuildingInput(BaseModel):
 #         &emsp; <span style='color: {'#d32f2f' if diff < 0 else '#43a047'}' > {'↓' if diff < 0 else '✓'}</span> &nbsp; &nbsp; ${abs(diff):,.2f} {'more' if diff < 0 else 'less'} in cooling costs\n \
 #         Your energy performance is {abs(performance_delta):.1f}% {'less' if performance_delta < 0 else 'better'} than the baseline.")
 
-class Recommendation(BaseModel):
-    """Structure for window performance comparison"""
-    performance_delta: float = Field(description="Percentage difference from baseline")
-    recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
-        First line: '<span style='color: #1a237e; font-weight: 600; font-size: 1.1em; display: block; margin: 0px; padding: 0px; line-height: 1;'>PERFORMANCE ANALYSIS</span>\
-        <div style='border-bottom: 1px solid #dee2e6; width: 200px; margin: 15px 0; padding: 0px;'></div>\
-        &emsp; <span style='display: inline-block; width: 120px;'>Peak Heat Gain</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; {abs(diff):,.0f} {('less' if diff > 0 else 'more')} BTU/hr\n \
-        &emsp; <span style='display: inline-block; width: 120px;'>Energy Usage</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; {abs(diff):,.0f} {('less' if diff > 0 else 'more')} kWh/year\n \
-        &emsp; <span style='display: inline-block; width: 120px;'>Cooling Costs</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; ${abs(diff):,.2f} {('less' if diff > 0 else 'more')}\n\n \
-        <div style='margin-top: 16px;'>Overall Performance: &nbsp;<span style='color: {'#43a047' if performance_delta > 0 else '#b71c1c'}'>{abs(performance_delta):.1f}%</span>&nbsp;{('better' if performance_delta > 0 else 'worse')} than baseline</div>")
+# class Recommendation(BaseModel):
+#     """Structure for window performance comparison"""
+#     performance_delta: float = Field(description="Percentage difference from baseline")
+#     recommendations: list[str] = Field(description="List of formatted recommendations that MUST follow this format: \
+#         First line: '<span style='color: #1a237e; font-weight: 600; font-size: 1.1em; display: block; margin: 0px; padding: 0px; line-height: 1;'>PERFORMANCE ANALYSIS</span>\
+#         <div style='border-bottom: 1px solid #dee2e6; width: 200px; margin: 15px 0; padding: 0px;'></div>\
+#         &emsp; <span style='display: inline-block; width: 120px;'>Peak Heat Gain</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; {abs(diff):,.0f} {('less' if diff > 0 else 'more')} BTU/hr\n \
+#         &emsp; <span style='display: inline-block; width: 120px;'>Energy Usage</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; {abs(diff):,.0f} {('less' if diff > 0 else 'more')} kWh/year\n \
+#         &emsp; <span style='display: inline-block; width: 120px;'>Cooling Costs</span> <span style='color: {'#43a047' if diff > 0 else '#d32f2f'}'>{'✓' if diff > 0 else '↓'}</span> &nbsp; &nbsp; ${abs(diff):,.2f} {('less' if diff > 0 else 'more')}\n\n \
+#         <div style='margin-top: 16px;'>Overall Performance: &nbsp;<span style='color: {'#43a047' if performance_delta > 0 else '#b71c1c'}'>{abs(performance_delta):.1f}%</span>&nbsp;{('better' if performance_delta > 0 else 'worse')} than baseline</div>")
 
 
-members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility"] # Current Agents
+members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility", "radiation_node"] # Current Agents
 options = members + ["FINISH"]
 
 # Our team supervisor is an LLM node. It picks the next agent to process and decides when the work is completed
