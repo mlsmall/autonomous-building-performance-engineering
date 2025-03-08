@@ -39,6 +39,39 @@ from pathlib import Path
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
 
+def format_recommendation(data: dict) -> str:
+    """Convert raw data to styled HTML without leading whitespace"""
+    # Extract metrics from recommendations list (first 3 items)
+    heat_gain_line = data["recommendations"][0]
+    energy_line = data["recommendations"][1] 
+    cost_line = data["recommendations"][2]
+    
+    # Parse numerical values from recommendation strings
+    heat_gain_diff = float(heat_gain_line.split(":")[1].split()[0])
+    energy_diff = float(energy_line.split(":")[1].split()[0])
+    cost_diff = float(cost_line.split(":")[1].split()[0])
+    
+    return (
+        '<div style="font-family:\'Inter\',sans-serif;border-left:3px solid #1a237e;padding:1rem;margin:1rem 0;background:#f8f9fa;">'
+        '<div style="color:#1a237e;font-weight:600;font-size:1.1em;margin-bottom:1rem;">PERFORMANCE ANALYSIS</div>'
+        f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Peak Heat Gain</span>'
+        f'<span style="color:{"#43a047" if heat_gain_diff < 0 else "#d32f2f"};">'
+        f'{"✓" if heat_gain_diff < 0 else "↓"}</span> '
+        f'{abs(heat_gain_diff):,.0f} {"less" if heat_gain_diff < 0 else "more"} BTU/hr</div>'
+        f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Energy Usage</span>'
+        f'<span style="color:{"#43a047" if energy_diff < 0 else "#d32f2f"};">'
+        f'{"✓" if energy_diff < 0 else "↓"}</span> '
+        f'{abs(energy_diff):,.0f} {"less" if energy_diff < 0 else "more"} kWh/year</div>'
+        f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Cooling Costs</span>'
+        f'<span style="color:{"#43a047" if cost_diff < 0 else "#d32f2f"};">'
+        f'{"✓" if cost_diff < 0 else "↓"}</span> '
+        f'${abs(cost_diff):,.2f} {"less" if cost_diff < 0 else "more"}</div>'
+        '<div style="margin-top:1rem;padding-top:0.5rem;border-top:1px solid #eee;">'
+        f'The proposed building is <span style="color:{"#43a047" if data["performance_delta"] < 0 else "#d32f2f"};">'
+        f'{abs(data["performance_delta"]):.1f}% {"better" if data["performance_delta"] < 0 else "worse"} </span> than the Baseline building.'
+        '</div>'
+        '</div>'
+    )
 
 # UI Configuration
 st.set_page_config(
@@ -70,7 +103,7 @@ st.markdown("""
     
     /* Raise Input Box */     
     [data-testid="stBottom"] {
-        height: 200px !important;
+        height: 300px !important;
     }
     
     /* Chat input text area height */
@@ -195,7 +228,7 @@ if 'messages' not in st.session_state:
     })
     st.session_state.messages.append({
         "role": "assistant",
-        "content": """<div style='font-weight: 500;'>Enter the total building window area (ft²) in the input box below. &nbsp; <span style='color: #1a237e; font-size: 1.4em;'>↓</span></div>"""
+        "content": """<div style='font-weight: 500;'>Enter the total building window area (ft²) in the input box below. &nbsp; <span style='color: #1a237e; font-size: 1.2em;'>↓</span></div>"""
     })
 
 # Display chat history
@@ -373,12 +406,15 @@ if prompt:
                         # Handle agent recommendations and update UI
                         if 'recommendation' in state:
                             try:
-                                recs = json.loads(state['recommendation']['messages'][0].content)
-                                recommendations = "\n".join(recs['recommendations'])
-                                st.session_state.messages.append({"role": "assistant", "content": recommendations})
+                                rec_data = json.loads(state['recommendation']['messages'][0].content)
+                                styled_html = format_recommendation(rec_data)
+                                st.session_state.messages.append({
+                                    "role": "assistant", 
+                                    "content": styled_html
+                                })
                                 st.rerun()
-                            except Exception:
-                                pass
+                            except Exception as e:
+                                st.error(f"Error formatting recommendation: {str(e)}")
 
             # Reset state data for the new analysis
             st.session_state.building_data = {

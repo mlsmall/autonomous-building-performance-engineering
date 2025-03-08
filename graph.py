@@ -51,11 +51,11 @@ If no user_data:
         - After getting local electricity rates, route to radiation_node to get the solar radiation value
 
     3. After utility rates and solar radiation values are found:
-        - First route to calculation for proposed design (using user's U-value)
-        - Then route to calculation again for baseline design (using ASHRAE U-value)
-        - Both calculations must be complete before proceeding
+        - First route to calculation for proposed calculations (using user's U-value and SHGC)
+        - Then route to calculation again for baseline calculations (using ASHRAE U-value and SHGC)
+        - Proposed AND Baseline calculations must be complete before proceeding
 
-    4. Only after BOTH calculations are complete:
+    4. Only after BOTH Proposed AND Baseline calculations are complete:
         - Route to recommendation for comparison
         - Then route to FINISH
 
@@ -142,7 +142,7 @@ def input_validation_node(state: AgentState) -> AgentState:
             "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
         }
     else:
-        error_message  = result["messages"][-1].content + "\nPlease enter your building details again:"
+        error_message  = f"{result["messages"][-1].content}  \nPlease enter it again:"
         return {
             "messages": [HumanMessage(content=error_message, name="input_validation")],
             "next": START
@@ -201,7 +201,8 @@ def utility_node(state: AgentState) -> AgentState:
     city = state["city"]
     # Format query to get only numeric rate value
     query = f"Find an estimated value for the commercial utility rates ($/kWh) in {city}. \
-        Please provide only a numeric estimated utility rate value without any additional text."
+        Please provide only a numeric estimated utility rate value without any additional text. \
+        If no utility rate is available, please return '0.1'."
     result = research_agent.invoke({"messages": [HumanMessage(content=query)]})
     return {
         "utility_rate": float(result["messages"][-1].content),
@@ -230,10 +231,10 @@ energy = annual_cooling_energy(heat_gain, {state["ashrae_cdd"]})
 cost = annual_cost(energy, {state["utility_rate"]})
     """
     result = calculation_tool.invoke(query)
-    # print("CALCULATION NODE RESULT", result)
     # Parse the output from the calculation tool
     stdout_index = result.find('Stdout:') # Find the start of the stdout
     stdout = result[stdout_index + len('Stdout:'):].strip() # Extract the stdout
+    
     # Convert calculation tool results to float values
     lines = stdout.split('\n') # Split into lines 
     parsed_values = {}
@@ -241,8 +242,7 @@ cost = annual_cost(energy, {state["utility_rate"]})
         if '=' in line:
             key, value = line.split('=', 1)
             parsed_values[key.strip()] = float(value.strip())
-    print("PARSED VALUES", parsed_values)
-
+    print("CALCULATION PARSED VALUES", parsed_values, calculation_type)
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
     return {
@@ -279,7 +279,7 @@ def recommendation_node(state: AgentState) -> AgentState:
     ashrae_shgc: {state['ashrae_shgc']}
     u_value: {state['u_value']}
     ashrae_u_factor: {state['ashrae_u_factor']}"""
-
+    print("RECOMMENDATION NODE MESSAGE:", message)
     # Get recommendations and format response based on the Recommendation class
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
