@@ -1,5 +1,5 @@
 chroma-hnswlib==0.7.6
-chromadb==0.5.23
+chromadb
 cohere==5.13.12
 fpdf==1.7.2
 google-ai-generativelanguage==0.6.15
@@ -47,3 +47,4 @@ streamlit-toggle-switch==1.0.2
 streamlit-vertical-slider==2.5.5
 cryptography
 langchain_mistralai
+pysqlite3-binary

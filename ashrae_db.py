@@ -2,8 +2,12 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 from langchain_core.documents import Document
+from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from models import embedding_google
@@ -13,7 +17,6 @@ warnings.filterwarnings("ignore")  # Suppress all warnings
 
 embedding = embedding_google
 
-from langchain_chroma import Chroma
 vector_store = Chroma(
     collection_name="rag-chroma",
     embedding_function=embedding,
