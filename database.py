@@ -12,24 +12,15 @@ client = MongoClient(os.getenv("MONGODB_URI"))
 db = client["building_db"]
 buildings = db["buildings"]
 
-def identify_user(user_id: str):
-    user = buildings.find_one({"user_id": user_id})
-    if not user:
-        buildings.insert_one({
-            "user_id": user_id,
-            "created_at": datetime.now()
-        })
-    return user
-
+# Create a new document in the database
 def building_data(user_id: str, state: AgentState):
-    state_data = {k: v for k, v in state.items() 
-                 if v is not None 
-                 and k != 'next'
-                 and k != 'messages'
-                 and k != 'existing_data'}
+    state_data = {key: value for key, value in state.items() 
+                 if value is not None 
+                 and key != 'next'
+                 and key != 'messages'
+                 and key != 'existing_data'}
     
-    identify_user(user_id)
-    
+    # Add the user_id to the state data
     buildings.update_one(
         {"user_id": user_id},
         {"$set": {
@@ -37,16 +28,18 @@ def building_data(user_id: str, state: AgentState):
             "timestamp": datetime.now()
         }}
     )
-    
+
     stored = buildings.find_one({"user_id": user_id})
     stored['_id'] = str(stored['_id'])
     return stored
 
+# Retrieve a document from the database
 def get_user_history(user_id: str):
     stored = buildings.find_one({"user_id": user_id})
     if stored:
         stored['_id'] = str(stored['_id'])
     return stored
+
 
 if __name__ == "__main__":
     from schemas import AgentState

@@ -13,6 +13,7 @@ from langchain_experimental.utilities import PythonREPL
 from schemas import BuildingInput
 from models import llm_gemini, llm_gpt, llm_mistral
 from core_engine.ashrae_data import ASHRAE_VALUES
+from corrective_rag import retrieve, generate
 from radiation_rag import rad_generate, rad_retrieve
 
 llm = llm_gpt
@@ -76,31 +77,6 @@ def input_validation_tool(query: Annotated[str, "Check if all required inputs ar
     
     except Exception as e:
         return f"Error in validation: {str(e)}"
-		
-# @tool
-# def input_validation_tool(query: Annotated[str, "Check if all required inputs are present and valid"]):
-#     """Validates if SHGC, window area, U-value, and city are provided and valid"""
-#     try:
-#         result = llm.invoke(
-#             f"""Extract and validate these values from the input:
-#             Input: {query}
-            
-#             Check:
-#             1. SHGC: Must be between 0-1
-#             2. Window area: Must be positive number in ft�
-#             3. U-value: Must be positive number
-#             4. City: Must be non-empty
-            
-#             Format response as:
-#             Valid: [yes/no]
-#             Missing: [list any missing values]
-#             Invalid: [list any out of range values]
-#             """
-#         )
-#         return result.content
-    
-#     except Exception as e:
-#         return f"Error in validation: {str(e)}"
     
 @tool
 def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):

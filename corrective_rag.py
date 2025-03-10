@@ -2,7 +2,7 @@ from langchain import hub
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
-from create_database import retriever
+from ashrae_db import retriever
 from models import llm_gemini, llm_gpt, llm_llama, llm_cohere
 
 llm = llm_cohere

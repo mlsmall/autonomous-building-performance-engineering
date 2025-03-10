@@ -21,11 +21,7 @@ from database import building_data, get_user_history
 llm = llm_gpt # llm_gpt preferred
 
 # Supervisor agent system prompt
-# Controls workflow between agents based on input state:
-# 1. Input validation
-# 2. ASHRAE data lookup
-# 3. Calculations (proposed first, then baseline)
-# 4. Recommendations
+# Controls workflow between agents based on input state
 system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
 
 For User ID: {{user_id}}
@@ -81,19 +77,20 @@ def supervisor_node(state: AgentState) -> AgentState:
     
     if USE_DATABASE:
         user_id = state.get('user_id')
+        user_data = "No previous building data"
+
         # Create user_data string if we building data from the user exists
         if any(key in state for key in ['city', 'window_area', 'shgc', 'u_value']):
             user_data = "Building data in state:\n"
             for key in ['city', 'window_area', 'shgc', 'u_value', 'baseline_cost', 'proposed_cost']:
                 if key in state:
-                    user_data += f"- {key}: {state[key]}\n"
-        else:
-            user_data = "No previous building data"
+                    user_data += f"- {key}: {state[key]}\n"        
         
         formatted_prompt = system_prompt.format(
             user_id=user_id,
             user_data=user_data
         )
+
     else:
         formatted_prompt = system_prompt
 
@@ -104,7 +101,7 @@ def supervisor_node(state: AgentState) -> AgentState:
     if next1 == "FINISH":
         next1 = END
 
-    # Store in MongoDB only if enabled
+    # Store in MongoDB if enabled
     if USE_DATABASE and state.get("user_id"):
         if next1 == "ashrae_lookup" or next1 == END:
             building_data(state["user_id"], state)
@@ -331,7 +328,7 @@ def main_loop():
     """
 
     if USE_DATABASE:
-        print("Welcome! Please enter your email as your user ID")
+        print("Welcome! Please enter your user ID")
         user_id = input("User ID: ")
         user_data = get_user_history(user_id)
     else:
