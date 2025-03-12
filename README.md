@@ -113,19 +113,19 @@ Get professional engineering analysis in seconds, with personalized design guida
 
 ```ascii
  ┌────────────────────────────────────────────────────────────────────────────────────┐
- │                              Autonomous Agent Network                              │
+ │                                   Agent Network                                    │
  └────────────────────────────────────────────────────────────────────────────────────┘
 
 ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐
-│   Input   │  │ Knowledge │  │ Resource  │  │   Calc.   │  │   Rec.    │  │ Technical │
-│Validation │  │ Retrieval │  │ Research  │  │   Agent   │  │   Agent   │  │  Report   │
+│   Input   │  │  ASHRAE   │  │ Radiation │  │  Utility  │  │   Calc.   │  │   Rec.    │
+│Validation │  │  Lookup   │  │  Lookup   │  │   Agent   │  │   Agent   │  │   Agent   │
 └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘
-      │              │              │              │              │              │    
-      │              ▼              │              │              ▼              │    
-      │         ┌──────────┐        │              │         ┌──────────┐        │    
-      │         │  Vector  │        │              │         │  Vector  │        │    
-      │         │  Store   │        │              │         │  Store   │        │    
-      │         └────┬─────┘        │              │         └────┬─────┘        │    
+      ▲              │              │              │              │              │    
+      │              ▼              ▼              │              │              │  
+      │         ┌──────────┐   ┌──────────┐        │              │              │
+      │         │  Vector  │   │  Vector  │        │              │              │
+      │         │  Store   │   │  Store   │        │              │              │
+      │         └────┬─────┘   └────┬─────┘        │              │              │
       │              │              │              │              │              │    
       ▼              ▼              ▼              ▼              ▼              ▼    
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
