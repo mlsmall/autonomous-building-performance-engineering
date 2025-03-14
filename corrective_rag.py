@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from ashrae_db import retriever
 from models import llm_gemini, llm_gpt, llm_llama, llm_cohere
 
-llm = llm_cohere
+llm = llm_gpt
 
 # Load the prompt
 prompt = hub.pull("rlm/rag-prompt")
@@ -72,14 +72,14 @@ def retrieve(state):
     documents = retriever.invoke(question)
 
     # Add these debug prints
-    print("\n=== RETRIEVAL DEBUG ===")
-    print("Input question:", question)
-    print(f"\nDocuments retrieved: {len(documents)}")
-    print("\nFULL Content of Retrieved Documents:")
-    for i, doc in enumerate(documents):
-        print(f"\nDocument {i+1}:")
-        print(doc.page_content)
-        print("-" * 50)
+    # print("\n=== RETRIEVAL DEBUG ===")
+    # print("Input question:", question)
+    # print(f"\nDocuments retrieved: {len(documents)}")
+    # print("\nFULL Content of Retrieved Documents:")
+    # for i, doc in enumerate(documents):
+    #     print(f"\nDocument {i+1}:")
+    #     print(doc.page_content)
+    #     print("-" * 50)
     
     return {"documents": documents, "question": question}
 
@@ -115,8 +115,8 @@ def generate(state):
 
     generation = rag_chain.invoke({"context": documents, "question": question})
 
-    print("\n=== GENERATION DEBUG ===")
-    print("Generation output:", generation)
+    # print("\n=== GENERATION DEBUG ===")
+    # print("Generation output:", generation)
 
     return {"documents": documents, "question": question, "generation": generation}
 
@@ -214,7 +214,7 @@ workflow.add_edge("generate", END)
 graph = workflow.compile()
 
 # Display the graph
-graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph_flow.png")
+# graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph_flow.png")
 
 
 # Run

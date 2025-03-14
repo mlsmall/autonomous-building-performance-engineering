@@ -101,7 +101,7 @@ def supervisor_node(state: AgentState) -> AgentState:
     if next1 == "FINISH":
         next1 = END
 
-    # Store in MongoDB if enabled
+    # Store building data in MongoDB if enabled
     if USE_DATABASE and state.get("user_id"):
         if next1 == "ashrae_lookup" or next1 == END:
             building_data(state["user_id"], state)
@@ -293,30 +293,31 @@ builder = StateGraph(AgentState)
 # Register all agent nodes
 builder.add_node("supervisor", supervisor_node)
 builder.add_node("input_validation", input_validation_node)
-builder.add_node("ashrae_lookup", ashrae_lookup_node)
-builder.add_node("radiation_node", radiation_node)
+builder.add_node("ashrae_lookup", ashrae_lookup_node) # Energy Code Lookup
+builder.add_node("radiation_node", radiation_node) # Radiation table lookup
 builder.add_node("calculation", calculation_node)
 builder.add_node("recommendation", recommendation_node)
-builder.add_node("llm", llm_node)
 builder.add_node("utility", utility_node)
+builder.add_node("llm", llm_node)
+
 
 # Define graph connection
 builder.add_edge(START, "supervisor") # All workflows start at supervisor
 
-# Each agent always reports back to the supervisor after completion
+# Each agent reports back to the supervisor after completion
 for member in members: 
     builder.add_edge(member, "supervisor")
 
 # The supervisor populates the "next" field in the graph states which either routes to a node or finishes based on the state
 builder.add_conditional_edges("supervisor", lambda state: state["next"]) # Pass the state and returns the key of the next state
 
-# MemorySaver maintains data between agent call (# Short-term memory)
+# MemorySaver maintains data between agent calls (# Short-term memory)
 memory = MemorySaver() # Keeps track of building data and calculation results
 
 # Compile graph with memory integration
 graph = builder.compile(checkpointer=memory) 
 
-# Draw the graph
+# Draw a graph
 #graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
 
 # Database configuration and main loop

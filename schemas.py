@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from typing import Literal
 
 # This agent state is the input to each node in the graph
-# Ttracks all data through the process:
+# Tracks all data through the process:
 class AgentState(MessagesState):
     # The 'next' field indicates where to route to next
     next: str

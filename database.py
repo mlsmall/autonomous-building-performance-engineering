@@ -20,7 +20,7 @@ def building_data(user_id: str, state: AgentState):
                  and key != 'messages'
                  and key != 'existing_data'}
     
-    # Add the user_id to the state data
+    # Create or update the document
     buildings.update_one(
         {"user_id": user_id},
         {"$set": {

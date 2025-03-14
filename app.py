@@ -12,27 +12,27 @@ from cryptography.fernet import Fernet
 from pathlib import Path
 
 # Decrypt and load core engine files
-# key = st.secrets["DECRYPT_KEY"].encode()
-# cipher = Fernet(key)
+key = st.secrets["DECRYPT_KEY"].encode()
+cipher = Fernet(key)
 
-# # Collect all encrypted content
-# decrypted_files = {}
-# for file in Path('core_engine').glob('*.py'):
-#     with open(file, 'rb') as f:
-#         content = f.read()
-#     # Check if content looks encrypted (starts with 'gAAAAA')
-#     if content.startswith(b'gAAAAA'):
-#         decrypted = cipher.decrypt(content).decode()
-#     else:
-#         decrypted = content.decode()
+# Collect all encrypted content
+decrypted_files = {}
+for file in Path('core_engine').glob('*.py'):
+    with open(file, 'rb') as f:
+        content = f.read()
+    # Check if content looks encrypted (starts with 'gAAAAA')
+    if content.startswith(b'gAAAAA'):
+        decrypted = cipher.decrypt(content).decode()
+    else:
+        decrypted = content.decode()
         
-#     first_line = decrypted.split('\n')[0]
-#    # print(f"First line: {first_line}")
-#     decrypted_files[file] = decrypted
+    first_line = decrypted.split('\n')[0]
+   # print(f"First line: {first_line}")
+    decrypted_files[file] = decrypted
 
-# for file, content in decrypted_files.items():
-#     with open(file, 'w') as f:
-#         f.write(content)
+for file, content in decrypted_files.items():
+    with open(file, 'w') as f:
+        f.write(content)
 
 
 
@@ -57,15 +57,15 @@ def format_recommendation(data: dict) -> str:
         f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Peak Heat Gain</span>'
         f'<span style="color:{"#43a047" if heat_gain_diff < 0 else "#d32f2f"};">'
         f'{"✓" if heat_gain_diff < 0 else "↓"}</span> '
-        f'{abs(heat_gain_diff):,.0f} {"less" if heat_gain_diff < 0 else "more"} BTU/hr</div>'
+        f'&nbsp; The peak energy use is {abs(heat_gain_diff):,.0f} {"less" if heat_gain_diff < 0 else "more"} BTU/hr</div>'
         f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Energy Usage</span>'
         f'<span style="color:{"#43a047" if energy_diff < 0 else "#d32f2f"};">'
         f'{"✓" if energy_diff < 0 else "↓"}</span> '
-        f'{abs(energy_diff):,.0f} {"less" if energy_diff < 0 else "more"} kWh/year</div>'
+        f'&nbsp; The building uses {abs(energy_diff):,.0f} {"less" if energy_diff < 0 else "more"} kWh/year</div>'
         f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Cooling Costs</span>'
         f'<span style="color:{"#43a047" if cost_diff < 0 else "#d32f2f"};">'
         f'{"✓" if cost_diff < 0 else "↓"}</span> '
-        f'${abs(cost_diff):,.2f} {"less" if cost_diff < 0 else "more"}</div>'
+        f'&nbsp;The yearly energy costs are ${abs(cost_diff):,.2f} {"less" if cost_diff < 0 else "more"}</div>'
         '<div style="margin-top:1rem;padding-top:0.5rem;border-top:1px solid #eee;">'
         f'The proposed building is <span style="color:{"#43a047" if data["performance_delta"] < 0 else "#d32f2f"};">'
         f'{abs(data["performance_delta"]):.1f}% {"better" if data["performance_delta"] < 0 else "worse"} </span> than the Baseline building.'

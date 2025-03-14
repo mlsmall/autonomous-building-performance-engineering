@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from radiation_db import rad_retriever
 from models import llm_gemini, llm_gpt, llm_llama, llm_cohere
 
-llm = llm_cohere
+llm = llm_gpt
 
 # Load the prompt
 prompt = hub.pull("rlm/rag-prompt")
