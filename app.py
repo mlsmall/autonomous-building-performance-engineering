@@ -13,27 +13,27 @@ from pathlib import Path
 
 
 # Decrypt and load core engine files
-# key = st.secrets["DECRYPT_KEY"].encode()
-# cipher = Fernet(key)
+key = st.secrets["DECRYPT_KEY"].encode()
+cipher = Fernet(key)
 
 # Collect all encrypted content
-# decrypted_files = {}
-# for file in Path('core_engine').glob('*.py'):
-#     with open(file, 'rb') as f:
-#         content = f.read()
-#     # Check if content looks encrypted (starts with 'gAAAAA')
-#     if content.startswith(b'gAAAAA'):
-#         decrypted = cipher.decrypt(content).decode()
-#     else:
-#         decrypted = content.decode()
+decrypted_files = {}
+for file in Path('core_engine').glob('*.py'):
+    with open(file, 'rb') as f:
+        content = f.read()
+    # Check if content looks encrypted (starts with 'gAAAAA')
+    if content.startswith(b'gAAAAA'):
+        decrypted = cipher.decrypt(content).decode()
+    else:
+        decrypted = content.decode()
         
-#     first_line = decrypted.split('\n')[0]
-#    # print(f"First line: {first_line}")
-#     decrypted_files[file] = decrypted
+    first_line = decrypted.split('\n')[0]
+   # print(f"First line: {first_line}")
+    decrypted_files[file] = decrypted
 
-# for file, content in decrypted_files.items():
-#     with open(file, 'w') as f:
-#         f.write(content)
+for file, content in decrypted_files.items():
+    with open(file, 'w') as f:
+        f.write(content)
 
 
 from graph import graph, USE_DATABASE, get_user_history
