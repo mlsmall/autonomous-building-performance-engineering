@@ -11,33 +11,34 @@ import streamlit as st
 from cryptography.fernet import Fernet
 from pathlib import Path
 
+
 # Decrypt and load core engine files
-key = st.secrets["DECRYPT_KEY"].encode()
-cipher = Fernet(key)
+# key = st.secrets["DECRYPT_KEY"].encode()
+# cipher = Fernet(key)
 
 # Collect all encrypted content
-decrypted_files = {}
-for file in Path('core_engine').glob('*.py'):
-    with open(file, 'rb') as f:
-        content = f.read()
-    # Check if content looks encrypted (starts with 'gAAAAA')
-    if content.startswith(b'gAAAAA'):
-        decrypted = cipher.decrypt(content).decode()
-    else:
-        decrypted = content.decode()
+# decrypted_files = {}
+# for file in Path('core_engine').glob('*.py'):
+#     with open(file, 'rb') as f:
+#         content = f.read()
+#     # Check if content looks encrypted (starts with 'gAAAAA')
+#     if content.startswith(b'gAAAAA'):
+#         decrypted = cipher.decrypt(content).decode()
+#     else:
+#         decrypted = content.decode()
         
-    first_line = decrypted.split('\n')[0]
-   # print(f"First line: {first_line}")
-    decrypted_files[file] = decrypted
+#     first_line = decrypted.split('\n')[0]
+#    # print(f"First line: {first_line}")
+#     decrypted_files[file] = decrypted
 
-for file, content in decrypted_files.items():
-    with open(file, 'w') as f:
-        f.write(content)
-
+# for file, content in decrypted_files.items():
+#     with open(file, 'w') as f:
+#         f.write(content)
 
 
 from graph import graph, USE_DATABASE, get_user_history
 from report_generator import generate_performance_report
+
 
 def format_recommendation(data: dict) -> str:
     """Convert raw data to styled HTML without leading whitespace"""
@@ -52,7 +53,7 @@ def format_recommendation(data: dict) -> str:
     cost_diff = float(cost_line.split(":")[1].split()[0])
     
     return (
-        '<div style="font-family:\'Inter\',sans-serif;border-left:3px solid #1a237e;padding:1rem;margin:1rem 0;background:#f8f9fa;">'
+        '<div style="font-family:\'Inter\',sans-serif;border-left:3px solid #1a237e;padding:1rem;margin:1rem 0;background:#faffff;">'
         '<div style="color:#1a237e;font-weight:600;font-size:1.1em;margin-bottom:1rem;">PERFORMANCE ANALYSIS</div>'
         f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Peak Heat Gain</span>'
         f'<span style="color:{"#43a047" if heat_gain_diff < 0 else "#d32f2f"};">'
@@ -125,24 +126,88 @@ st.markdown("""
         width: 100% !important;
         max-width: 100% !important;
     }
+            
     /* Remove input focus outline */
     .st-c5, .st-c4, .st-c3, .st-c2 {
         border-color: transparent !important;
     }
+            
     /* Chat input background, border, shadow */
     [data-testid="stChatInput"] {
         background-color: #ffffff !important;
         border: 1px solid #c0c0c0 !important;
         box-shadow: 6px 6px 6px rgba(0,0,0,0.03) !important;
+            
+    /* Form input styling */
+    .input-header {
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        color: #1a237e;
+        margin-bottom: -0.5rem;
     }
+
+    div[data-baseweb="input"] {
+        margin-bottom: 1.2rem;
+    }
+
+    div[data-baseweb="input"] > div {
+        border-radius: 8px !important;
+        border: 1px solid #c0c0c0 !important;
+        padding: 8px 12px !important;
+    }
+
+    div[data-baseweb="input"]:has(> div:hover) {
+        border-color: #1a237e !important;
+    }
+
+    .invalid-input div[data-baseweb="input"] > div {
+        border-color: #d32f2f !important;
+        background: #fff5f5 !important;
+    }
+
+    button[kind="formSubmit"] {
+        background: #1a237e !important;
+        color: white !important;
+        font-weight: 500 !important;
+        border: none !important;
+        margin-top: 1rem !important;
+    }
+
+   
 </style>
 """, unsafe_allow_html=True)
 
-# Top heading
+# # Top heading
+# st.markdown("""
+#     <div style='margin: -2rem 0 3rem 0'>
+#         <h2 style='color: #1a237e; font-size: 34px; font-weight: 600; margin: 0; letter-spacing: -1px;'>
+#             BPA <span style='color: #2c2c2c; font-weight: 500; font-size: 32px;'>| Building Performance Assistant</span>
+#         </h2>
+#     </div>
+# """, unsafe_allow_html=True)
+
 st.markdown("""
-    <div style='margin: -4rem 0 4.5rem 0'>
-        <h2 style='color: #1a237e; font-size: 34px; font-weight: 600; margin: 0;'>
-            BPA <span style='color: #2c2c2c; font-weight: 500; font-size: 32px;'>| Building Performance Assistant</span>
+    <div style='margin: -1rem 0 2.5rem 0'>
+        <h2 style='
+            color: #1a237e;
+            font-size: 34px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        '>
+            <span>BPA</span>
+            <span style='
+                color: #2c2c2c;
+                font-weight: 500;
+                font-size: 30px;
+                opacity: 0.9;
+                letter-spacing: -0.5px;
+            '>
+                | Building Performance Assistant
+            </span>
         </h2>
     </div>
 """, unsafe_allow_html=True)
@@ -213,117 +278,107 @@ if 'building_data' not in st.session_state:
 # Initialize messages with a welcome message and track conversation state
 if 'messages' not in st.session_state:
     st.session_state.messages = []
-    # Initialize user ID for database tracking or testing
+    # For example, use a test user if no database is in use.
     st.session_state.user_id = None if USE_DATABASE else "test_user"
     
-    # Intro messages
+    premium_intro = """
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <div style="
+            max-width: 600px;
+            background: #FFFFFF;
+            padding: 1rem 1rem;  
+            font-family: 'Inter', sans-serif;
+            border-radius: 8px;
+            margin: 0 0 2rem 0;
+            box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);
+            border: 1px solid rgba(26, 35, 126, 0.05);
+            border-left: 3px solid #1a237e; 
+            ">
+            <p style="
+                color: #1a237e;
+                font-size: 1.28rem;
+                font-weight: 500;
+                margin: 0 0 1.4rem 0;
+                letter-spacing: -0.4px;
+                padding-left: 0.3rem; 
+            ">
+                Energy Performance & Cost Modeling
+            </p>
+            <p style="
+                font-size: 0.93rem;
+                color: #444;
+                margin: 0;
+                line-height: 1.7;
+                padding-left: 0.3rem; 
+            ">
+                ▸ Compare your building against industry benchmarks, energy use, and costs.<br>  
+                ▸ Enter your building details below. <span style='color: #1a237e; font-size: 1.2em;'>↓</span></div>
+            </p>
+        </div>
+        """
     st.session_state.messages.append({
         "role": "assistant", 
-        "content": """Hello, I'm your building performance engineer assistant. Please enter these inputs:
-
-* Window area (ft²) <sup><span style='color: #1a237e; font-size: 10px; font-family: "Times New Roman", serif; opacity: 0.8; border: 1px solid #1a237e; border-radius: 50%; padding: 0 3px; margin-left: 2px; cursor: help;' title="Total glazing area of the building envelope">i</span></sup>
-* SHGC value (0-1) <sup><span style='color: #1a237e; font-size: 10px; font-family: "Times New Roman", serif; opacity: 0.8; border: 1px solid #1a237e; border-radius: 50%; padding: 0 3px; margin-left: 2px; cursor: help;' title="Solar Heat Gain Coefficient - The fraction of solar radiation admitted through a window">i</span></sup>
-* U-value <sup><span style='color: #1a237e; font-size: 10px; font-family: "Times New Roman", serif; opacity: 0.8; border: 1px solid #1a237e; border-radius: 50%; padding: 0 3px; margin-left: 2px; cursor: help;' title="Overall heat transfer coefficient - Measures how well a window conducts heat">i</span></sup>
-* Building location (city) <sup><span style='color: #1a237e; font-size: 10px; font-family: "Times New Roman", serif; opacity: 0.8; border: 1px solid #1a237e; border-radius: 50%; padding: 0 3px; margin-left: 2px; cursor: help;' title="Used to determine climate zone and local energy requirements">i</span></sup>"""
-    })
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": """<div style='font-weight: 500;'>Enter the total building window area (ft²) in the input box below. &nbsp; <span style='color: #1a237e; font-size: 1.2em;'>↓</span></div>"""
+        "content": premium_intro
     })
 
-# Display chat history
+# Displays the chat history
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"], unsafe_allow_html=True)
 
-# Chat input box
-prompt = st.chat_input("Enter value:")
-# Input handling and validation loop
-if prompt:
-    # Show user's entered message
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    # Handle each input step (window_area -> shgc -> u_value -> city)
-    if st.session_state.current_input == 'window_area':
-        try:
-            area = float(prompt)
-            if area > 0:
-                st.session_state.building_data['window_area'] = area
-                st.session_state.current_input = 'shgc'
-                st.session_state.messages.append({
-                    "role": "assistant", 
-                    "content": "Enter the SHGC for the glass (0-1):"
-                })
-            else:
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": "The window area must be greater than 0. Try again:"
-                })
-        except ValueError:
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": "Please enter a number greater than zero for the window area:"
-            })
+# Initialize form visibility
+if 'show_form' not in st.session_state:
+    st.session_state.show_form = True
 
-    # Validate and process SHGC input
-    elif st.session_state.current_input == 'shgc':
-        try:
-            shgc = float(prompt)
-            if 0 <= shgc <= 1: # Check SHGC is within valid range (0-1)
-                st.session_state.building_data['shgc'] = shgc
-                st.session_state.current_input = 'u_value'
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": "Enter the U-value for the window:"
-                })
-            else:
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": "The Solar Heat Gain Coefficient must be between 0 and 1. Try again:"
-                })
+# Chat input box 
+# Three columns with the form in the first column (left side). The other two are empty.
+#cols = st.columns(3)
+col1, col2, col3 = st.columns([0.03, .5, 1]) 
+if st.session_state.show_form:
+    with col2:
+        with st.form("building_form"):
+            st.markdown("""
+            <style>
+                /* Remove number input spin buttons */
+                div[data-testid="stNumberInput"] button {
+                    display: none !important;
+                }
+                   
+                /* Remove 'Press enter to submit' text */
+                div[data-testid="InputInstructions"] {
+                    display: none !important;
+                }   
+            </style>
+            """, unsafe_allow_html=True)
+                    
+            st.markdown("""
+                    <h5 style='color: #1a237e;'>Building Details</h5>
+                """, unsafe_allow_html=True)
+            window_area = st.number_input("Window Area (ft²)", min_value=1, step=1, value=None, help="Total glazing area of the building envelope")
+            shgc = st.number_input("Solar Heat Gain Coefficient (0-1)", min_value=0.0, max_value=1.0, step=0.01, value=None, help="Fraction of solar radiation admitted")
+            u_value = st.number_input("U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the window")
+            city = st.text_input("City", value=None, help="Used to determine your climate zone and local energy requirements")
+            submit_button = st.form_submit_button("Submit")
 
-        except ValueError:
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": "Please enter a valid SHGC value:"
-            })
+        if submit_button:     
+            # st.session_state.building_data = {'window_area': window_area, 'shgc': shgc, 'u_value': u_value, 'city': city.strip()}
+            st.session_state.building_data['window_area'] = window_area
+            st.session_state.building_data['shgc'] = shgc
+            st.session_state.building_data['u_value'] = u_value
+            st.session_state.building_data['city'] = city
+        
 
-    elif st.session_state.current_input == 'u_value':
-        try:
-            u_value = float(prompt)
-            if  0 <= u_value <= 10:
-                st.session_state.building_data['u_value'] = u_value
-                st.session_state.current_input = 'city'
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": "Enter the name of your city:"
-                })
-            else:
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": "The U-value must be between 0 and 10. Try again:"
-                })
-        except ValueError:
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": "Please enter a valid U-value:"
-            })
-
-    elif st.session_state.current_input == 'city':
-        # City input stage
-        if prompt.strip():
-            st.info(f"Processing data for {prompt.strip()}")
-            # Prepare user input for graph processing
+            # Format the input for graph processing
             formatted_input = (
                 f"window area = {int(st.session_state.building_data['window_area'])} ft2 "
                 f"shgc = {st.session_state.building_data['shgc']} "
                 f"u-value = {st.session_state.building_data['u_value']} "
-                f"city = {prompt.strip()}"
+                f"city = {st.session_state.building_data['city']} "
             )
-            # Assistant message spinner
+
             with st.chat_message("assistant"):
+            # Process the input via the multi-agent graph stream.
                 with st.spinner("Calculating building performance..."):
-                    # Pass data to the graph for calculations
                     for state in graph.stream({
                         "messages": [("user", formatted_input)],
                         "next": "",
@@ -335,11 +390,11 @@ if prompt:
                         # Validate input
                         if 'input_validation' in state:
                             if "Valid input" in state['input_validation']['messages'][0].content:
-                                st.session_state.building_data['city'] = prompt.strip()
+                                st.session_state.building_data['city'] = city
                                 
                                 # Display building inputs in formatted box
                                 formatted_list = """
-                                <div style='background-color: #fafaff; padding: 1.1rem; border-radius: 8px; border-left: 2.5px solid #1a237e; margin: 1rem 0; width: 52%; max-width: 52%;'>
+                                <div style='background-color: #faffff; padding: 1.1rem; border-radius: 8px; border-left: 2.5px solid #1a237e; margin: 1rem 0; width: 52%; max-width: 52%;'>
                                     <div style='font-size: 1.1em; font-weight: 500; color: #1a237e; margin-bottom: 0.8rem;'>
                                         Your Proposed Building Inputs
                                     </div>
@@ -354,7 +409,7 @@ if prompt:
                                     f"{int(st.session_state.building_data['window_area']):,}",
                                     st.session_state.building_data['shgc'],
                                     st.session_state.building_data['u_value'],
-                                    prompt.strip()
+                                    st.session_state.building_data['city']
                                 )
 
                                 # Then modify how you append it to messages:
@@ -411,32 +466,31 @@ if prompt:
                                 st.session_state.messages.append({
                                     "role": "assistant", 
                                     "content": styled_html
-                                })
+                                }) 
+                                st.session_state.show_form = False # Hide form after recommendation
+                                
                                 st.rerun()
+                                
                             except Exception as e:
                                 st.error(f"Error formatting recommendation: {str(e)}")
+                # # Reset state data for the new analysis
+                # st.session_state.building_data = {
+                #     'window_area': None,
+                #     'shgc': None,
+                #     'u_value': None,
+                #     'city': None
+                # }
+                # st.session_state.current_input = 'window_area'
+                # st.session_state.messages.append({
+                #     "role": "assistant",
+                #     "content": "Enter your window area (ft²) for a new analysis:"
+                # })
 
-            # Reset state data for the new analysis
-            st.session_state.building_data = {
-                'window_area': None,
-                'shgc': None,
-                'u_value': None,
-                'city': None
-            }
-            st.session_state.current_input = 'window_area'
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": "Enter your window area (ft²) for a new analysis:"
-            })
-        else:
-            # Invalid city input
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": "Please enter a valid city name:"
-            })
-    st.rerun()
 
 # If the last_state with validated values is present, show button for generating final PDF report
+# =============================================================================
+# FINAL ELEMENT IN SCRIPT
+# =============================================================================
 if 'last_state' in st.session_state:  # Custom styling for report download button
     st.markdown("""
         <style>

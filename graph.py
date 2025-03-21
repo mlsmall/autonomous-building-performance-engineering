@@ -221,7 +221,7 @@ def calculation_node(state: AgentState) -> AgentState:
         shgc = state["ashrae_shgc"]
         u = state["ashrae_u_factor"]
 
-    # Format calculation query with appropriate values
+    # Format the calculation query and pass the values
     query = f"""
 heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, U={u}, To={state["ashrae_to"]}, radiation={state["radiation"]})
 energy = annual_cooling_energy(heat_gain, {state["ashrae_cdd"]})
@@ -239,7 +239,7 @@ cost = annual_cost(energy, {state["utility_rate"]})
         if '=' in line:
             key, value = line.split('=', 1)
             parsed_values[key.strip()] = float(value.strip())
-    print("CALCULATION PARSED VALUES", parsed_values, calculation_type)
+    # print("CALCULATION PARSED VALUES", parsed_values, calculation_type)
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
     return {
@@ -276,13 +276,13 @@ def recommendation_node(state: AgentState) -> AgentState:
     ashrae_shgc: {state['ashrae_shgc']}
     u_value: {state['u_value']}
     ashrae_u_factor: {state['ashrae_u_factor']}"""
-    print("RECOMMENDATION NODE MESSAGE:", message)
+    # print("RECOMMENDATION NODE MESSAGE:", message)
     # Get recommendations and format response based on the Recommendation class
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
-    print("AGENT RESPONSE BEFORE LLM:", agent_response)
+    # print("AGENT RESPONSE BEFORE LLM:", agent_response)
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
-    print("LLM RECOMMENDATION:", recommendation.model_dump_json())
+    # print("LLM RECOMMENDATION:", recommendation.model_dump_json())
     return {"messages": [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]}
 
 

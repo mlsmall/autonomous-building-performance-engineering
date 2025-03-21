@@ -23,10 +23,7 @@ def building_data(user_id: str, state: AgentState):
     # Create or update the document
     buildings.update_one(
         {"user_id": user_id},
-        {"$set": {
-            **state_data,
-            "timestamp": datetime.now()
-        }}
+        {"$set": {**state_data,"timestamp": datetime.now()}}
     )
 
     stored = buildings.find_one({"user_id": user_id})
@@ -40,7 +37,7 @@ def get_user_history(user_id: str):
         stored['_id'] = str(stored['_id'])
     return stored
 
-
+# Test the database
 if __name__ == "__main__":
     from schemas import AgentState
     
