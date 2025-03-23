@@ -1,1 +1,258 @@
-gAAAAABn3LxU0xFpFjc0RLHnAjQW3iIwFaOSO7RwZY22-vApeZSIypGu03sCOYVR12v2uKgG7KUt67gUohk-K4zc_b9m8nWobmTBvP7us6bmxf_43TuBK-9oMi2koFKdsJilCJr_giVJ_TuAgKL2_hWYdzRLE92GKqh7_eOanU6Sh41HRkdaSYFSI9nK-g4foCd4ocptC47mbSgDVqLBph7W0PmJ7s1QPAVPmAoF0FvL1U5SUkf5_1oF-fjvX4r9Qjn8oOUyxpFvYnFHwwqX7afStZwz0g-dlrMZn8vvmn2Q8nVY94VYwvQUpal6GoDTR8w0OOzUMlL9RvD_M-wlJwjyqgxLDLpuokcEneJb_4TjLgMnw-bo9LspFAeKT11GVnIM03TrnGUUnMkSGRFQlVb_WD3_TrDeuBo-Y2NMw61FwB7nvk582jtOVUPxyT832YgZKp7GeqYKNU02pSGcNJIYgt0G3-rhokpPFyy4Z6dtq2gGCkZVRqQ255EHmvsZf4VD0iJXiQtQSd1SXFhqdRKsSGlAQ6Z4v1mKJDivcutsLtfCoWy5rDTZoAVk2Q3e50umP62eBV_I82OWSTmdOPE44oPYsR1ZLNjND98vZNyC3EkSQ64TXjEPa_rFO28PLLI_md0Ym_-r0zU8FsqNngrehdNuCsY26WYvdxDC1CvUnYW2RQpBWzZS1J49i99HKGsNOdvFJo-U4jr_7tFnWShnvUimOwoS6Qrco81yUnzfbLjTMRZl_xS_Ful2KySQKnO54dlirXRvsLFcSImCcdl8w9gl-i5ceb6ycjChHEKa4Cl70OhaVwbZnc-qQOF2a-P24lg8MrUzBBwJ16xElsUB3Lm9Pxj2SWSKmjqzaV_l6Fe4zIYv_LMbh66zhgw_G2-3edGgY5WHsfF6Jj5mZ2TroEV-QK-o8tAWHviyrL4QIeGhV6rE-aXMiqrnnccYBxSqscgUVRV1OR_L-RX1uGHG27epzqy3CtCMNjIYXgJ2DYTEZDp7UihWlXCHSHVS_k5wUY6ITXmIyHppOHJHuPqOrufcED7G5oh3If1eIpSfASKnTMcHkcjA-Xae3w2PxnduwwtA2icAWeAJjQsmzNJlMlhhRa-eyzbTehxV0wFSuWcpNG7c0r6WvsoXLWMcVLhghUKxtf1I76M_xJ05djbWpyYA6e-rlznrmp7Vdy0piwG6yM7F3WGNlxBcat6k-pSTLcWjfFjlX81dxDe3VeEYmPSyI3Uj4fZFd08IMgPVKg-yj3ELEdYkvE8CIwAaCkOp4UsUnsYUqVEYEoxPwB47NRV9l7RIUI3uBJ_ova_Kli4sTBdzqbfQGSGKmvIkpv_l9C6jkPO2TnGmuW_t07OPnTxBxmKo9Ioeapq3wRI9I8Kqfvz-9R7Nf9elv7M0Lrj8sFYRqRFv5n9vXdrqvMjTn-mHwRs8Fn8oiVOIJhx0dpt6cLi3wg6ljarn1yWZuC9UN1TOnob2KUQUXAhwTtam4yim1hb8gXvFz5PK8Yx5qIkEykt_RuowY7Iko8KKh_IEKFSskJAiEUECPURuueWuuN4UwkjG19ez7cdL3lmv-eaTuYDLdwbFArSSXtJExNZlwK4ELbPG1L43oUm9XqC1wXi1e0B3nynqwvMWtJJwDvv35LGcAJMh7ngX51dU4Zb6MqjTWYTgx1dQS2Vpe8F8wVk30NanUnz_2_h0m09juOjm-TkEkTtB1C2dybV94cG-8H3D6rCS7szcS5hBur9zEDRstogapm3AxtIcTQA-mRyn2V_j1YocmicSK8wImbGzRYjyL0BBxakblpHchUoUiaipHJ6y1vg4tD4i0iVLRwJbJSMb5SSl3P8w4PbawwNzD8QnQ-YtYgDBtIXmJ40MVwd75i5y5A2eOGYuYlP572Oc-8QF6Jms60hKaoyl-CDt0WfCebFS6jAA0fvtWIQFG1jarY5WuhukYwq6ZKrV-TLczPPJkXzELJHmM1AZOMj-S9YLu0k71Nq3gymaM-3sPtfdWP9h5mNNB73w9YDrEqJu3tl4QFxdQ6uwD9yvzLW56rC_WZyjQ3NG0YBzsu3w7pP_blZ1dwCmMsCYiwbNh8321uxd0Wbehfq3PTmCTSE9aOrgwxbd0EnnMBdU1mcx65EqQwDMUiOV00z3mQkERDP_o9hcKC1CHesNHhqGyxC6hYvTbnjlsXYsfxabR-jB0ulAfF4BvAQnIs2Fv289LFmi72j29nWb8Zkl7D-I6EtPnyYfOUZOzlGVOKIWlhyo0yoBhAg90xfdoqSP7MmnwbVy28qMzKNR9yK_1XaYoRAyk8N28L8Cr4-YvQKxkPm1BwNHXhWB-pXq3DP98NpI2siwueKZPTXiIgYviD50IrbVsSitDHA2_N79ZQrjAYvcLR4TEZ-Z546BHYdEeksRn5pr1vdakdVEdI4sn4CSZvhOGYTCAMQw4AU9MY4V1YK6LjvzF598J0C9DXjKZfeg1v0NaPKAImDwhvQ9R0XUlwyF2obJDpiW8-TC7cVuK76mSf5P4kmg0yksyXo5m9UdqFsvB-6JXIry2lDOZKix0qKwf-xKSRUq3UHIIMbg8Rl7nMq5CyupLfNFgHpNclyvWnn9teZdsl1hCcL2xQHTlL11MwW7fbrvmuBexIPER5ZjkEQhqMIA5IDwohlI19Vfu0NWIYH0bvjxA6_zh7Y1Qty8y2xby3A1X464cX9Jy8ATfo6WNfqlYWOoLTCoreD92AEPTVVQqx2lUGVywajnDkruHU1tsFlyEViTF13H8YcayJVYUR96fGv1P6gugED62tvPL0ZUyYzije3ev6VsAj5dQFYLeL3edIEdYF_VLdj6fxOT5SbQKg2E-S-O-g-sWZ6it4RN4etp_IqK7TNq0dG4_WYn5Bq_nWUiYakwxhha71IsROWU6S4Ld-3pWaWuGevlS1wUdIONtvvlg3lEOV3zHFTwgRvI7UMo2gJ3gODn_X-u7nt-dRRpPNY_XUPnPuhpzU5--O0gkeMOi6tSTp-CGHg0ijVJJIx0TQaIn4Rm77Rgv9TYWKiyjcvWAHjtK32lGx8Q27Ft1OD-ZBgh2LNbamoDP-Af-RusE0BdxZjHbuSkWorNPB3qQHwNnzRrWnC6oqMFngd4mkt-I4w0aWgsKxPNZCruKRpxeIfwBOlMfjhcfoyLNjpGDut3efGPsMIwVuNywkmHqe3E8ND_41fVNors646zczgt3eQU0Ay5g6_7_UOoxieWxipnGK9k5PgtN6V4Sii1f40cbKLmBZB7SlTFLcEEBqwXzEC1umsECipHQbJd41_18eK6hsGzwz0bICb9Hu8QK5g63B_NN9bqcM3Q8Lws4O5QlwSzL_-bh26QWGYpiHVMrSStllfR2X0TeSuEXRVHOrrlxgNfW_1OaY5Ai8MKUfRPX95zOtjeLruaeB_uFOEOmGxTOYE-scbSsZ19wEEgbdKU-IWcMjHTrU1uIpZ37IZaNeXPi0zRMRJiH35Ghm2-l9VR0Wyjn-aarkxygS1JHltINmJvtN63ex6wgevjM0FgOHgBWZr5cQaOQtYbP23fPeXUiD9dB-slyhOSnYbg_1-RHVamQDwIaTR0gFX2bJ7tzTJby65kI9vnuuYlceY_MS5ug9c5cgHORuyc9hVqtKopMdroTz36G2FexDWF3_ijEoUTkNddehxw-MkbB8JrGAYYRdqmww98yQ2qSyQuDdN6Bk4ZwsPWCYSCcMGCxOBg_1HmiBNgChBZvdEJDF9UhUoPXQObFLgzjBPcYAvIIWjXTP3vWE5O15eTBS-9WjzcMwXzzpOSBgsLtDSbg0oQ_8H8cmzCDR46Dezb8EGpK6Mv9i5ddipOV7DL6Cqv29jeUIz0LKqJdwKewrL01DTbxRG2vGKcom5O8KNx2z3kj4lSThXCRyTSedHOnDdk42KMO4LbV4i92H0gmdIcZP_SVLIL8GfJzQEdKPw8wBonDrZrjryYfOG8KDCiJ2RWNvTaLb458UUVRI0Kg2hBc9UGpzEnX6iG41OM0-kqOjJiMd6jSeV2-Oszt3_ugY1DVoF8DA9nSjKM7x2_7pKireB4zCdXZOJQ0P1aWe3OC5ZJ4hybJEClUfxc69Z_P7IVfcGZezLM9uySNcHMgp8XO1rOwrb7O9QDQN1m79Zi_khhswG77-aLXwTlbEFq_Tr6ZvO-xyZrwLF6Y2C2QQflm4Co3yAzwXWMnt7sACgO1WXU25xbL2uujndy40HDYiCDn7-k2yY6v5IrtJNd_QRKM2wBbyj7KgAtiV3Qr6IyhRNuvWLwBC7FobSoUjgSMSdRInMIRib47QBE8fzFY-uoCt-nUcwoOAk4HrX65D558kkKuwVenTHgqhZcC-qMP6c2z4-aEGE3aioWpj_BFnD6uD9zT7ZhM-r1EoTghTN7TZFryG-XOGD-MJhBGZ6Nicipm0I_0W5rNJh80_DYl9eulBF3S2hEeg8S-hOOpQFwL2zWd2Na5KUDdOXxyK2ST_uLkbQRcRvYnY_Iu6Ur5hPn1YDaSaVYoNdOYhH1NcRB5GX-LhRDGXPNtAz8qMsW3fOnp6bwD_Fs25q-kOdhnOO_7YYA6s_WIXxvoll-vLFOiu0EHPrHVLceGTaoKVkmxtV_fAWHeTX7wXgnTY5cblYHQtk3PS18NpExJEmh03AYyT3sA0lCSHQCeghmSIslVIXflA_4XJJyP_zWP7jc0vvnEBV0yyprp2WFbiVA-7qM4viRjDfUmSOnEnNuTREx6-1pn13xk5_rrjihgbMmnR9Clivs4XsJMQM4bM0mZzDlji39Jy-rtzwhLQqvdkvYMJ_XJimgEytoUUPiv0d5BAG8lfj5Iv230w0ePvNWTE6awTV0tTbcTc4yPZ3Pe_Y-vIBPKKicHnNi1uK6uhPtPSXRvutmiSDVHTdMFmxfPRVJhX1ra8EzX7PxXs5vwBdnBPlAkm8_PMAiycnWHPOGVdgs4-7t7eUmzOhNScfj_K6mU9Bngs85szC7P1pWwVqO9QNQdC4jBZcRwi4-l-kc3ajaaKFQa2zUxi_J5wYPWEO7mwruKVQEHVuo8jY4ySKEPv77b9r9ogVH2Wi1_rszT4-rdHHWAM62iw1A6OnoOytIPAYARgQC1z7eMPidIJ8Lp_GZcVxoJZo3WRXApI_hcfzHPT08s9SqXmXlf2MmfNTLULhI4It3ZKITIYja4uxVwX1Js6Pfu_S4Rh2A9WvBR3pOd6X1TGHfmsfJFhLCsknCfeQqIPrI2oefVqKb6kXnYvGwy7XennGn1EZLZYS7PuyVZW5lhcDlGwbvefI1zJxHUBH7uv9MPHycpKMcUiM09pKxbwY1OPAIwkPJXnXu2vVAc-Xne4o8jHfn15fjLFNG5wgMrJZU50yN-YvPoKHzdcQ9yBI7GYxx4wT3c2xzn0ggEajlQEjf0fbWXyiWw0lGINl6CLmdjiYZGKqHFireJuPZlJGcgAhT7ycVD2KYruoj3YTgOxx8tgcbaY0YgJIoWjs6wqiBwPwXAwlTcsM5hsWc7pIP_R7vBjan0tQ9NKVgJCo-3LaDj4SU6BgUk6H6Un9UDBj4eHJvInTOUmCowZM2wLG-KLp-RKyPvTc2lozbCpPCxDFn_xPhqDY6SUKhtmiDElNIU0L9q4ZXKIwx7Cye6QfUeeq_TXWObxOdBCK92h2cNkaOBh4t2iF88TuirR2gFYI5NMmXeB8kYtVIvEbjidyFXvHulzNQSWQHzHMvIbMgZuEOfNi1w2aLR1r12BpIcqMIlwmuGnNH2onXB2YFem3owYYOH0cZw8f1qpK-TGwXeaROd956h68vsX5oNfp0YlJqj6lt9FGKNUA4u9uQv3hl3B78GD-6CpDeZkt3p0EAHteOn2kDMw-90CbS_1SbyuqY08xKd-pRTlVtULBxk6sSeuAjOJkFfPA3_ze_l-lMk9vnjuHJAn3E8FCQvWF-m8tIOm8LEeYRdPBgicPkzUlUti9iWN_kuLNc0tibPSjaAUDuiygfdR1h3klipNo9BtbBz5kpdHm0uCQdydoTbGUV2YHC_UY6b_Req4gRe76NKiFJocfrQiFyNYjzUUl4hywGRP5HBKZN-jQMT_SRHimHfoEfUDw6Z_qBX52dGW-NVV-mHHBK9RC5VhAvg1jJJjm0FcqxY31GQBFVzQbItMPB_YRUn9MxmOJYC4UKf65rD2PyG_R8qXvCRhqbgtQ5QMkDW_x8a2aOe710PZzpK5uah1ieviMB5KotwFT5iYSc0nYhxeubznBJl_K6biQOWT1u2Rp58yGWZo2W0F9LWtAH89Cj8C8Tpwdl8n0_OGDO1jmXRMC_ZV0sDNbFLuCf4-JUBmICX4QgQUxXEC8Xq2xbMyREjEMQtVRv4O_KCRnznlrUxAhTPk-qjmjoAIfBq-W2LcRBbQSA1V5JeUOoKmyA9mYKfjsNwAI9HKE997NtWs_3R1iTRY8TtYA_DEJaG0_N12tT1t61NMPYgE8AqG8_LYA7CUNJVRdZMnsBQXeelVeB6cLIS0hNbLKCoe_Xr-UnyeONq5LdVZD_J1ukh3YnrqVtN-UPOIf0GeSC7Rpnf1VOudLY0Hw03AB0cA_41e1iHuQ8Z9cd96yoM3jLiIGwsLOnybZJFPcoEV7iaBEPSmRqUH3pdxRspKNEpTKCZtTnv7xbm3S-Wtxsrk2ibBWS3Myag6NxhnfZ-j_ydeKuhbqaxb-iu_hvtqNSACVNQwfLZbMGfjSlgl2rg5enhG_CIQ3zbX8X6m8lEhyLvF2INJpiKok6gfGXv1fOT4_0cM-4fXIiCvtJd3uLL0X0K0ych8e4OmZdQKJyP_8nKK-5QoasL2fdQ_cJ3LnPxYNPX1ug7BJMbmxVvFQyiEMi308zl4Fzu-mrPQcnwayPc_xRnUdHGJcph6LzpHIhNbYfxsXWjqi2sc7NQwTr_ii-uStE_m1X7wX4WZJghYkqu6lHKWVi1XgvpWlMjfb_MjatYRdG6Z2mKXo-uFz5URyCPqWq4kKzzreswcqX4DVeJcS0jROprX7p7WvTz4FFpqgN0E5BvauwCDul1IgmZlu2UWY5QWW2Pywb0XChWMvPwGT6Ic68q9vqXg38bVKdgJ5V9cX0yc8k9wB-I8WMpb1nmee48GcYj_qyMmicvxgGy7IG7xB5xkpJo43UWIjWlWQg5_qKO1O7dr3C3LF1p1Yy1inGHRQdJk3BvXwoHOUU_zESi1z3jzOMCCGHSzrmFQ6Sg8BXSrnyK7qoMdpXNyfCC7qI6D7iP3H1XaQrlElmBIZroCA7KvfSFNwVAPa-tjRRPGiKZf_rAUgZQeyYG1SSdQod6HJSxoh4e74N8cBTymomH5ZopNmiEG-wzcdE_XyJza691_QZs95DsgmkTlwt-ZhwC2JKbGjqXPcOyqzlCfqw76nv-ldJD5Fhk9al4VwFY4I5LuQ0sPpvsukFe0TbzM9vtdYFrhhnjnycod4APnxunRQ-aD1e0fqZgOibRTyOKhlU_0XPw-tbTcBh2E4Nc5WNkMthKi0LIp4ZvxT9jMUC1H4uN8b8vCeg0LJkITWGJWH5ckc1h0hUHeYypArH3dDyRdcEAWdLQQCjSdjFBHUthNGB0gRvdZ1Udlrj8dbfhel7GpbqhGQDMMPfGB_aBo5cFj81D7YhhICaIhmWyah2zHVvZ3D0foMR_EH0sQfvvup7KrEtJsyik1qxofq4c8G9kd3OtdbEWQJBmqOoNZihg1zkFv9bKZ3GiXJW6TQ76ddCoCf5augB7EPHaZM2sE0qC_WsLdQU5Zl-sWSF81VORaLm3pBXoPYEf8NJDItLcCawComs_LGa47I1nydcVGwzDMMggGGG1C4vt9obi61tr539NLW1Z4EEVAhUkPbs7ue49AIaVsgCC-AopNnBkhonKQESkYDUUWAcwHh-UoQNvUz3571PJOt5gEayBtdt0eOAxE-_dWV4IMBzKV3EPAvp5hM1XR2EtF8Gw6LOZR3aP6CULzNza9XUSjxHVEV_vtLnUyWscNGZ1lSUcPJt-k-w_8tpClz2HvcoQ0RTouXuzHQYBnQ3sCf3OlWcJsIv2YsFUcwc1MIERiptMQ0SmG1KhuBZAHLsKkcOk8tpmAk4ZNn35ZzFGWWjMvXf8h8VbH3SznNHXr5exYVMnWhaihKfrP9tjwyMb60KKdI0NOvzoRXkZwKpqYrARI-Yej0Yf6VN1CyeMHj7WnGwsek_c8lzLtS1lnKAOR3tRiiUT2PRGnQr91qdNdEsOgn7E7-1kluzQ3afCx23q8p6a5PBouW5qJhLemCNjLmlgaYtpXby0JUA2T0XdgQe0aOWslLuSqIL907AjExe2KjoKID7Giq0Lv1GJjDwZ5sHz12qDasuGfC6nyLeYYX7la6ROSOZNJPshGrsrEzzOJ4aVB0bG7L2NMkZQrYnuoWWNIISFRF2BjUXtKl6DklUAyJdp4abcACgW0RZzzLlR1HbpwzHzUYAlgcleitrtjMqdCT0UVhEgwuGL3vq_YhvphxOPrjq08B_CFG1SbymkgIjLH4aq98eTLSnz7zAhCDMsOnpPEzzl0EsxsemEw2zQMoIWwj5ZCR_8x2kfABXEdLS5k2RjjuammFH4qx0KxsU-NbhMuAYZuKVYgg-tZnBUbofpqGP2q5yIY4ZLqJEdyJHvh9YZUryMAcQrcpgF1YxbBh4ntIjCZHVjp4Ap3Wpnnmoe4SclaJoV1iY9ptga6frA5wyRhG2E-E795qdyRUM-4FgAvcAvPgCAz7gJz939_hzUKHD_5-3lT2BnGvLKZEkh8XLDgzvXaWdIZckoa0hffqTpfy0qw7R0ns_3DxKa4NTr-rgm6vQORtSndH-Se0bZJ-WQfennLZvAVF-JQlRGA-SfwhQIL7XoNVtWmJuTufInk0t0xErmrraQixp5YmUET3UVNjnN0jutcpbfJ0g1DbXria3WYgGAZc1nHiCfV85IZcVhxET24pmzHp6e05nRXOrGx_ALGCI9muRquaKydBsdD_UOXT_hNmBJ8n5j07dUFt27sDd9wXimcVS4e1QjND1Idqb9d5G9o_eCi6mSbAAw1bnfg7dweYKw_00SrVF-O5gdowRR9oHKS36uDzhav-3FJGdkH9GZxJlF8Bb6eV3hB-iwTollO4sbzuTrwpMboY7gd0rwuzna5LX0QJztl0oFrfuyDOjc1ZnVgnS7njYeF9ajiCp04qaNwNVB39E3KtQHq9gJnMCKO9XJDxtSV0KhnCSP7ydZDsSVe7fvsFPXWtqUhRfIrp6KlmXCgfSjvIeXbw5xO0SIfLkc1PDZ2XYpsGupepljNXke1EpbGRjp9W1_xRb2in5_poSbLLCFlJuwPqvqhXovDBPB6tgqWxpUu2t29xSIywKipD3LCKKBml3bzlvvpPSGPRjbCPA1bHm37eSb0l5ONgRP6DYIc_SC7Tk2Sc0iH5Hk6D1pXRaEk7NHdTh02_mMIGAFl1sh19gpWeCSnUmrYYm1ftHD3klF9g0JjTKhnf7AHbTnZxVsX-5I4xfHJg1ThLAv3AIV2K19GfLxghh0Xm_Z5xUbPKjfoSS0pzzzTysDiSENqWpFQpZiahdR13t2IJcbrNv0XTHpad5YwCJSNo8ysB6KTCWWONdomk3ZiAb7hmikOhy_N3pSuvUAutU-9_GpyP_rGTElR7quT4xaxJwhaEAu5Wsn49U5XxbBJki8tY3OCaHAbQzDzVO-62Rz4EO6M78LS5fadpHfCCrXlm-ZTXJS1nC62tqYDs3XB9DQTpIWc_1yp9h2NOwhn_LtjUawZzuw7VxOSGgEMGD-Zk96I3VVFGk8dErWvQm12MqP-RwnEF9RcISdv0KlfLJ-5sYx96IBqbSxW83qSgYxu6GMyc4FjhgE1UMX40CXoph1FeABbDKsN9UpOfOfme5tgL6t37_jh4kNGBD6yVNIZ8yatcjTkgfrUKTekfaUiuF6JldPKNeqZrus_UzETlrNJXCEWQdJq_4_4LGT8KmF99s6nlO3NNQVpVnj7zVjIHjlVyvO84zAYdsQtjqcc-FNxoQ1oldcZxztyVwE3o8aRTsfe70DGFCa1DmO-D1w_QIcctrqTplrp8S67QmGck3CXK_4IVVgkbwbYApmecpc2fORhQsfapwHjvYTHFzKfVB1ZQFYxoQXGgONXr07_hZl0TOua87XakMcJx30FSpLSMnvr723hr4szYHK34hKM3uEZCDSr5WFTw5UgAFhSviQ8wfWWP24wHg3bXRXIpis97SHTGvVeOgjp-iqMt8Pg3KjMrPsVGtiJ6e9PlD23R0pH1f0o8Lotihx-_FndKzW_3nEG7Ev7pix9mYXMAuwtawiorrpcLMRg8oLzoxHLHqqJTsIuERfaC46BVSUp-DkIUK7NpFLjy1QwGE5OSECdNsvyJZESXiiudJJ5PRcIcGnAhth0hZYSsfmVSfg3HQCFNMEM1FeyYsaNsAMdcU6olRluDfSa6m_E1_Ox8HnonEhrLezRrAwPzU0Q5k17UgMJ8XiJTIiigj7j6moARoP5XorM6-6RXLsc6BriMt407RGKDM69S9dL1qDX58w5Xc7uPw4LzqVCAm__KfG9R6ntTcTnCsZdC4ZNyBIvXd54gDyCbLxxI3uVo0aEal86gD1G1akepQ0mAx1aWGnOK_zDHj7W0zrmTofmsdXa5sB11yH15uN545AFVjg_CcQjfu-b1F1u70dMtCA4Zk0COpXy5iJD4Y7yAI-MJ3ATNMD0piO5F5J0L2jy2cxKEL72s3WogrUTD_sa7_XNSKpTUhgggs0N6JaAF5ZRTQpD0X4LlqUUzpaEoIHiauHttv72bmfiNo5TYuFJAbNe-poKgpqxQGWbB9OgsJ3j0Sa_XQ39ZEYPuken16l-9UpiNLkmDhkJZuP6WrHKR2C3Lq1nXmggH3-cLpYuuK9BckQrSeU81N1o_nUV8zhvPzThseFPWwIUPvSLKcwZoRTAtzimo-PiiNzeopDmhmwhyKYIdfDr96krwiu9h386tCmtfDnKuej8pPVR1cFwNvtZBWgLJC4MKACXX4GJkdbyHde1oSHR1RWTefim28twrl2JEw5B6w_acWXnwEHanGGKLEEfb44idYgl2JaIxW0FZxPnxvLnWtd7BGU37CEUVI2hT3fqcLNy1OHyBbToeF0wzi4EsRUmAs9aU2taLLx7aUFzgfIKTT3odEKqNdNEXvQAaf9-NYfNpgqxDTbmDNoyN-YsBTLIBSOFF2uCF3RdZgdaVmc5FLnlY3qNDB7gPYf3RzxhM_r8pj-EA8_jcmiUhDU5iMEI0Jrk1xj1XqPCpazjcHJBoChymtD8IZpb-FLZ5tQh4ktxWNAgGrVSngfXZwkC1kGXgvbkzELTal9-uOYhFXr4iq3-ALunxsqPTYGVvFcQH2VVOx8M97m6vS1NgScvRbIvSj7UZRHtfpeYguL9UaZblx83ScXX226JXob15zCkPG68qZi6oEnCStOTW7b-QFm_8VgwcbaGiH7navwwiIaCvoDXu0mr1cM1nSA79ANUgCQWrLIl3OKyK8Klr1OXJ5BVqKBKc2FdaY0RJEW1DL7r2IxGQdD7hrtG_8ee24MPNKDcOMC-G0qu8mAYYVel1QEHg2AWG6sbFzS852NSuu2ytcbKMXswIHQYMOS8Bi76IMEwh9KUMjIDn7xd-WB-D_yqvfQIR_wJgf4yXhYF7QPStJcMnZ8S4msMzi1lZL929YXZRynOEIcGaPP-pBWrdchcJ0Pr9UhZfwgjspvjeMzTaAojKt_w-x2sACU2nsEjQBvd6weND0zRQsMcUFUD-xCMxx0nSX49ttBE_KfS9z88i3fZkEXE6TNAHepp5KL9qZ1Zpf0uZSDykLD40m_hJfIL2wmt1-HmZSi-4hHe8PFC1nDQ40khprs2EX4tGDdkGwAgykCMWbsplLwMCoXQQtLai66gra_tIRGVI4erDFU_uFUJp1HS_BWzSrvBZWqX1aXrVnDO0daGy-Fwi2aHs8Bo3Ip3jE3-wVn63FodPvz3yqpeOoarUbcGBYrUfvbMvLiEmIb_KWYvKkOMsqP_HEQQ-cMIf99yDmkRcnTsCS5DUXP9CS2zT8BABYwpSZxZjNQ0j2hnUPMS8Ahz7fikI_wMgdosmB5S0ojMIIXHez3awtfCySbf99wsckVpXwU9cYh7BL04zUZrcPFhqh7kOfHNVfstvwf6mDs72o6MWuVtaqZlJ4Gi3xGwRHrfvFmLzTm-4B60Zb364k4DW-0_Tw08SFdro5Zs-msbmBq1Z9GMigM7u5wMkBKPThT26yZ8Ygj329T866e7LTVvZsGD36AchkE-2L12T3yrw1DYdiwMwlIYzmMYJwkU2BXJBjkARs147iI9L_OgNWYvx2l-2GmnkHa-KGHatkpysO-5pQJcyB5KwKyslyuu69ChK4bYVpFCpFkflesDXYUrQ8Ta7FDiK6SDO8Ikuc0tTYcCBh0WNGQs_P3xq3asij_4w0Epp_Gj8f22SrG6XTRAQ6bhA_KFJApy-KjUl69Tc9Z-TVFy6JUVzHJg1Wl38uVF1eq_WolEUDMM7SKfA9QJ5s1AUrh01WfhVzAgIkgpc4X8bg-zgg_ltaDp8w1rbOTWnWLO8MN4Nf-5tHdlDXivp5GO0loRjvtv_lyIhwMTNBaLxlOBMNh26oIpUiRLyEXzqKv-Zw2DdbxBe5QNmeePUb-wbCN9UmJhZLQZw8LUQcDmTiF0wUs8-zFKzZzTiDUus3aVa7E2qBIGC6ongvoNjtbHSqfttNd1x1H4AE0pA6qjzOYrMoEbZK2Upp_f9Mnsh5TN75_3H3lTmibdVr4UBqo4vaR_apkvyssPqe2OT9KVs6G_-wEaPNBxNlyipAbe3FIWqwL75_bpaSrmtEEXssPUusAmB1Px7meesHfQPDadC6aWS3PMk9TgeMii5Pe0YfuqUHz9KmU_imjygeXZIqz7EJUeliqZn7BxBbbcAp5SeGszmDgZ5I13O6u1TKmlk2FbDhbg5A5OTqJIRVLMIX15LPuaxBqSgyKDl4RSWq0LGr3DyZ2f49YdR7FdVfQby3hxDIayVW8IuS06wgMJtZK4Ha4xE-tgtxspKvANToLEDycJ7Yu-SsKvsJxXRiM8f6F1k2lM_6leA49HAD_jKaO9BQk1s6tjGRGFRii6DeDeJuLMHJNMJcPHsdHjCGLbELPWQsS6QSytsxIFsroPvyQNL_X5g_7l7ligoz5fF7ckkpJNVKCfq4p_Ff3hjeO-iR-CsAV0Gr2H7omAxEfFj4VqpwidwgHrMT_VjJiEKBtdtk81ls3sUCm61NgapIsfJURxtg_S5Hd0EbOnOXMG0PgH9Zhc6lerXvA136__wImd6fbORw-MPEVCA0YdlP088onsTpEsViiOmiA0dHDiRSEsfZYHObeNOyln4NPX2duhLC8RnoxCIVGN46aEHrfuRkuNVJF0kMZOxDYOy5x8s3QbnzK53HlW9oFwzwmCyou2JwPeSUBdKcAF_n8ftCS-uUESe5LIw1UqJCd6nHnb3HHusOoT2FrTWc7m73c-vxB_AYYuXix19TpQ-QQ0LhZY_vg5_rY1T61nKBeGssCpIzHW_idQJzPvnCrwevZ9T83KPQ41iQVHlxp_Zlw5F3KUUMnHnjz2ESt2LZYaoLZA01F16mdTCFQ53eZFD-3UXyJ-rYhqWrmmySAevl929qcNDNgv_PRfxcDPdLESjw8HzIMKHmgc0w4L55UDlvdZNPuZiRg7eFK6vPhi623kJQFh8b-Stshl6H6J_xqzfEC4o1w7_CQyuh6qtIJoT19qtXWWh_wQA2ze2dTbW9eqBVlTYxbsSFpX-XDlUU17RGrDp0jN9GVz1QzktH4fOQz01v_wJnxjcSa3b8u4G9YUvHI_zamd_8U05VkCCQ1_GbqJTralok7Nsi40vV9DRM9mdJBdDJEmqKCm_vUmLfHKaR7duBNZP3Q7qgx6g0SpZ4-9M5LGqAMfKNK1zKow6CMXvOTraMQm1vOx_m84V4Z-91shc4TEzC54kyweTFpY9N5rGXGNRFcusce9g4T5aQkrUX2-tVWLggnSIvlMi-KRM9QBCvmXLfg-Gz4PK2Vm2tKpJzZ6yAZR0b0ChlD19CiA==
+import json
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import matplotlib
+from typing import Annotated
+from langchain_core.tools import tool
+import matplotlib
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_experimental.utilities import PythonREPL
+
+from schemas import BuildingInput
+from models import llm_gemini, llm_gpt, llm_mistral
+from core_engine.ashrae_data import ASHRAE_VALUES
+from corrective_rag import retrieve, generate
+from radiation_rag import rad_generate, rad_retrieve
+
+llm = llm_gpt
+
+# Create a tool to call the LLM model
+@tool
+def llm_tool(query: Annotated[str, "The query to search for."]):
+    """ A tool to call an LLM model to search for a query"""
+    try:
+        result = llm.invoke(query)
+    except BaseException as e:
+        return f"Failed to execute. Error: {e}"
+    return result.content
+
+
+repl = PythonREPL()
+@tool
+def python_repl_tool(code: Annotated[str, "The code to execute user instructions such as perform calculations or create charts"]):
+    """Use this tool to execute Python code and do math. If you want to see the output of a value,
+    you should print it out with 'print(...)'. This is visible to the user.""
+    If you need to save a plot, you should save it to the ./ folder. Assume default values for charts and plots.
+    If the user has not indicated a preference, make an assumption and create the plot. Do no use a sandboxed environment.
+    Write the files to the ./ folder residing in the current folder.
+    
+    Clean the data provided before plotting a chart. If arrays are of unequal length, substitute missing data points with 0
+    or the average of the array.
+    
+    Example:
+    Do not save the plot to (sandbox:/plot.png) but to (./plot.png)
+
+    Example:
+    ``` 
+    from matplotlib import pyplot as plt
+    plt.savefig("./data/foo.png")
+    ```
+    """
+    try:
+        matplotlib.use('agg')
+        result = repl.run(code) # The code is generated by the llm
+    except BaseException as e:
+        return f"Failed to execute. Error: {repr(e)}"
+    
+    result_str = f"Succesfully executed :\n```python\n{code}\nStdout: {result}"
+    return result_str
+
+tavily_tool = TavilySearchResults(max_results=3, search_depth="advanced")
+
+# Input Validation Tool
+@tool
+def input_validation_tool(query: Annotated[str, "Check if all required inputs are present and valid"]):
+    """Validates if SHGC, window area, U-value, and city are provided and valid"""
+    try:
+        result = llm.invoke(
+            f"""Extract and validate these values from the input:
+            Input: {query}
+            
+            Check that they match these rules: {BuildingInput.model_json_schema()}
+            """
+        )
+        return result.content
+    
+    except Exception as e:
+        return f"Error in validation: {str(e)}"
+    
+@tool
+def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):
+    """No matter what city is input. Returns ASHRAE values for Montreal."""
+    data = ASHRAE_VALUES["Montreal"]
+    return f"To={data['To']}\nCDD={data['CDD10']}\nClimate Zone={data['zone']}\nU-value={data['u_factor']}\nSHGC={data['shgc']}"
+
+# def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
+#     """Uses RAG to find ASHRAE information from validated input"""
+#     try:
+#         print("CITY:", city)
+#         # Use the existing retrieve and generate functions directly
+#         # 1. Temperature and CDD lookup
+#         climate_query = (
+#         f"What is the cooling design temperature (To) and cooling degree days (CDD10) \
+#         in {city} according to ASHRAE Table D Climate Design Data? \
+#         Please provide only the numeric values in the format: \
+#         To = [value] \
+#         CDD10 = [value]"
+#         )
+
+#         state = {"question": climate_query}
+#         climate_result = generate(retrieve(state))
+#         to_value = climate_result['generation'].split('To =')[1].split('\n')[0].strip()
+#         cdd_value = climate_result['generation'].split('CDD10 =')[1].strip()
+#         print("To:", to_value)
+#         print("CDD:", cdd_value)
+
+#         # 2. Climate Zone lookup
+#         climate_zone_query = (
+#         f"In Table B1 International Climate Zone Definitions, what is the climate zone number for {city}? \
+#         Please provide only the numeric climate zone value without any additional text."
+#         )
+#         state = {"question": climate_zone_query}
+#         zone_result = generate(retrieve(state))
+#         # Extract just the number from something like "Montreal Dorval International A is climate zone 6"
+#         zone_number = zone_result['generation'].split("zone")[-1].strip().rstrip('.')
+#         print("ZONE RESULT:", zone_number)
+
+#         # 3. ufactor_query lookup
+#         ufactor_query = (
+#         f"What is the U-factor for Vertical Fenestration 0%–40% of Wall for Nonmetal framing \
+#         in climate zone {zone_number} according to Building Envelope Requirements? \
+#         Please provide only the numeric U-factor value without any additional text."
+#         )
+#         state = {"question": ufactor_query}
+#         ufactor_result = generate(retrieve(state))
+#         u_value = ufactor_result['generation'].split("U-")[-1].split('.')[0].strip()
+#         print("U-FACTOR:", u_value)
+
+#         # 4. SHGC_query lookup
+#         shgc_query = (
+#         f"What is the SHGC for Vertical Fenestration 0%–40% of Wall (for all frame types) \
+#         in climate zone {zone_number} according to Building Envelope Requirements? \
+#         Please provide only the numeric SHGC value without any additional text."
+#         )
+#         state = {"question": shgc_query}
+#         shgc_result = generate(retrieve(state))
+#         shgc_value = shgc_result['generation']
+#         print("SHGC:", shgc_value)
+
+#         return f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_number}\nU-value={u_value}\nSHGC={shgc_value}"
+
+#     except Exception as e:
+#         return f"Error in ASHRAE lookup: {str(e)}"
+
+@tool
+def radiation_tool(city: Annotated[str, "Look up specific solar radiation data"]):
+    """Uses RAG to find solar radiation values from a given city"""
+    try:
+        query = (
+        f"What is the solar radiation for {city}? \
+        Please provide only the numeric value without any additional text."
+        ) 
+        documents = rad_retrieve(query)
+        result = rad_generate(query, documents)
+        
+        return result
+
+    except Exception as e:
+        return f"Error in solar radiation lookup: {str(e)}"
+
+@tool
+def calculation_tool(query: Annotated[str, "Execute building energy calculations using provided values"]):
+    """Performs building energy calculations"""
+    try:
+        calc_code = f"""
+# Building Energy Calculation Formulas
+def window_heat_gain(area, SHGC, U, To, radiation):
+    TD = (To*1.8 + 32) - 70 # Converting To from Celsius to Fahrenheit
+    # radiation is given in KWh/m^2/day, convert to W/m^2, then everything to BTU/hr
+    Q_solar = area * SHGC * radiation * 41.67 * 0.003412
+    # U is in W/(m^2 * Kelvin) in Ashrae table. Convert to BTU/(hr * ft^2 * Fahrenheit)
+    Q_conduction = U * 0.1761 * area * TD
+    return Q_solar + Q_conduction
+
+def annual_cooling_energy(Q, CDD):
+    # Convert peak load to annual energy use
+    annual_energy = Q * CDD * 24 * (1/12000) * 0.85
+    return annual_energy
+
+def annual_cost(annual_energy, rate):
+    cost = annual_energy * rate
+    return cost
+
+{query}
+
+print(f"heat_gain={{heat_gain}}")
+print(f"annual_energy={{energy}}")
+print(f"annual_cost={{cost}}")
+"""
+        result = python_repl_tool.invoke(calc_code)
+        return result
+    
+    except Exception as e:
+        return f"Error in calculations: {str(e)}"
+    
+# @tool
+# def recommendation_tool(query: Annotated[str, "Compare building performance and provide recommendations"]):
+#     """Analyzes performance differences between proposed and baseline values"""
+#     try:
+#         return f"""
+#         Based on the analysis of:
+
+#         Proposed vs Baseline:
+#         Heat Gain: {query["proposed_heat_gain"]} vs {query["baseline_heat_gain"]} BTU/hr
+#         Annual Energy: {query["proposed_cooling_energy"]} vs {query["baseline_cooling_energy"]} kWh/year
+#         Annual Cost: ${query["proposed_cost"]} vs {query["baseline_cost"]}
+
+#         ASHRAE Requirements:
+#         SHGC: {query["shgc"]} vs required {query["ashrae_shgc"]}
+#         U-Factor: {query["u_value"]} vs required {query["ashrae_u_factor"]}
+
+#         Calculate percentage differences between proposed and baseline values.
+#         Analyze ASHRAE compliance and provide specific recommendations for improvement.
+#         """
+    
+#     except Exception as e:
+#         return f"Error formatting data: {str(e)}"
+
+
+
+@tool
+def recommendation_tool(query: Annotated[str, "Compare building performance and provide recommendations"]):
+    """Analyzes performance differences between proposed and baseline values."""
+    
+    try:
+        lines = query.strip().split('\n')
+        data = {}
+        for line in lines:
+            key, value = line.strip().split(': ')
+            data[key] = float(value)
+        
+        # heat_gain_diff = data['baseline_heat_gain'] - data['proposed_heat_gain']
+        # energy_diff = data['baseline_cooling_energy'] - data['proposed_cooling_energy']
+        # cost_diff = data['baseline_cost'] - data['proposed_cost']
+        # performance_delta = ((data['baseline_cost'] - data['proposed_cost']) / data['baseline_cost']) * 100
+
+        # Calculate differences as (Proposed - Baseline)
+        heat_gain_diff = data['proposed_heat_gain'] - data['baseline_heat_gain']
+        energy_diff = data['proposed_cooling_energy'] - data['baseline_cooling_energy']
+        cost_diff = data['proposed_cost'] - data['baseline_cost']
+        performance_delta = ((data['proposed_cost'] - data['baseline_cost']) / data['baseline_cost']) * 100
+
+        print("Recommendation tool results")
+        print(f"Heat Gain difference: {heat_gain_diff} BTU/hr")
+        print(f"Annual Energy difference: {energy_diff} kWh/year")
+        print(f"Annual Cost difference: ${cost_diff}")
+        print(f"Performance delta: {performance_delta}%")
+
+        return json.dumps({
+            "heat_gain_diff": heat_gain_diff,
+            "energy_diff": energy_diff,
+            "cost_diff": cost_diff,
+            "performance_delta": performance_delta
+        })
+    
+    except Exception as e:
+        return f"Error in recommendations: {str(e)}"

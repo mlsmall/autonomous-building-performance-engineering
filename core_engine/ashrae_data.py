@@ -1,1 +1,9 @@
-gAAAAABn3LxUXJS9O8KNCPyeMbDYyxZvC7Z629QUXwpSsqA0IBYbVuZGT7KH44y_peSm4tKY6s4rcYg8HgHHbtddgiNdRwnEcgyYr4w934TWmaj1jHfGnZlnULz3pUVsphsv50EUEOXXkkPa1uhKVHX26jmQEkkLLlnXw_KJq9uDGfiIF8-x4--8G9pR8oapKxlvz_cmuCgW6Y44cVPNADKQOtLFx4BTrx4khff7o6iUu8VjzkNnkPGNKmzBkBexPe-s5L7d5NTcCZU-W8j0AiFt8v0LJMFJ5g==
+ASHRAE_VALUES = {
+    "Montreal": {
+        "To": 28,
+        "CDD10": 1192,
+        "zone": 6,
+        "u_factor": 1.82,
+        "shgc": 0.40
+    }
+}

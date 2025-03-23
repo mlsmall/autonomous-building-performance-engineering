@@ -47,4 +47,4 @@ streamlit-toggle-switch
 streamlit-vertical-slider
 cryptography
 langchain_mistralai
-pysqlite3-binary
+#pysqlite3-binary

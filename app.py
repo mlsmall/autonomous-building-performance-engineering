@@ -8,32 +8,32 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import streamlit as st
-from cryptography.fernet import Fernet
-from pathlib import Path
 
 
-# Decrypt and load core engine files
-key = st.secrets["DECRYPT_KEY"].encode()
-cipher = Fernet(key)
+# # Decrypt and load core engine files
+# from cryptography.fernet import Fernet
+# from pathlib import Path
+# key = st.secrets["DECRYPT_KEY"].encode()
+# cipher = Fernet(key)
 
-# Collect all encrypted content
-decrypted_files = {}
-for file in Path('core_engine').glob('*.py'):
-    with open(file, 'rb') as f:
-        content = f.read()
-    # Check if content looks encrypted (starts with 'gAAAAA')
-    if content.startswith(b'gAAAAA'):
-        decrypted = cipher.decrypt(content).decode()
-    else:
-        decrypted = content.decode()
+# # Collect all encrypted content
+# decrypted_files = {}
+# for file in Path('core_engine').glob('*.py'):
+#     with open(file, 'rb') as f:
+#         content = f.read()
+#     # Check if content looks encrypted (starts with 'gAAAAA')
+#     if content.startswith(b'gAAAAA'):
+#         decrypted = cipher.decrypt(content).decode()
+#     else:
+#         decrypted = content.decode()
         
-    first_line = decrypted.split('\n')[0]
-   # print(f"First line: {first_line}")
-    decrypted_files[file] = decrypted
+#     first_line = decrypted.split('\n')[0]
+#     # print(f"First line: {first_line}")
+#     decrypted_files[file] = decrypted
 
-for file, content in decrypted_files.items():
-    with open(file, 'w') as f:
-        f.write(content)
+# for file, content in decrypted_files.items():
+#     with open(file, 'w') as f:
+#         f.write(content)
 
 
 from graph import graph, USE_DATABASE, get_user_history
@@ -177,37 +177,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# # Top heading
-# st.markdown("""
-#     <div style='margin: -2rem 0 3rem 0'>
-#         <h2 style='color: #1a237e; font-size: 34px; font-weight: 600; margin: 0; letter-spacing: -1px;'>
-#             BPA <span style='color: #2c2c2c; font-weight: 500; font-size: 32px;'>| Building Performance Assistant</span>
-#         </h2>
-#     </div>
-# """, unsafe_allow_html=True)
-
+# Top heading
 st.markdown("""
-    <div style='margin: -1rem 0 2.5rem 0'>
-        <h2 style='
-            color: #1a237e;
-            font-size: 34px;
-            font-weight: 600;
-            margin: 0;
-            letter-spacing: -1px;
-            display: flex;
-            align-items: baseline;
-            gap: 0.5rem;
-        '>
-            <span>BPA</span>
-            <span style='
-                color: #2c2c2c;
-                font-weight: 500;
-                font-size: 30px;
-                opacity: 0.9;
-                letter-spacing: -0.5px;
-            '>
-                | Building Performance Assistant
-            </span>
+    <div style='margin: -2rem 0 3rem 0'>
+        <h2 style='color: #1a237e; font-size: 34px; font-weight: 600; margin: 0; letter-spacing: -1px;'>
+            BPA <span style='color: #2c2c2c; font-weight: 500; font-size: 32px;'>| Building Performance Assistant</span>
         </h2>
     </div>
 """, unsafe_allow_html=True)
@@ -312,7 +286,7 @@ if 'messages' not in st.session_state:
                 padding-left: 0.3rem; 
             ">
                 ▸ Compare your building against industry benchmarks, energy use, and costs.<br>  
-                ▸ Enter your building details below. <span style='color: #1a237e; font-size: 1.2em;'>↓</span></div>
+                ▸ Enter your building details below. <span style='color: #1a237e; font-size: 1.1em;'>↓</span></div>
             </p>
         </div>
         """
@@ -351,9 +325,7 @@ if st.session_state.show_form:
             </style>
             """, unsafe_allow_html=True)
                     
-            st.markdown("""
-                    <h5 style='color: #1a237e;'>Building Details</h5>
-                """, unsafe_allow_html=True)
+            st.markdown("""<h4 style='color: #1a237e;'>Building Details</h4>""", unsafe_allow_html=True)
             window_area = st.number_input("Window Area (ft²)", min_value=1, step=1, value=None, help="Total glazing area of the building envelope")
             shgc = st.number_input("Solar Heat Gain Coefficient (0-1)", min_value=0.0, max_value=1.0, step=0.01, value=None, help="Fraction of solar radiation admitted")
             u_value = st.number_input("U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the window")

@@ -25,8 +25,9 @@ venv.bak/
 scratch.py
 encrypt.py
 .streamlit/
-core engine files/
+backup files/
 working_app*.py
 
 # Data
 data/
+.aider*
