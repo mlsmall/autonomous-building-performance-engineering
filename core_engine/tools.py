@@ -178,6 +178,10 @@ def wall_heat_gain(wall_area, U, To):
     Q_wall_cond = U * 0.1761 * wall_area * TD # BTU/hr
     return Q_wall_cond
 
+def total_heat_gain(glass_heat_gain, wall_heat_gain):
+    total_heat = glass_heat_gain + wall_heat_gain
+    return total_heat
+
 def annual_cooling_energy(Q, CDD):
     # Convert peak load to annual energy use
     annual_energy = Q * CDD * 24 * (1/12000) * 0.85
@@ -190,10 +194,10 @@ def annual_cost(annual_energy, rate):
 
 {query}
 
-print(f"glass_heat_gain={{glass_heat_gain}}")
+print(f"total_heat_gain={{total_heat}}")
 print(f"annual_energy={{energy}}") # kWh/year
 print(f"annual_cost={{cost}}")
-print(f"wall_heat={{wall_heat_gain}}")
+
 """
         result = python_repl_tool.invoke(calc_code)
         return result
