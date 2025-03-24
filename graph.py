@@ -163,7 +163,7 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
             "ashrae_to": float(tool_message.split("To=")[1].split("\n")[0].strip()),
             "ashrae_cdd": float(tool_message.split("CDD=")[1].split("\n")[0].strip()),
             "ashrae_climate_zone": int(tool_message.split("Climate Zone=")[1].split("\n")[0].strip()),
-            "ashrae_u_factor": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
+            "ashrae_glass_u_factor": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
             "ashrae_shgc": float(tool_message.split("SHGC=")[1].strip()),
             "messages": [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
         }
@@ -221,7 +221,7 @@ def calculation_node(state: AgentState) -> AgentState:
     else:
         calculation_type = "baseline"
         shgc = state["ashrae_shgc"]
-        glass_u_value = state["ashrae_u_factor"]
+        glass_u_value = state["ashrae_glass_u_factor"]
 
     # Format the calculation query and pass the values
     query = f"""
@@ -280,7 +280,7 @@ def recommendation_node(state: AgentState) -> AgentState:
     shgc: {state['shgc']}
     ashrae_shgc: {state['ashrae_shgc']}
     glass_u_value: {state['glass_u_value']}
-    ashrae_u_factor: {state['ashrae_u_factor']}"""
+    ashrae_glass_u_factor: {state['ashrae_glass_u_factor']}"""
     # print("RECOMMENDATION NODE MESSAGE:", message)
     # Get recommendations and format response based on the Recommendation class
     result = recommendation_agent.invoke({"messages": [("user", message)]})

@@ -17,7 +17,7 @@ class AgentState(MessagesState):
     ashrae_to: float = None
     ashrae_cdd: float = None
     ashrae_climate_zone: int = None
-    ashrae_u_factor: float = None
+    ashrae_glass_u_factor: float = None
     ashrae_shgc: float = None
     # Utility data
     utility_rate: float = None
@@ -35,7 +35,7 @@ class AgentState(MessagesState):
     baseline_cost: float = None
 
 # Validates user input
-class BuildingInput(BaseModel): 
+class BuildingInput(BaseModel):
     window_area: float = Field(gt=0, description="Window area in ft²")
     shgc: float = Field(gt=0, lt=1.1, description="Solar Heat Gain Coefficient")
     glass_u_value: float = Field(gt=0, lt=20, description="The u-value must be between 0 and 20")
