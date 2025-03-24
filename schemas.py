@@ -19,6 +19,7 @@ class AgentState(MessagesState):
     ashrae_climate_zone: int = None
     ashrae_glass_u: float = None
     ashrae_shgc: float = None
+    ashrae_wall_u: float = None
     # Utility data
     utility_rate: float = None
     # Solar radiation data
