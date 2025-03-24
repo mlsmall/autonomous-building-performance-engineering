@@ -189,8 +189,9 @@ def wall_heat_gain(wall_area, U, To):
 {query}
 
 print(f"heat_gain={{heat_gain}}")
-print(f"annual_energy={{energy}}")
+print(f"annual_energy={{energy}}") # kWh/year
 print(f"annual_cost={{cost}}")
+print(f"wall_heat={{wall_heat}}")
 """
         result = python_repl_tool.invoke(calc_code)
         return result

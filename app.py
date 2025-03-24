@@ -329,6 +329,8 @@ if st.session_state.show_form:
             window_area = st.number_input("Window Area (ft²)", min_value=1, step=1, value=None, help="Total glazing area of the building envelope")
             shgc = st.number_input("Solar Heat Gain Coefficient (0-1)", min_value=0.0, max_value=1.0, step=0.01, value=None, help="Fraction of solar radiation admitted")
             u_value = st.number_input("U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the window")
+            wall_area = st.number_input("Wall Area (ft²)", min_value=1, step=1, value=None, help="Total wall area of the building envelope")
+            wall_u_value = st.number_input("Wall U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the wall")
             city = st.text_input("City", value=None, help="Used to determine your climate zone and local energy requirements")
             submit_button = st.form_submit_button("Submit")
 
@@ -337,18 +339,20 @@ if st.session_state.show_form:
             st.session_state.building_data['window_area'] = window_area
             st.session_state.building_data['shgc'] = shgc
             st.session_state.building_data['u_value'] = u_value
+            st.session_state.building_data['wall_area'] = wall_area
+            st.session_state.building_data['wall_u_value'] = wall_u_value
             st.session_state.building_data['city'] = city
         
 
             # Format the input for graph processing
             formatted_input = (
-               f"window area = {int(st.session_state.building_data['window_area'])} ft2 "
-               f"shgc = {st.session_state.building_data['shgc']} "
-               f"u-value = {st.session_state.building_data['u_value']} "
-               f"wall area = {int(st.session_state.building_data['wall_area'])} ft2 "
-               f"city = {st.session_state.building_data['city']} "
-               f"wall u-value = {st.session_state.building_data['wall_u_value']} "
-           )
+                f"window area = {int(st.session_state.building_data['window_area'])} ft2 "
+                f"shgc = {st.session_state.building_data['shgc']} "
+                f"u-value = {st.session_state.building_data['u_value']} "
+                f"wall area = {int(st.session_state.building_data['wall_area'])} ft2 "
+                f"city = {st.session_state.building_data['city']} "
++               f"wall u-value = {st.session_state.building_data['wall_u_value']} "
+            )
 
             with st.chat_message("assistant"):
             # Process the input via the multi-agent graph stream.
@@ -373,22 +377,22 @@ if st.session_state.show_form:
                                         Your Proposed Building Inputs
                                     </div>
                                     <div style='font-family: "Inter", sans-serif; font-size: 0.9em;'>
-                                       • Glass area = <span style='font-weight: normal'>{} ft²</span><br>
-                                       • SHGC = <span style='font-weight: normal'>{}</span><br>
-                                       • U-value = <span style='font-weight: normal'>{}</span><br>
-                                       • Wall area = <span style='font-weight: normal'>{} ft²</span><br>
-                                       • City = <span style='font-weight: normal'>{}</span>
-                                       • Wall U-value = <span style='font-weight: normal'>{}</span>
-                                   </div>
-                               </div>
-                               """.format(
-                                   f"{int(st.session_state.building_data['window_area']):,}",
-                                   st.session_state.building_data['shgc'],
-                                   st.session_state.building_data['u_value'],
-                                   st.session_state.building_data['city'],
-                                   st.session_state.building_data['wall_area'],
-                                   st.session_state.building_data['wall_u_value']
-                               )
+                                        • Glass area = <span style='font-weight: normal'>{} ft²</span><br>
+                                        • SHGC = <span style='font-weight: normal'>{}</span><br>
+                                        • U-value = <span style='font-weight: normal'>{}</span><br>
+                                        • Wall area = <span style='font-weight: normal'>{} ft²</span><br>
+                                        • City = <span style='font-weight: normal'>{}</span>
++                                       • Wall U-value = <span style='font-weight: normal'>{}</span>
+                                    </div>
+                                </div>
+                                """.format(
+                                    f"{int(st.session_state.building_data['window_area']):,}",
+                                    st.session_state.building_data['shgc'],
+                                    st.session_state.building_data['u_value'],
+                                    st.session_state.building_data['city'],
+                                    st.session_state.building_data['wall_area'],
++                                   st.session_state.building_data['wall_u_value']
+                                )
 
                                 # Then modify how you append it to messages:
                                 st.session_state.messages.append({

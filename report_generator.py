@@ -108,6 +108,8 @@ def generate_performance_report(state):
     pdf.cell(0, 10, f"{state.get('baseline_cooling_energy', 0):,.0f} kWh", ln=True)
     pdf.cell(60, 10, "Annual Energy Cost:", 0)
     pdf.cell(0, 10, f"${state.get('baseline_cost', 0):,.2f}", ln=True)
+    pdf.cell(60, 10, "Wall Heat Gain:", 0)
+    pdf.cell(0, 10, f"{state.get('wall_heat_gain', 0):,.0f} BTU/hr", ln=True)
     pdf.ln(10)
 
     # Performance Comparison Section

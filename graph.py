@@ -228,7 +228,8 @@ def calculation_node(state: AgentState) -> AgentState:
 heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, U={u}, To={state["ashrae_to"]}, radiation={state["radiation"]})
 energy = annual_cooling_energy(heat_gain, {state["ashrae_cdd"]})
 cost = annual_cost(energy, {state["utility_rate"]})
-    """
+wall_heat = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_value"]}, To={state["ashrae_to"]})
+"""
     result = calculation_tool.invoke(query)
     # Parse the output from the calculation tool
     stdout_index = result.find('Stdout:') # Find the start of the stdout
@@ -245,12 +246,12 @@ cost = annual_cost(energy, {state["utility_rate"]})
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
     return {
-       f"{key_prefix}_heat_gain": parsed_values["heat_gain"],
-       f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
-       f"{key_prefix}_cost": parsed_values["annual_cost"],
-       "wall_heat_gain": parsed_values["wall_heat"],
-       "messages": [HumanMessage(content=result, name="calculation")]
-   }
+        f"{key_prefix}_heat_gain": parsed_values["heat_gain"],
+        f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
+        f"{key_prefix}_cost": parsed_values["annual_cost"],
+        "wall_heat_gain": parsed_values["wall_heat"],
+        "messages": [HumanMessage(content=result, name="calculation")]
+    }
 # def recommendation_node(state: AgentState) -> AgentState:
 #     # First use React agent to get analysis
 #     result = recommendation_agent.invoke(state)
