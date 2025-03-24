@@ -165,13 +165,14 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
             "ashrae_climate_zone": int(tool_message.split("Climate Zone=")[1].split("\n")[0].strip()),
             "ashrae_glass_u": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
             "ashrae_shgc": float(tool_message.split("SHGC=")[1].strip()),
+            "wall_u_value": float(tool_message.split("Wall-U-Value=")[1].split("\n")[0].strip()),
             "messages": [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
         }
     else:
         # Handle invalid city
         return {
             "messages": [HumanMessage(
-                content=f"ASHRAE data not found for '{city}'", 
+                content=f"ASHRAE data not found for '{city}'",
                 name="ashrae_lookup"
             )],
             "city": None,  # Clear city

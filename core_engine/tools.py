@@ -116,18 +116,29 @@ def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
         zone_number = zone_result['generation'].split("zone")[-1].strip().rstrip('.')
         print("ZONE RESULT:", zone_number)
 
-        # 3. ufactor_query lookup
-        ufactor_query = (
+        # 3. glass_ufactor_query lookup
+        glass_ufactor_query = (
         f"What is the U-factor for Vertical Fenestration 0%–40% of Wall for Nonmetal framing \
         in climate zone {zone_number} according to Building Envelope Requirements? \
         Please provide only the numeric U-factor value without any additional text."
         )
-        state = {"question": ufactor_query}
-        ufactor_result = generate(retrieve(state))
-        u_value = ufactor_result['generation'].split("U-")[-1].split('.')[0].strip()
-        print("U-FACTOR:", u_value)
+        state = {"question": glass_ufactor_query}
+        glass_ufactor_result = generate(retrieve(state))
+        glass_u_value = glass_ufactor_result['generation'].split("U-")[-1].split('.')[0].strip()
+        print("GLASS U-FACTOR:", glass_u_value)
 
-        # 4. SHGC_query lookup
+        # 4. wall_ufactor_query lookup
+        wall_ufactor_query = (
+        f"What is the U-factor for Walls for Nonmetal framing \
+        in climate zone {zone_number} according to Building Envelope Requirements? \
+        Please provide only the numeric U-factor value without any additional text."
+        )
+        state = {"question": wall_ufactor_query}
+        wall_ufactor_result = generate(retrieve(state))
+        wall_u_value = wall_ufactor_result['generation'].split("U-")[-1].split('.')[0].strip()
+        print("WALL U-FACTOR:", wall_u_value)
+
+        # 5. SHGC_query lookup
         shgc_query = (
         f"What is the SHGC for Vertical Fenestration 0%–40% of Wall (for all frame types) \
         in climate zone {zone_number} according to Building Envelope Requirements? \
@@ -138,7 +149,7 @@ def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
         shgc_value = shgc_result['generation']
         print("SHGC:", shgc_value)
 
-        return f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_number}\nU-value={u_value}\nSHGC={shgc_value}"
+        return f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_number}\nU-value={glass_u_value}\nSHGC={shgc_value}\nWall-U-Value={wall_u_value}"
 
     except Exception as e:
         return f"Error in ASHRAE lookup: {str(e)}"
