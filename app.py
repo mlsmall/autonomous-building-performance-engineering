@@ -383,17 +383,17 @@ if st.session_state.show_form:
                                         • SHGC = <span style='font-weight: normal'>{}</span><br>
                                         • U-value = <span style='font-weight: normal'>{}</span><br>
                                         • Wall area = <span style='font-weight: normal'>{} ft²</span><br>
+                                        • Wall U-value = <span style='font-weight: normal'>{}</span><br>
                                         • City = <span style='font-weight: normal'>{}</span>
-+                                       • Wall U-value = <span style='font-weight: normal'>{}</span>
                                     </div>
                                 </div>
                                 """.format(
                                     f"{int(st.session_state.building_data['window_area']):,}",
                                     st.session_state.building_data['shgc'],
                                     st.session_state.building_data['u_value'],
-                                    st.session_state.building_data['city'],
-                                    st.session_state.building_data['wall_area'],
-+                                   st.session_state.building_data['wall_u_value']
+                                    f"{int(st.session_state.building_data['wall_area']):,}",
+                                    st.session_state.building_data['wall_u_value'],
+                                    st.session_state.building_data['city']
                                 )
 
                                 # Then modify how you append it to messages:
@@ -407,7 +407,9 @@ if st.session_state.show_form:
                                     'city': state['input_validation'].get('city'),
                                     'window_area': state['input_validation'].get('window_area'),
                                     'shgc': state['input_validation'].get('shgc'),
-                                    'u_value': state['input_validation'].get('u_value')
+                                    'u_value': state['input_validation'].get('u_value'),
+                                    'wall_area': state['input_validation'].get('wall_area'),
+                                    'wall_u_value': state['input_validation'].get('wall_u_value')
                                 }
                             else:
                                 # Handle invalid city
@@ -424,7 +426,8 @@ if st.session_state.show_form:
                             st.session_state.last_state.update({
                                 'ashrae_climate_zone': state['ashrae_lookup'].get('ashrae_climate_zone'),
                                 'ashrae_shgc': state['ashrae_lookup'].get('ashrae_shgc'),
-                                'ashrae_u_factor': state['ashrae_lookup'].get('ashrae_u_factor')
+                                'ashrae_u_factor': state['ashrae_lookup'].get('ashrae_u_factor'),
+                                'wall_u_value': state['ashrae_lookup'].get('wall_u_value')
                             })
 
                         # Store calculation results for report generation

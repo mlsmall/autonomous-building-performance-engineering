@@ -143,7 +143,7 @@ def input_validation_node(state: AgentState) -> AgentState:
            "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
        }
     else:
-        error_message  = f'{result["messages"][-1].content}  \nPlease enter it again:'
+        error_message = f'{result["messages"][-1].content}  \nPlease enter it again:'
         return {
             "messages": [HumanMessage(content=error_message, name="input_validation")],
             "next": START
