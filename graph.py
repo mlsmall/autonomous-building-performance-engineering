@@ -246,7 +246,7 @@ wall_heat = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_valu
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
     return {
-        f"{key_prefix}_heat_gain": parsed_values["heat_gain"],
+        f"{key_prefix}_glass_heat_gain": parsed_values["heat_gain"],
         f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
         f"{key_prefix}_cost": parsed_values["annual_cost"],
         f"{key_prefix}_wall_heat_gain": parsed_values["wall_heat"],
@@ -270,8 +270,8 @@ def recommendation_node(state: AgentState) -> AgentState:
     """
 
     # Format data to send to recommendation agent
-    message = f"""proposed_heat_gain: {state['proposed_heat_gain']}
-    baseline_heat_gain: {state['baseline_heat_gain']}
+    message = f"""proposed_glass_heat_gain: {state['proposed_glass_heat_gain']}
+    baseline_glass_heat_gain: {state['baseline_glass_heat_gain']}
     proposed_cooling_energy: {state['proposed_cooling_energy']}
     baseline_cooling_energy: {state['baseline_cooling_energy']}
     proposed_cost: {state['proposed_cost']}

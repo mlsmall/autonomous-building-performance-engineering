@@ -85,8 +85,8 @@ def generate_performance_report(state):
     # Performance content
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "", 12)
-    pdf.cell(60, 10, "Peak Heat Gain:", 0)
-    pdf.cell(0, 10, f"{state.get('proposed_heat_gain', 0):,.0f} BTU/hr", ln=True)
+    pdf.cell(60, 10, "Peak Glass Heat Gain:", 0)
+    pdf.cell(0, 10, f"{state.get('proposed_glass_heat_gain', 0):,.0f} BTU/hr", ln=True)
     pdf.cell(60, 10, "Building Energy Use:", 0)
     pdf.cell(0, 10, f"{state.get('proposed_cooling_energy', 0):,.0f} kWh", ln=True)
     pdf.cell(60, 10, "Annual Energy Cost:", 0)
@@ -102,8 +102,8 @@ def generate_performance_report(state):
     # Performance content
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "", 12)
-    pdf.cell(60, 10, "Peak Heat Gain:", 0)
-    pdf.cell(0, 10, f"{state.get('baseline_heat_gain', 0):,.0f} BTU/hr", ln=True)
+    pdf.cell(60, 10, "Peak Glass Heat Gain:", 0)
+    pdf.cell(0, 10, f"{state.get('baseline_glass_heat_gain', 0):,.0f} BTU/hr", ln=True)
     pdf.cell(60, 10, "Building Energy Use:", 0)
     pdf.cell(0, 10, f"{state.get('baseline_cooling_energy', 0):,.0f} kWh", ln=True)
     pdf.cell(60, 10, "Annual Energy Cost:", 0)
@@ -124,7 +124,7 @@ def generate_performance_report(state):
 
     # Add performance comparison difference metrics
     # First metric - Heat Gain
-    pdf.cell(60, 10, "Peak Heat Gain:", 0)
+    pdf.cell(60, 10, "Peak Glass Heat Gain:", 0)
     pdf.cell(0, 10, f" {abs(diff['heat_gain']):,.0f} BTU/hr {'more than baseline' if diff['heat_gain'] > 0 else 'less than baseline'}", ln=True)
 
     # Second metric - Energy Usage
