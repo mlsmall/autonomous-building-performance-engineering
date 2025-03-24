@@ -225,14 +225,16 @@ def calculation_node(state: AgentState) -> AgentState:
 
     # Format the calculation query and pass the values
     query = f"""
-heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, U={u}, To={state["ashrae_to"]}, radiation={state["radiation"]})
-energy = annual_cooling_energy(heat_gain, {state["ashrae_cdd"]})
+glass_heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, U={u}, To={state["ashrae_to"]}, radiation={state["radiation"]})
+wall_heat_gain = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_value"]}, To={state["ashrae_to"]})
+total_heat = total_heat_gain(glass_heat_gain, wall_heat_gain)
+energy = annual_cooling_energy(total_heat, {state["ashrae_cdd"]})
 cost = annual_cost(energy, {state["utility_rate"]})
-wall_heat = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_value"]}, To={state["ashrae_to"]})
 """
-    result = calculation_tool.invoke(query)
+    result = python_repl_tool.invoke(query)
     # Parse the output from the calculation tool
     stdout_index = result.find('Stdout:') # Find the start of the stdout
+    stdout = result[stdout_index + len('Stdout:'):].strip() # Extract the stdout
     stdout = result[stdout_index + len('Stdout:'):].strip() # Extract the stdout
     
     # Convert calculation tool results to float values
@@ -246,10 +248,9 @@ wall_heat = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_valu
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
     return {
-        f"{key_prefix}_glass_heat_gain": parsed_values["glass_heat_gain"],
+        f"{key_prefix}_total_heat_gain": parsed_values["total_heat_gain"],
         f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
         f"{key_prefix}_cost": parsed_values["annual_cost"],
-        f"{key_prefix}_wall_heat_gain": parsed_values["wall_heat"],
         "messages": [HumanMessage(content=result, name="calculation")]
     }
 # def recommendation_node(state: AgentState) -> AgentState:
@@ -270,8 +271,8 @@ def recommendation_node(state: AgentState) -> AgentState:
     """
 
     # Format data to send to recommendation agent
-    message = f"""proposed_glass_heat_gain: {state['proposed_glass_heat_gain']}
-    baseline_glass_heat_gain: {state['baseline_glass_heat_gain']}
+    message = f"""proposed_total_heat_gain: {state['proposed_total_heat_gain']}
+    baseline_total_heat_gain: {state['baseline_total_heat_gain']}
     proposed_cooling_energy: {state['proposed_cooling_energy']}
     baseline_cooling_energy: {state['baseline_cooling_energy']}
     proposed_cost: {state['proposed_cost']}

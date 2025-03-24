@@ -24,10 +24,10 @@ class AgentState(MessagesState):
     # Solar radiation data
     radiation: float = None
     # Calculation results
-    proposed_glass_heat_gain: float = None
+    proposed_total_heat_gain: float = None
     proposed_cooling_energy: float = None
     proposed_cost: float = None
-    baseline_glass_heat_gain: float = None
+    baseline_total_heat_gain: float = None
     baseline_cooling_energy: float = None
     wall_area: float = None # Add wall area
     wall_u_value: float = None # Add wall u-value
