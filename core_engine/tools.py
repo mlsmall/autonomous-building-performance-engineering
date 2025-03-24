@@ -219,7 +219,7 @@ print(f"annual_cost={{cost}}")
 
 #         ASHRAE Requirements:
 #         SHGC: {query["shgc"]} vs required {query["ashrae_shgc"]}
-#         U-Factor: {query["glass_u_value"]} vs required {query["ashrae_u_factor"]}
+#         U-Factor: {query["glass_u_value"]} vs required {query["ashrae_glass_u_factor"]}
 
 #         Calculate percentage differences between proposed and baseline values.
 #         Analyze ASHRAE compliance and provide specific recommendations for improvement.
