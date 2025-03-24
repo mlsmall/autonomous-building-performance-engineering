@@ -348,7 +348,9 @@ def main_loop():
         print("Your existing building data has been found:")
         print(f"* Window area: {user_data['window_area']} ft²")
         print(f"* SHGC: {user_data['shgc']}")
-        print(f"* U-value: {user_data['u_value']}")
+        print(f"* glass u-value: {user_data['glass_u_value']}")
+        print(f"* Wall area: {user_data['wall_area']} ft²")
+        print(f"* Wall u-value: {user_data['wall_u_value']}")
         print(f"* City: {user_data['city']}")
         print("\nType 'go' to see your analysis, or enter new inputs to recalculate.")
     else:
@@ -356,7 +358,9 @@ def main_loop():
         print("Hello, I'm your personal building performance engineer. Please enter these inputs:")
         print("* Window area (ft²)")
         print("* SHGC value (0-1)")
-        print("* U-value")
+        print("* glass u-value")
+        print("* Wall area (ft²)")
+        print("* Wall u-value")
         print("* Building location (city)")
 
     while True:
@@ -385,9 +389,9 @@ def main_loop():
         for state in graph.stream(stream_state, config=config):
             # Handle invalid input
             if 'input_validation' in state and "Valid input" not in state['input_validation']['messages'][0].content:
-                    print("\n" + state['input_validation']['messages'][0].content + "\n")
-                    break  #  breaks stream, returns to input loop
-            
+                print("\n" + state['input_validation']['messages'][0].content + "\n")
+                break  # breaks stream, returns to input loop
+
             # Display recommendations at the end when available
             if 'recommendation' in state:
                 recs = json.loads(state['recommendation']['messages'][0].content)
