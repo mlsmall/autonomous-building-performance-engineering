@@ -13,7 +13,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
 from agents import llm_agent, research_agent, ashrae_lookup_agent, recommendation_agent, input_validation_agent
-from core_engine.tools import calculation_tool, radiation_tool
+from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
 from models import llm_gemini, llm_gpt
 from schemas import AgentState, Recommendation, SupervisorState, members
 from database import building_data, get_user_history
