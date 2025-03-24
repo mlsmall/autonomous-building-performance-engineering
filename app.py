@@ -216,8 +216,7 @@ with st.sidebar:
     with st.expander("ℹ️ Disclaimer"):
         st.markdown(
             "<div style='font-size: 0.85em; color: #6c757d;'>This building performance assistant performs comprehensive engineering calculations but should not be used for compliance verification or detailed engineering specifications.</div>",
-            unsafe_allow_html=True
-        )
+            unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
     # If database usage is enabled and a user session is present

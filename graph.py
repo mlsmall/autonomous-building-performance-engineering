@@ -39,7 +39,7 @@ If no user_data:
     1. Send all inputs to input_validation to check:
         - SHGC (0-1)
         - Window area (ft²)
-        - glass u-value
+        - Glass u-value
         - Wall area (ft²)
         - Wall U-value
         - City
@@ -139,7 +139,7 @@ def input_validation_node(state: AgentState) -> AgentState:
            "shgc": float(user_input.split("shgc =")[1].split()[0].strip()),
            "wall_area": int(user_input.split("wall area =")[1].split("ft2")[0].strip().replace(",", "")),
            "wall_u_value": float(user_input.split("wall u-value =")[1].split("city")[0].strip()),
-           "u_value": float(user_input.split("u-value =")[1].split("city")[0].strip()),
+           "glass_u_value": float(user_input.split("glass u-value =")[1].split("city")[0].strip()),
            "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
        }
     else:
@@ -280,10 +280,7 @@ def recommendation_node(state: AgentState) -> AgentState:
     baseline_cooling_energy: {state['baseline_cooling_energy']}
     proposed_cost: {state['proposed_cost']}
     baseline_cost: {state['baseline_cost']}
-    shgc: {state['shgc']}
-    ashrae_shgc: {state['ashrae_shgc']}
-    glass_u_value: {state['glass_u_value']}
-    ashrae_glass_u: {state['ashrae_glass_u']}"""
+    """
     # print("RECOMMENDATION NODE MESSAGE:", message)
     # Get recommendations and format response based on the Recommendation class
     result = recommendation_agent.invoke({"messages": [("user", message)]})
