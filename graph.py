@@ -217,15 +217,15 @@ def calculation_node(state: AgentState) -> AgentState:
     if "proposed_heat_gain" not in state: 
         calculation_type = "proposed"
         shgc = state["shgc"]
-        u = state["u_value"]
+        glass_u_value = state["glass_u_value"]
     else:
         calculation_type = "baseline"
         shgc = state["ashrae_shgc"]
-        u = state["ashrae_u_factor"]
+        glass_u_value = state["ashrae_u_factor"]
 
     # Format the calculation query and pass the values
     query = f"""
-glass_heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, U={u}, To={state["ashrae_to"]}, radiation={state["radiation"]})
+glass_heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, glass_u_value={glass_u_value}, To={state["ashrae_to"]}, radiation={state["radiation"]})
 wall_heat_gain = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_value"]}, To={state["ashrae_to"]})
 total_heat = total_heat_gain(glass_heat_gain, wall_heat_gain)
 energy = annual_cooling_energy(total_heat, {state["ashrae_cdd"]})
@@ -279,7 +279,7 @@ def recommendation_node(state: AgentState) -> AgentState:
     baseline_cost: {state['baseline_cost']}
     shgc: {state['shgc']}
     ashrae_shgc: {state['ashrae_shgc']}
-    u_value: {state['u_value']}
+    glass_u_value: {state['glass_u_value']}
     ashrae_u_factor: {state['ashrae_u_factor']}"""
     # print("RECOMMENDATION NODE MESSAGE:", message)
     # Get recommendations and format response based on the Recommendation class
