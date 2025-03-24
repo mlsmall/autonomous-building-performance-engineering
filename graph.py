@@ -39,7 +39,9 @@ If no user_data:
     1. Send all inputs to input_validation to check:
         - SHGC (0-1)
         - Window area (ft²)
-        - U-value
+        - glass u-value
+        - Wall area (ft²)
+        - Wall U-value
         - City
 
     2. After validation, send validated input to ashrae_lookup
