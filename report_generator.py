@@ -125,7 +125,7 @@ def generate_performance_report(state):
     # Add performance comparison difference metrics
     # First metric - Heat Gain
     pdf.cell(60, 10, "Peak Glass Heat Gain:", 0)
-    pdf.cell(0, 10, f" {abs(diff['heat_gain']):,.0f} BTU/hr {'more than baseline' if diff['heat_gain'] > 0 else 'less than baseline'}", ln=True)
+    pdf.cell(0, 10, f" {abs(diff['glass_heat_gain']):,.0f} BTU/hr {'more than baseline' if diff['glass_heat_gain'] > 0 else 'less than baseline'}", ln=True)
 
     # Second metric - Energy Usage
     pdf.cell(60, 10, "Energy Usage:", 0)

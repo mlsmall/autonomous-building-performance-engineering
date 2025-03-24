@@ -246,7 +246,7 @@ wall_heat = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_valu
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
     return {
-        f"{key_prefix}_glass_heat_gain": parsed_values["heat_gain"],
+        f"{key_prefix}_glass_heat_gain": parsed_values["glass_heat_gain"],
         f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
         f"{key_prefix}_cost": parsed_values["annual_cost"],
         f"{key_prefix}_wall_heat_gain": parsed_values["wall_heat"],
