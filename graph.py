@@ -249,7 +249,7 @@ wall_heat = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_valu
         f"{key_prefix}_heat_gain": parsed_values["heat_gain"],
         f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
         f"{key_prefix}_cost": parsed_values["annual_cost"],
-        "wall_heat_gain": parsed_values["wall_heat"],
+        f"{key_prefix}_wall_heat_gain": parsed_values["wall_heat"],
         "messages": [HumanMessage(content=result, name="calculation")]
     }
 # def recommendation_node(state: AgentState) -> AgentState:
