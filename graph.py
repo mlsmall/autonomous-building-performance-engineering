@@ -280,6 +280,10 @@ def recommendation_node(state: AgentState) -> AgentState:
     baseline_cooling_energy: {state['baseline_cooling_energy']}
     proposed_cost: {state['proposed_cost']}
     baseline_cost: {state['baseline_cost']}
+    glass_u_value: {state['glass_u_value']}
+    ashrae_glass_u: {state['ashrae_glass_u']}
+    wall_u_value: {state['wall_u_value']}
+    ashrae_wall_u: {state['ashrae_wall_u']}
     """
     # print("RECOMMENDATION NODE MESSAGE:", message)
     # Get recommendations and format response based on the Recommendation class
