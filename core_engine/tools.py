@@ -82,7 +82,14 @@ def input_validation_tool(query: Annotated[str, "Check if all required inputs ar
 def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):
     """No matter what city is input. Returns ASHRAE values for Montreal."""
     data = ASHRAE_VALUES["Montreal"]
-    return f"To={data['To']}\nCDD={data['CDD10']}\nClimate Zone={data['zone']}\nU-value={data['glass_u_factor']}\nSHGC={data['shgc']}\nWall-U-Value={data['wall_u_value']}"
+    return (
+        f"To={data['To']}\n"
+        f"CDD={data['CDD10']}\n"
+        f"Climate Zone={data['zone']}\n"
+        f"U-value={data['glass_u_factor']}\n"
+        f"SHGC={data['shgc']}\n"
+        f"Wall-U-Value={data['wall_u_value']}"
+    )
 
 def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
     """Uses RAG to find ASHRAE information from validated input"""
