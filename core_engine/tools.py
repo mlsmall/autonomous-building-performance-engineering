@@ -191,7 +191,7 @@ def wall_heat_gain(wall_area, U, To):
 print(f"glass_heat_gain={{glass_heat_gain}}")
 print(f"annual_energy={{energy}}") # kWh/year
 print(f"annual_cost={{cost}}")
-print(f"wall_heat={{wall_heat}}")
+print(f"wall_heat={{wall_heat_gain}}")
 """
         result = python_repl_tool.invoke(calc_code)
         return result
