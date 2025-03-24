@@ -165,12 +165,12 @@ def calculation_tool(query: Annotated[str, "Execute building energy calculations
     try:
         calc_code = f"""
 # Building Energy Calculation Formulas
-def window_heat_gain(area, SHGC, U, To, radiation):
+def window_heat_gain(area, SHGC, glass_u_value, To, radiation):
     TD = (To*1.8 + 32) - 70 # Converting To from Celsius to Fahrenheit
     # radiation is given in KWh/m^2/day, convert to W/m^2, then everything to BTU/hr
     Q_solar = area * SHGC * radiation * 41.67 * 0.003412
     # U is in W/(m^2 * Kelvin) in Ashrae table. Convert to BTU/(hr * ft^2 * Fahrenheit)
-    Q_conduction = U * 0.1761 * area * TD
+    Q_conduction = glass_u_value * 0.1761 * area * TD
     return Q_solar + Q_conduction
 
 def wall_heat_gain(wall_area, U, To):
@@ -219,7 +219,7 @@ print(f"annual_cost={{cost}}")
 
 #         ASHRAE Requirements:
 #         SHGC: {query["shgc"]} vs required {query["ashrae_shgc"]}
-#         U-Factor: {query["u_value"]} vs required {query["ashrae_u_factor"]}
+#         U-Factor: {query["glass_u_value"]} vs required {query["ashrae_u_factor"]}
 
 #         Calculate percentage differences between proposed and baseline values.
 #         Analyze ASHRAE compliance and provide specific recommendations for improvement.
