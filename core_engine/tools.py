@@ -69,7 +69,7 @@ def input_validation_tool(query: Annotated[str, "Check if all required inputs ar
         result = llm.invoke(
             f"""Extract and validate these values from the input:
             Input: {query}
-            
+
             Check that they match these rules: {BuildingInput.model_json_schema()}
             """
         )
@@ -181,7 +181,11 @@ def annual_cooling_energy(Q, CDD):
 def annual_cost(annual_energy, rate):
     cost = annual_energy * rate
     return cost
-
+    
+def wall_heat_gain(wall_area, U, To):
+    TD = (To*1.8 + 32) - 70 # Converting To from Celsius to Fahrenheit
+    Q_wall_cond = U * 0.1761 * wall_area * TD # BTU/hr
+    return Q_wall_cond
 {query}
 
 print(f"heat_gain={{heat_gain}}")

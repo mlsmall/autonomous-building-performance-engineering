@@ -132,12 +132,14 @@ def input_validation_node(state: AgentState) -> AgentState:
         user_input = state["messages"][0].content
         # Extract and convert input values to appropriate types if necessary
         return {
-            "city": user_input.split("city =")[1].strip(),
-            "window_area": int(user_input.split("window area =")[1].split("ft2")[0].strip().replace(",", "")),
-            "shgc": float(user_input.split("shgc =")[1].split()[0].strip()),
-            "u_value": float(user_input.split("u-value =")[1].split("city")[0].strip()),
-            "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
-        }
+           "city": user_input.split("city =")[1].strip(),
+           "window_area": int(user_input.split("window area =")[1].split("ft2")[0].strip().replace(",", "")),
+           "shgc": float(user_input.split("shgc =")[1].split()[0].strip()),
+           "wall_area": int(user_input.split("wall area =")[1].split("ft2")[0].strip().replace(",", "")),
+           "wall_u_value": float(user_input.split("wall u-value =")[1].split("city")[0].strip()),
+           "u_value": float(user_input.split("u-value =")[1].split("city")[0].strip()),
+           "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
+       }
     else:
         error_message  = f'{result["messages"][-1].content}  \nPlease enter it again:'
         return {
@@ -243,11 +245,12 @@ cost = annual_cost(energy, {state["utility_rate"]})
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
     return {
-        f"{key_prefix}_heat_gain": parsed_values["heat_gain"],
-        f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
-        f"{key_prefix}_cost": parsed_values["annual_cost"],
-        "messages": [HumanMessage(content=result, name="calculation")]
-    }
+       f"{key_prefix}_heat_gain": parsed_values["heat_gain"],
+       f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
+       f"{key_prefix}_cost": parsed_values["annual_cost"],
+       "wall_heat_gain": parsed_values["wall_heat"],
+       "messages": [HumanMessage(content=result, name="calculation")]
+   }
 # def recommendation_node(state: AgentState) -> AgentState:
 #     # First use React agent to get analysis
 #     result = recommendation_agent.invoke(state)

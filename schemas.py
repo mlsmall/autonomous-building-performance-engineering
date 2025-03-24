@@ -29,6 +29,9 @@ class AgentState(MessagesState):
     proposed_cost: float = None
     baseline_heat_gain: float = None
     baseline_cooling_energy: float = None
+    wall_area: float = None # Add wall area
+    wall_u_value: float = None # Add wall u-value
+    wall_heat_gain: float = None # Add wall heat gain
     baseline_cost: float = None
 
 # Validates user input
@@ -37,6 +40,8 @@ class BuildingInput(BaseModel):
     shgc: float = Field(gt=0, lt=1.1, description="Solar Heat Gain Coefficient")
     u_value: float = Field(gt=0, lt=20, description="The u-value must be between 0 and 20")
     city: str = Field(description=(
+    wall_area: float = Field(gt=0, description="Wall area in ft²")
+    wall_u_value: float = Field(gt=0, lt=20, description="The wall u-value must be between 0 and 20")
         "It MUST be the name of a city from anywhere in the world."
         "It must NOT be a country, province, state, fruit, animal, plant, or vegtable")
     )
