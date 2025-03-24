@@ -156,7 +156,14 @@ def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
         shgc_value = shgc_result['generation']
         print("SHGC:", shgc_value)
 
-        return f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_number}\nU-value={glass_u_value}\nSHGC={shgc_value}\nWall-U-Value={wall_u_value}"
+        return (
+            f"To={to_value}\n"
+            f"CDD={cdd_value}\n"
+            f"Climate Zone={zone_number}\n"
+            f"U-value={glass_u_value}\n"
+            f"SHGC={shgc_value}\n"
+            f"Wall-U-Value={wall_u_value}"
+        )
 
     except Exception as e:
         return f"Error in ASHRAE lookup: {str(e)}"
