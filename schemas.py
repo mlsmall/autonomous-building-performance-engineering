@@ -17,7 +17,7 @@ class AgentState(MessagesState):
     ashrae_to: float = None
     ashrae_cdd: float = None
     ashrae_climate_zone: int = None
-    ashrae_glass_u_factor: float = None
+    ashrae_glass_u: float = None
     ashrae_shgc: float = None
     # Utility data
     utility_rate: float = None
