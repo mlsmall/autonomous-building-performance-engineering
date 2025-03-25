@@ -190,6 +190,7 @@ def radiation_node(state: AgentState) -> AgentState:
     Retrieves solar radiation value for a given city.
     """
     city = state["city"]
+    print("ASHRAE LOOKUP NODE RESULTS:", state)
     result = radiation_tool.invoke(city)
 
     print("RADIATION NODE RESULT", result)
