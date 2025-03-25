@@ -324,13 +324,19 @@ if st.session_state.show_form:
                 div[data-testid="InputInstructions"] {
                     display: none !important;
                 }   
+                        
+                /* Remove number input clear X */
+                svg[data-baseweb="icon"][title="Clear value"] {
+                    display: none !important;
+                }
+                            
             </style>
             """, unsafe_allow_html=True)
                     
             st.markdown("""<h4 style='color: #1a237e;'>Building Details</h4>""", unsafe_allow_html=True)
             window_area = st.number_input("Window Area (ft²)", min_value=1, step=1, value=None, help="Total glazing area of the building envelope")
             shgc = st.number_input("Solar Heat Gain Coefficient (0-1)", min_value=0.0, max_value=1.0, step=0.01, value=None, help="Fraction of solar radiation admitted")
-            u_value = st.number_input("U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the window")
+            glass_u_value = st.number_input("Window U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the window")
             wall_area = st.number_input("Wall Area (ft²)", min_value=1, step=1, value=None, help="Total wall area of the building envelope")
             wall_u_value = st.number_input("Wall U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the wall")
             city = st.text_input("City", value=None, help="Used to determine your climate zone and local energy requirements")
@@ -340,7 +346,7 @@ if st.session_state.show_form:
             # st.session_state.building_data = {'window_area': window_area, 'shgc': shgc, 'u_value': u_value, 'city': city.strip()}
             st.session_state.building_data['window_area'] = window_area
             st.session_state.building_data['shgc'] = shgc
-            st.session_state.building_data['u_value'] = u_value
+            st.session_state.building_data['glass_u_value'] = glass_u_value
             st.session_state.building_data['wall_area'] = wall_area
             st.session_state.building_data['wall_u_value'] = wall_u_value
             st.session_state.building_data['city'] = city
@@ -350,7 +356,7 @@ if st.session_state.show_form:
             formatted_input = (
                 f"window area = {int(st.session_state.building_data['window_area'])} ft2 "
                 f"shgc = {st.session_state.building_data['shgc']} "
-                f"u-value = {st.session_state.building_data['u_value']} "
+                f"glass u-value = {st.session_state.building_data['glass_u_value']} "
                 f"wall area = {int(st.session_state.building_data['wall_area'])} ft2 "
                 f"city = {st.session_state.building_data['city']} "
 +               f"wall u-value = {st.session_state.building_data['wall_u_value']} "
@@ -381,7 +387,7 @@ if st.session_state.show_form:
                                     <div style='font-family: "Inter", sans-serif; font-size: 0.9em;'>
                                         • Glass area = <span style='font-weight: normal'>{} ft²</span><br>
                                         • SHGC = <span style='font-weight: normal'>{}</span><br>
-                                        • U-value = <span style='font-weight: normal'>{}</span><br>
+                                        • Glass U-value = <span style='font-weight: normal'>{}</span><br>
                                         • Wall area = <span style='font-weight: normal'>{} ft²</span><br>
                                         • Wall U-value = <span style='font-weight: normal'>{}</span><br>
                                         • City = <span style='font-weight: normal'>{}</span>
@@ -390,7 +396,7 @@ if st.session_state.show_form:
                                 """.format(
                                     f"{int(st.session_state.building_data['window_area']):,}",
                                     st.session_state.building_data['shgc'],
-                                    st.session_state.building_data['u_value'],
+                                    st.session_state.building_data['glass_u_value'],
                                     f"{int(st.session_state.building_data['wall_area']):,}",
                                     st.session_state.building_data['wall_u_value'],
                                     st.session_state.building_data['city']
@@ -407,7 +413,7 @@ if st.session_state.show_form:
                                     'city': state['input_validation'].get('city'),
                                     'window_area': state['input_validation'].get('window_area'),
                                     'shgc': state['input_validation'].get('shgc'),
-                                    'u_value': state['input_validation'].get('u_value'),
+                                    'glass_u_value': state['input_validation'].get('glass_u_value'),
                                     'wall_area': state['input_validation'].get('wall_area'),
                                     'wall_u_value': state['input_validation'].get('wall_u_value')
                                 }
