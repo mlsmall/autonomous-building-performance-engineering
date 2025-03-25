@@ -438,15 +438,15 @@ if st.session_state.show_form:
 
                         # Store calculation results for report generation
                         if 'calculation' in state:
-                            if 'proposed_heat_gain' in state['calculation']:
+                            if 'proposed_total_heat_gain' in state['calculation']:
                                 st.session_state.last_state.update({
-                                    'proposed_heat_gain': state['calculation'].get('proposed_heat_gain'),
+                                    'proposed_total_heat_gain': state['calculation'].get('proposed_total_heat_gain'),
                                     'proposed_cooling_energy': state['calculation'].get('proposed_cooling_energy'),
                                     'proposed_cost': state['calculation'].get('proposed_cost')
                                 })
-                            if 'baseline_heat_gain' in state['calculation']:
+                            if 'baseline_total_heat_gain' in state['calculation']:
                                 st.session_state.last_state.update({
-                                    'baseline_heat_gain': state['calculation'].get('baseline_heat_gain'),
+                                    'baseline_total_heat_gain': state['calculation'].get('baseline_total_heat_gain'),
                                     'baseline_cooling_energy': state['calculation'].get('baseline_cooling_energy'),
                                     'baseline_cost': state['calculation'].get('baseline_cost')
                                 })
