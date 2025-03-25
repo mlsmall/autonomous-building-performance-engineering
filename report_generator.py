@@ -55,8 +55,12 @@ def generate_performance_report(state):
     pdf.cell(0, 10, f"{state.get('window_area', 0):,.0f} ft²", ln=True)
     pdf.cell(60, 10, "Proposed SHGC:", 0)
     pdf.cell(0, 10, f"{state.get('shgc', 0)}", ln=True)
-    pdf.cell(60, 10, "Proposed U-Value:", 0)
-    pdf.cell(0, 10, f"{state.get('u_value', 0)}", ln=True)
+    pdf.cell(60, 10, "Proposed Glass U-Value:", 0)
+    pdf.cell(0, 10, f"{state.get('glass_u_value', 0)}", ln=True)
+    pdf.cell(60, 10, "Wall Area:", 0)
+    pdf.cell(0, 10, f"{state.get('wall_area', 0):,.0f} ft²", ln=True)
+    pdf.cell(60, 10, "Proposed Wall U-Value:", 0)
+    pdf.cell(0, 10, f"{state.get('wall_u_value', 0)}", ln=True)
     pdf.ln(10)
 
     # ASHRAE Baseline Comparison
