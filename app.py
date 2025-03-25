@@ -432,8 +432,9 @@ if st.session_state.show_form:
                             st.session_state.last_state.update({
                                 'ashrae_climate_zone': state['ashrae_lookup'].get('ashrae_climate_zone'),
                                 'ashrae_shgc': state['ashrae_lookup'].get('ashrae_shgc'),
-                                'ashrae_u_factor': state['ashrae_lookup'].get('ashrae_u_factor'),
-                                'wall_u_value': state['ashrae_lookup'].get('wall_u_value')
+                                'ashrae_glass_u': state['ashrae_lookup'].get('ashrae_glass_u'),
+                                'ashrae_wall_u': state['ashrae_lookup'].get('ashrae_wall_u'),
+                                'wall_u_value': state['input_validation'].get('wall_u_value')
                             })
 
                         # Store calculation results for report generation
