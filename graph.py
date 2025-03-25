@@ -5,8 +5,7 @@ Manages agent workflow, state, and interactions for building performance analysi
 
 from dotenv import load_dotenv
 load_dotenv()
-import json
-import uuid
+import json, uuid, re
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
@@ -137,14 +136,15 @@ def input_validation_node(state: AgentState) -> AgentState:
         user_input = state["messages"][0].content
         # Extract and convert input values to appropriate types if necessary
         return {
-           "city": user_input.split("city =")[1].split("wall")[0].strip(),
-           "window_area": int(user_input.split("window area =")[1].split("ft2")[0].strip().replace(",", "")),
-           "shgc": float(user_input.split("shgc =")[1].split()[0].strip()),
-           "glass_u_value": float(user_input.split("glass u-value =")[1].split("city")[0].strip()),
-           "wall_area": int(user_input.split("wall area =")[1].split("ft2")[0].strip().replace(",", "")),
-           "wall_u_value": float(user_input.split("wall u-value =")[1].strip()),          
-           "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
-       }
+            "city": re.search(r'city\s*=\s*([^=\n]+?)(?=\s|$)', user_input).group(1).strip(),
+            "window_area": int(re.search(r'window\s+area\s*=\s*([\d,]+)\s*ft2\b', user_input).group(1).replace(",", "")),
+            "shgc": float(re.search(r'shgc\s*=\s*(\d*\.?\d+)', user_input).group(1)),
+            "glass_u_value": float(re.search(r'glass\s+u-?value\s*=\s*(\d*\.?\d+)(?=\s|$)', user_input).group(1)),
+            "wall_area": int(re.search(r'wall\s+area\s*=\s*([\d,]+)\s*ft2\b', user_input).group(1).replace(",", "")),
+            "wall_u_value": float(re.search(r'wall\s+u-?value\s*=\s*(\d*\.?\d+)', user_input).group(1)),
+            "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
+        }
+                            
     else:
         error_message = f'{result["messages"][-1].content}  \nPlease enter it again:'
         return {
@@ -173,6 +173,7 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
             "ashrae_wall_u": float(tool_message.split("Wall-U-Value=")[1].strip()),
             "messages": [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
         }
+    
     else:
         # Handle invalid city
         return {
