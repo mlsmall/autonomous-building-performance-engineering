@@ -11,12 +11,12 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_experimental.utilities import PythonREPL
 
 from schemas import BuildingInput
-from models import llm_gemini, llm_gpt, llm_mistral
+from models import llm_gemini, llm_gpt, llm_mistral, llm_cohere
 from core_engine.ashrae_data import ASHRAE_VALUES
-from corrective_rag import retrieve, generate
-from radiation_rag import rad_generate, rad_retrieve
+from rag_corrective import retrieve, generate
+from rag_radiation import rad_generate, rad_retrieve
 
-llm = llm_gpt
+llm = llm_mistral
 
 # Create a tool to call the LLM model
 @tool
@@ -78,23 +78,17 @@ def input_validation_tool(query: Annotated[str, "Check if all required inputs ar
     except Exception as e:
         return f"Error in validation: {str(e)}"
     
-@tool
-def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):
-    """No matter what city is input. Returns ASHRAE values for Montreal."""
-    data = ASHRAE_VALUES["Montreal"]
-    return (
-        f"To={data['To']}\n"
-        f"CDD={data['CDD10']}\n"
-        f"Climate Zone={data['zone']}\n"
-        f"U-value={data['glass_u_factor']}\n"
-        f"SHGC={data['shgc']}\n"
-        f"Wall-U-Value={data['wall_u_value']}"
-    )
+# @tool
+# def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):
+#     """No matter what city is input. Returns ASHRAE values for Montreal."/a""
+#     data = ASHRAE_VALUES["Montreal"]
+#     return f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_number}\nGlass-U-value={glass_u_factor}\nSHGC={shgc_value}\nWall-U-Value={wall_u_value}"
 
+@tool
 def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
     """Uses RAG to find ASHRAE information from validated input"""
     try:
-        print("CITY:", city)
+        print("City:", city)
         # Use the existing retrieve and generate functions directly
         # 1. Temperature and CDD lookup
         climate_query = (
@@ -125,24 +119,24 @@ def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
 
         # 3. glass_ufactor_query lookup
         glass_ufactor_query = (
-        f"What is the U-factor for Vertical Fenestration 0%–40% of Wall for Nonmetal framing \
-        in climate zone {zone_number} according to Building Envelope Requirements? \
+        f"What is the U-factor for Vertical Fenestration 0%–40% of Wall for Nonmetal framing, all \
+        in climate zone {zone_number} according to Table Building Envelope Requirements? \
         Please provide only the numeric U-factor value without any additional text."
         )
         state = {"question": glass_ufactor_query}
         glass_ufactor_result = generate(retrieve(state))
-        glass_u_value = glass_ufactor_result['generation'].split("U-")[-1].split('.')[0].strip()
+        glass_u_value = glass_ufactor_result['generation']
         print("GLASS U-FACTOR:", glass_u_value)
 
         # 4. wall_ufactor_query lookup
         wall_ufactor_query = (
-        f"What is the U-factor for Walls for Nonmetal framing \
+        f"What is the U-factor for Nonresidential Mass Walls \
         in climate zone {zone_number} according to Building Envelope Requirements? \
         Please provide only the numeric U-factor value without any additional text."
         )
         state = {"question": wall_ufactor_query}
         wall_ufactor_result = generate(retrieve(state))
-        wall_u_value = wall_ufactor_result['generation'].split("U-")[-1].split('.')[0].strip()
+        wall_u_value = wall_ufactor_result['generation']
         print("WALL U-FACTOR:", wall_u_value)
 
         # 5. SHGC_query lookup
@@ -156,14 +150,7 @@ def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
         shgc_value = shgc_result['generation']
         print("SHGC:", shgc_value)
 
-        return (
-            f"To={to_value}\n"
-            f"CDD={cdd_value}\n"
-            f"Climate Zone={zone_number}\n"
-            f"U-value={glass_u_value}\n"
-            f"SHGC={shgc_value}\n"
-            f"Wall-U-Value={wall_u_value}"
-        )
+        return f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_number}\nGlass-U-value={glass_u_value}\nSHGC={shgc_value}\nWall-U-Value={wall_u_value}"
 
     except Exception as e:
         return f"Error in ASHRAE lookup: {str(e)}"
@@ -216,13 +203,11 @@ def annual_cost(annual_energy, rate):
     cost = annual_energy * rate
     return cost
     
-
 {query}
 
 print(f"total_heat_gain={{total_heat}}")
 print(f"annual_energy={{energy}}") # kWh/year
 print(f"annual_cost={{cost}}")
-
 """
         result = python_repl_tool.invoke(calc_code)
         return result

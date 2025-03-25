@@ -27,6 +27,7 @@ encrypt.py
 .streamlit/
 backup files/
 working_app*.py
+CONVENTIONS.md
 
 # Data
 data/

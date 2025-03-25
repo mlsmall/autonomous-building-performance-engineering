@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from db_creation.ashrae_db import retriever
 from models import llm_gemini, llm_gpt, llm_llama, llm_cohere
 
-llm = llm_gpt
+llm = llm_gemini # use gemini 1.5 flash
 
 # Load the prompt
 prompt = hub.pull("rlm/rag-prompt")
@@ -66,12 +66,9 @@ question_rewriter = re_write_prompt | llm | StrOutputParser()
 
 ### Create the functions
 def retrieve(state):
-    # print("Retrieving...")
-
     question = state["question"]
     documents = retriever.invoke(question)
 
-    # Add these debug prints
     # print("\n=== RETRIEVAL DEBUG ===")
     # print("Input question:", question)
     # print(f"\nDocuments retrieved: {len(documents)}")
@@ -114,9 +111,6 @@ def generate(state):
     documents = state["documents"]
 
     generation = rag_chain.invoke({"context": documents, "question": question})
-
-    # print("\n=== GENERATION DEBUG ===")
-    # print("Generation output:", generation)
 
     return {"documents": documents, "question": question, "generation": generation}
 
@@ -217,18 +211,19 @@ graph = workflow.compile()
 # graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph_flow.png")
 
 
-# Run
-# inputs = {"question": "What is the SHGC for Vertical Fenestration 0%–40% of Wall (for all frame types) \
-# in climate zone 6 according to Building Envelope Requirements? \
-# Please provide only the numeric SHGC value without any additional text."}
+if __name__ == "__main__":
+    zone_number = 6
+    inputs = {"question": f"What is the U-value for Vertical Fenestration 0%–40% of Wall for Nonmetal framing, all \
+        in climate zone {zone_number} according to Table Building Envelope Requirements? \
+        Only provide the numeric U-value. Do not provide any additional text."}
 
-# # Run the graph and print outputs
-# for output in graph.stream(inputs):
-#     for key, value in output.items():
-#         # Node
-#         print(f"Node '{key}':")
-#     print("-------------------")
+    # Run the graph and print outputs
+    for output in graph.stream(inputs):
+        for key, value in output.items():
+            # Node
+            print(f"Node '{key}':")
+        print("-------------------")
 
-# # Final generation
-# print("Final output:")
-# print(value["generation"])
+    # Final generation
+    print("Final output:")
+    print(value["generation"])

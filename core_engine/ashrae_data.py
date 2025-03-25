@@ -5,6 +5,6 @@ ASHRAE_VALUES = {
         "zone": 6,
         "glass_u_factor": 1.82,
         "shgc": 0.40,
-        "wall_u_value": 0
+        "wall_u_value": 0.453
     }
 }

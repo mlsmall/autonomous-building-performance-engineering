@@ -1,5 +1,6 @@
-import os
+import os, sys
 from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -11,25 +12,30 @@ from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+# from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+project_root = Path(__file__).parent.parent 
+sys.path.append(str(project_root))
 from models import embedding_google
 
 import warnings
 warnings.filterwarnings("ignore")  # Suppress all warnings
 
+# embedding_google = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", task_type="retrieval_document")
 embedding = embedding_google
 
 vector_store = Chroma(
     collection_name="rag-chroma",
     embedding_function=embedding,
-    persist_directory="./vector_database"
+    persist_directory="./ashrae_vector_db"
 )
 # retriever = vector_store.as_retriever(search_type = "mmr", search_kwargs={"k": 10, "fetch_k": 50})
 retriever = vector_store.as_retriever(search_kwargs={"k": 3})
 
 if __name__ == "__main__":
-    chunk_size = 2048
-    chunk_overlap = 200
-    files_path = "data"
+    chunk_size = 4096
+    chunk_overlap = 400
+    files_path = "data/ashrae"
     
     print(f"\nStarting to ingest files from the {files_path} folder...")
     documents = []

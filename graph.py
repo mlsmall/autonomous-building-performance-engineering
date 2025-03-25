@@ -22,7 +22,7 @@ llm = llm_gpt # llm_gpt preferred
 
 # Supervisor agent system prompt
 # Controls workflow between agents based on input state
-system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. 
+system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. ask
 
 For User ID: {{user_id}}
 {{user_data}}
@@ -35,7 +35,7 @@ If user_data contains building information:
     - Skip asking for inputs we already have
     - If baseline and proposed values exist, then route to recommedation for comparison
 
-If no user_data:
+If user_data indicates no previous building data exists:
     1. Send all inputs to input_validation to check:
         - SHGC (0-1)
         - Window area (ft²)
@@ -94,7 +94,10 @@ def supervisor_node(state: AgentState) -> AgentState:
         )
 
     else:
-        formatted_prompt = system_prompt
+        formatted_prompt = system_prompt.format(
+            user_id="N/A",
+            user_data="No previous building data available."
+        )
 
     messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
     response = llm.with_structured_output(SupervisorState).invoke(messages)
@@ -134,12 +137,12 @@ def input_validation_node(state: AgentState) -> AgentState:
         user_input = state["messages"][0].content
         # Extract and convert input values to appropriate types if necessary
         return {
-           "city": user_input.split("city =")[1].strip(),
+           "city": user_input.split("city =")[1].split("wall")[0].strip(),
            "window_area": int(user_input.split("window area =")[1].split("ft2")[0].strip().replace(",", "")),
            "shgc": float(user_input.split("shgc =")[1].split()[0].strip()),
-           "wall_area": int(user_input.split("wall area =")[1].split("ft2")[0].strip().replace(",", "")),
-           "wall_u_value": float(user_input.split("wall u-value =")[1].split("city")[0].strip()),
            "glass_u_value": float(user_input.split("glass u-value =")[1].split("city")[0].strip()),
+           "wall_area": int(user_input.split("wall area =")[1].split("ft2")[0].strip().replace(",", "")),
+           "wall_u_value": float(user_input.split("wall u-value =")[1].strip()),          
            "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
        }
     else:
@@ -166,8 +169,8 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
             "ashrae_cdd": float(tool_message.split("CDD=")[1].split("\n")[0].strip()),
             "ashrae_climate_zone": int(tool_message.split("Climate Zone=")[1].split("\n")[0].strip()),
             "ashrae_glass_u": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
-            "ashrae_shgc": float(tool_message.split("SHGC=")[1].strip()),
-            "wall_u_value": float(tool_message.split("Wall-U-Value=")[1].split("\n")[0].strip()),
+            "ashrae_shgc": float(tool_message.split("SHGC=")[1].split("\n")[0].strip()),
+            "ashrae_wall_u": float(tool_message.split("Wall-U-Value=")[1].strip()),
             "messages": [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
         }
     else:
@@ -216,30 +219,31 @@ def calculation_node(state: AgentState) -> AgentState:
     Performs building performance calculations for both proposed and baseline cases.
     Currently calculates heat gain, energy use, and operating costs using ASHRAE data.
     """
+
     # Determine if calculating proposed or baseline case
-    if "proposed_heat_gain" not in state: 
+    if "proposed_total_heat_gain" not in state: 
         calculation_type = "proposed"
         shgc = state["shgc"]
         glass_u_value = state["glass_u_value"]
+        wall_u_value = state["wall_u_value"]
     else:
         calculation_type = "baseline"
         shgc = state["ashrae_shgc"]
         glass_u_value = state["ashrae_glass_u"]
+        wall_u_value = state["ashrae_wall_u"]
 
     # Format the calculation query and pass the values
     query = f"""
 glass_heat_gain = window_heat_gain(area={state["window_area"]}, SHGC={shgc}, glass_u_value={glass_u_value}, To={state["ashrae_to"]}, radiation={state["radiation"]})
-wall_heat_gain = wall_heat_gain(wall_area={state["wall_area"]}, U={state["wall_u_value"]}, To={state["ashrae_to"]})
+wall_heat_gain = wall_heat_gain(wall_area={state["wall_area"]}, U={wall_u_value}, To={state["ashrae_to"]})
 total_heat = total_heat_gain(glass_heat_gain, wall_heat_gain)
 energy = annual_cooling_energy(total_heat, {state["ashrae_cdd"]})
 cost = annual_cost(energy, {state["utility_rate"]})
 """
-    result = python_repl_tool.invoke(query)
+    result = calculation_tool.invoke(query)
     # Parse the output from the calculation tool
     stdout_index = result.find('Stdout:') # Find the start of the stdout
     stdout = result[stdout_index + len('Stdout:'):].strip() # Extract the stdout
-    stdout = result[stdout_index + len('Stdout:'):].strip() # Extract the stdout
-    
     # Convert calculation tool results to float values
     lines = stdout.split('\n') # Split into lines 
     parsed_values = {}
@@ -250,6 +254,7 @@ cost = annual_cost(energy, {state["utility_rate"]})
     # print("CALCULATION PARSED VALUES", parsed_values, calculation_type)
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
+
     return {
         f"{key_prefix}_total_heat_gain": parsed_values["total_heat_gain"],
         f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
@@ -280,10 +285,6 @@ def recommendation_node(state: AgentState) -> AgentState:
     baseline_cooling_energy: {state['baseline_cooling_energy']}
     proposed_cost: {state['proposed_cost']}
     baseline_cost: {state['baseline_cost']}
-    glass_u_value: {state['glass_u_value']}
-    ashrae_glass_u: {state['ashrae_glass_u']}
-    wall_u_value: {state['wall_u_value']}
-    ashrae_wall_u: {state['ashrae_wall_u']}
     """
     # print("RECOMMENDATION NODE MESSAGE:", message)
     # Get recommendations and format response based on the Recommendation class
