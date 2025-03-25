@@ -12,11 +12,11 @@ class PDF(FPDF):
 def generate_performance_report(state):
     pdf = PDF()
     diff = {
-                'heat_gain': state.get('proposed_heat_gain', 0) - state.get('baseline_heat_gain', 0),
-                'energy': state.get('proposed_cooling_energy', 0) - state.get('baseline_cooling_energy', 0),
-                'cost': state.get('proposed_cost', 0) - state.get('baseline_cost', 0)
-            }
-    
+            'heat_gain': state.get('proposed_heat_gain', 0) - state.get('baseline_heat_gain', 0),
+            'energy': state.get('proposed_cooling_energy', 0) - state.get('baseline_cooling_energy', 0),
+            'cost': state.get('proposed_cost', 0) - state.get('baseline_cost', 0)
+        }
+
     # Start fresh page
     pdf.add_page()
 
