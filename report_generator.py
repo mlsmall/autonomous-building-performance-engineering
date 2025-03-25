@@ -75,14 +75,10 @@ def generate_performance_report(state):
     pdf.cell(0, 10, f"{state.get('ashrae_climate_zone', 'N/A')}", ln=True)
     pdf.cell(60, 10, "Baseline SHGC:", 0)
     pdf.cell(0, 10, f"{state.get('ashrae_shgc', 0)}", ln=True)
-    pdf.cell(60, 10, "Baseline U-Value:", 0)
+    pdf.cell(60, 10, "Baseline Glass U-Value:", 0)
     pdf.cell(0, 10, f"{state.get('ashrae_glass_u', 0)}", ln=True)
-    pdf.cell(60, 10, "Wall U-Value:", 0)
+    pdf.cell(60, 10, "Baseline Wall U-Value:", 0)
     pdf.cell(0, 10, f"{state.get('ashrae_wall_u', 0)}", ln=True)
-    pdf.cell(60, 10, "ASHRAE To:", 0)
-    pdf.cell(0, 10, f"{state.get('ashrae_to', 0)}", ln=True)
-    pdf.cell(60, 10, "ASHRAE CDD:", 0)
-    pdf.cell(0, 10, f"{state.get('ashrae_cdd', 0)}", ln=True)
     pdf.ln(10)
 
     # Proposed Building Performance Analysis Section

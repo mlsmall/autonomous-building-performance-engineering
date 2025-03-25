@@ -351,7 +351,6 @@ if st.session_state.show_form:
             st.session_state.building_data['wall_u_value'] = wall_u_value
             st.session_state.building_data['city'] = city
         
-
             # Format the input for graph processing
             formatted_input = (
                 f"window area = {int(st.session_state.building_data['window_area'])} ft2 "
@@ -417,6 +416,7 @@ if st.session_state.show_form:
                                     'wall_area': state['input_validation'].get('wall_area'),
                                     'wall_u_value': state['input_validation'].get('wall_u_value')
                                 }
+
                             else:
                                 # Handle invalid city
                                 st.session_state.building_data['city'] = None
@@ -433,8 +433,7 @@ if st.session_state.show_form:
                                 'ashrae_climate_zone': state['ashrae_lookup'].get('ashrae_climate_zone'),
                                 'ashrae_shgc': state['ashrae_lookup'].get('ashrae_shgc'),
                                 'ashrae_glass_u': state['ashrae_lookup'].get('ashrae_glass_u'),
-                                'ashrae_wall_u': state['ashrae_lookup'].get('ashrae_wall_u'),
-                                'wall_u_value': state['input_validation'].get('wall_u_value')
+                                'ashrae_wall_u': state['ashrae_lookup'].get('ashrae_wall_u')
                             })
 
                         # Store calculation results for report generation

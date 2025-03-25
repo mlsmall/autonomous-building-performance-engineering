@@ -190,7 +190,6 @@ def radiation_node(state: AgentState) -> AgentState:
     Retrieves solar radiation value for a given city.
     """
     city = state["city"]
-    print("ASHRAE LOOKUP NODE RESULTS: ashrae_climate_zone=", state.get("ashrae_climate_zone"), " ashrae_shgc=", state.get("ashrae_shgc"), " ashrae_glass_u=", state.get("ashrae_glass_u"), " ashrae_wall_u=", state.get("ashrae_wall_u"))
     result = radiation_tool.invoke(city)
 
     print("RADIATION NODE RESULT", result)
@@ -253,7 +252,7 @@ cost = annual_cost(energy, {state["utility_rate"]})
         if '=' in line:
             key, value = line.split('=', 1)
             parsed_values[key.strip()] = float(value.strip())
-    # print("CALCULATION PARSED VALUES", parsed_values, calculation_type)
+    print("CALCULATION PARSED VALUES", parsed_values, calculation_type)
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
 
@@ -263,16 +262,6 @@ cost = annual_cost(energy, {state["utility_rate"]})
         f"{key_prefix}_cost": parsed_values["annual_cost"],
         "messages": [HumanMessage(content=result, name="calculation")]
     }
-# def recommendation_node(state: AgentState) -> AgentState:
-#     # First use React agent to get analysis
-#     result = recommendation_agent.invoke(state)
-#     print()
-#     # Then use structured output to format the response
-#     response = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=result["messages"][-1].content)])
-    
-#     # Return both the structured response and message
-#     state["messages"] = [HumanMessage(content=response.model_dump_json(), name="recommendation")]
-#     return state
 
 def recommendation_node(state: AgentState) -> AgentState:
     """
