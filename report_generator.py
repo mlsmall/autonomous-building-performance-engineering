@@ -39,7 +39,7 @@ def generate_performance_report(state):
     pdf.ln(10)
 
     # Building Details Section
-    pdf.ln(20)
+    pdf.ln(10)
     pdf.set_fill_color(26, 35, 126)
     pdf.set_text_color(26, 35, 126)
     pdf.set_font("Arial", "B", 16)
@@ -61,7 +61,7 @@ def generate_performance_report(state):
     pdf.cell(0, 10, f"{state.get('wall_area', 0):,.0f} ft²", ln=True)
     pdf.cell(60, 10, "Proposed Wall U-Value:", 0)
     pdf.cell(0, 10, f"{state.get('wall_u_value', 0)}", ln=True)
-    pdf.ln(10)
+    pdf.ln(5)
 
     # ASHRAE Baseline Comparison
     pdf.set_text_color(26, 35, 126)

@@ -252,7 +252,7 @@ cost = annual_cost(energy, {state["utility_rate"]})
         if '=' in line:
             key, value = line.split('=', 1)
             parsed_values[key.strip()] = float(value.strip())
-    print("CALCULATION PARSED VALUES", parsed_values, calculation_type)
+    print(calculation_type, "CALCULATION PARSED VALUES", parsed_values)
     # Return results with appropriate prefix (baseline/proposed)
     key_prefix = "baseline" if calculation_type == "baseline" else "proposed"
 
@@ -277,13 +277,13 @@ def recommendation_node(state: AgentState) -> AgentState:
     proposed_cost: {state['proposed_cost']}
     baseline_cost: {state['baseline_cost']}
     """
-    # print("RECOMMENDATION NODE MESSAGE:", message)
+
     # Get recommendations and format response based on the Recommendation class
     result = recommendation_agent.invoke({"messages": [("user", message)]})
     agent_response = result["messages"][-1].content
-    # print("AGENT RESPONSE BEFORE LLM:", agent_response)
+    # print("RECOMMENDATION AGENT RESPONSE BEFORE LLM:", agent_response)
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
-    # print("LLM RECOMMENDATION:", recommendation.model_dump_json())
+    # print("LLM WITH STRUCTURED OUTPUT RECOMMENDATION:", recommendation.model_dump_json())
     return {"messages": [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]}
 
 

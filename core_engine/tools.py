@@ -257,16 +257,16 @@ def recommendation_tool(query: Annotated[str, "Compare building performance and 
         # performance_delta = ((data['baseline_cost'] - data['proposed_cost']) / data['baseline_cost']) * 100
 
         # Calculate differences as (Proposed - Baseline)
-        heat_gain_diff = data['proposed_heat_gain'] - data['baseline_heat_gain']
+        heat_gain_diff = data['proposed_total_heat_gain'] - data['baseline_total_heat_gain']
         energy_diff = data['proposed_cooling_energy'] - data['baseline_cooling_energy']
         cost_diff = data['proposed_cost'] - data['baseline_cost']
         performance_delta = ((data['proposed_cost'] - data['baseline_cost']) / data['baseline_cost']) * 100
 
-        print("Recommendation tool results")
-        print(f"Heat Gain difference: {heat_gain_diff} BTU/hr")
-        print(f"Annual Energy difference: {energy_diff} kWh/year")
-        print(f"Annual Cost difference: ${cost_diff}")
-        print(f"Performance delta: {performance_delta}%")
+        # print("Recommendation tool results")
+        # print(f"Heat Gain difference: {heat_gain_diff} BTU/hr")
+        # print(f"Annual Energy difference: {energy_diff} kWh/year")
+        # print(f"Annual Cost difference: ${cost_diff}")
+        # print(f"Performance delta: {performance_delta}%")
 
         return json.dumps({
             "heat_gain_diff": heat_gain_diff,

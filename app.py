@@ -51,9 +51,9 @@ def format_recommendation(data: dict) -> str:
     heat_gain_diff = float(heat_gain_line.split(":")[1].split()[0])
     energy_diff = float(energy_line.split(":")[1].split()[0])
     cost_diff = float(cost_line.split(":")[1].split()[0])
-    
+
     return (
-        '<div style="font-family:\'Inter\',sans-serif;border-left:3px solid #1a237e;padding:1rem;margin:1rem 0;background:#faffff;">'
+        '<div style="font-family:\'Inter\',sans-serif;border-radius: 8px;border-left:3px solid #1a237e;padding:1rem;margin:1rem 0;background:#faffff;">'
         '<div style="color:#1a237e;font-weight:600;font-size:1.1em;margin-bottom:1rem;">PERFORMANCE ANALYSIS</div>'
         f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Peak Heat Gain</span>'
         f'<span style="color:{"#43a047" if heat_gain_diff < 0 else "#d32f2f"};">'
@@ -68,7 +68,7 @@ def format_recommendation(data: dict) -> str:
         f'{"✓" if cost_diff < 0 else "↓"}</span> '
         f'&nbsp;The yearly energy costs are ${abs(cost_diff):,.2f} {"less" if cost_diff < 0 else "more"}</div>'
         '<div style="margin-top:1rem;padding-top:0.5rem;border-top:1px solid #eee;">'
-        f'The proposed building is <span style="color:{"#43a047" if data["performance_delta"] < 0 else "#d32f2f"};">'
+        f'The Proposed building is <span style="color:{"#43a047" if data["performance_delta"] < 0 else "#d32f2f"};">'
         f'{abs(data["performance_delta"]):.1f}% {"better" if data["performance_delta"] < 0 else "worse"} </span> than the Baseline building.'
         '</div>'
         '</div>'
@@ -265,7 +265,7 @@ if 'messages' not in st.session_state:
             padding: 1rem 1rem;  
             font-family: 'Inter', sans-serif;
             border-radius: 8px;
-            margin: 0 0 2rem 0;
+            margin: 0 0 0 0;
             box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);
             border: 1px solid rgba(26, 35, 126, 0.05);
             border-left: 3px solid #1a237e; 
@@ -307,40 +307,58 @@ if 'show_form' not in st.session_state:
     st.session_state.show_form = True
 
 # Chat input box 
-# Three columns with the form in the first column (left side). The other two are empty.
-#cols = st.columns(3)
-col1, col2, col3 = st.columns([0.03, .5, 1]) 
+st.markdown("""
+<style>
+    /* Remove number input spin buttons */
+    div[data-testid="stNumberInput"] button {
+        display: none !important;
+    }
+        
+    /* Remove 'Press enter to submit' text */
+    div[data-testid="InputInstructions"] {
+        display: none !important;
+    }   
+            
+    /* Remove number input clear X */
+    svg[data-baseweb="icon"][title="Clear value"] {
+        display: none !important;
+    }
+    
+    /* Move the form border left */
+    div[data-testid="stForm"] {
+        margin-right: 100px !important;  /* Pulls right side left */ 
+        padding: 1rem 0 0.75rem 2rem !important; 
+        border-radius: 8px;
+        margin-top: -20px !important;
+        margin-left: 17px !important;
+        box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);
+        border: 1px solid rgba(26, 35, 126, 0.05);
+        border-left: 3px solid #1a237e; 
+        
+    }
+</style>
+""", unsafe_allow_html=True)
+
 if st.session_state.show_form:
-    with col2:
-        with st.form("building_form"):
-            st.markdown("""
-            <style>
-                /* Remove number input spin buttons */
-                div[data-testid="stNumberInput"] button {
-                    display: none !important;
-                }
-                   
-                /* Remove 'Press enter to submit' text */
-                div[data-testid="InputInstructions"] {
-                    display: none !important;
-                }   
-                        
-                /* Remove number input clear X */
-                svg[data-baseweb="icon"][title="Clear value"] {
-                    display: none !important;
-                }
-                            
-            </style>
-            """, unsafe_allow_html=True)
-                    
-            st.markdown("""<h4 style='color: #1a237e;'>Building Details</h4>""", unsafe_allow_html=True)
+    with st.form("building_form"):
+        st.markdown("""<h4 style='color: #1a237e;'>Building Details</h4>""", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)  
+        with col1:
             window_area = st.number_input("Window Area (ft²)", min_value=1, step=1, value=None, help="Total glazing area of the building envelope")
             shgc = st.number_input("Solar Heat Gain Coefficient (0-1)", min_value=0.0, max_value=1.0, step=0.01, value=None, help="Fraction of solar radiation admitted")
+
+        with col2:
             glass_u_value = st.number_input("Window U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the window")
             wall_area = st.number_input("Wall Area (ft²)", min_value=1, step=1, value=None, help="Total wall area of the building envelope")
+
+        with col3:
             wall_u_value = st.number_input("Wall U-Value (0-10)", min_value=0.0, max_value=10.0, step=0.1, value=None, help="Overall heat transfer coefficient of the wall")
             city = st.text_input("City", value=None, help="Used to determine your climate zone and local energy requirements")
-            submit_button = st.form_submit_button("Submit")
+
+        # Centered submit button
+        st.markdown("<div style='margin-top: 20px;'>", unsafe_allow_html=True)
+        submit_button = st.form_submit_button("Submit")
+        st.markdown("</div>", unsafe_allow_html=True)
 
         if submit_button:     
             # st.session_state.building_data = {'window_area': window_area, 'shgc': shgc, 'u_value': u_value, 'city': city.strip()}
