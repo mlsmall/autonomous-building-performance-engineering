@@ -13,7 +13,7 @@ from langchain_core.messages import HumanMessage
 
 from agents import llm_agent, research_agent, ashrae_lookup_agent, recommendation_agent, input_validation_agent
 from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
-from models import llm_gemini, llm_gpt
+from models import llm_gemini, llm_gpt, llm_mistral, llm_gemini_20
 from schemas import AgentState, Recommendation, SupervisorState, members
 from database import building_data, get_user_history
 
@@ -54,28 +54,24 @@ If user_data indicates no previous building data exists:
 
     4. Only after BOTH Proposed AND Baseline calculations are complete:
         - Route to recommendation for comparison
-        - Then route to FINISH
 
-Route to llm only for general building questions, never for calculations or data lookups.
+    5. After recommendations are shown:
+        - STOP
+        - Wait for the user to write a message or question
+        - ONLY AFTER a user writes a message or route to llm_node to answer questions or messages
+        - Do not route to llm_node until last message is a user message
+        - Only route to `input_validation` if new building data is provided (contains "=")
 """
-
-# # Nodes
-# def supervisor_node(state: AgentState) -> AgentState:
-#     print("------------------ SUPERVISOR NODE START ------------------\n")
-#     messages = [{"role": "system", "content": system_prompt}] + state["messages"]
-#     response = llm.with_structured_output(SupervisorState).invoke(messages)
-#     next1 = response.next
-#     if next1 == "FINISH":
-#         next1 = END
-
-#     print(f"Routing to {next1}")
-#     print("\n------------------ SUPERVISOR NODE END ------------------\n")
-#     return {"next": next1}
+# Route to llm for:
+#     - General building questions
+#     - Questions about the building's performance after analysis is complete
+#     - Questions about the calculated values and recommendations
+#     - Any user messages after the initial analysis is complete that don't contain new building specifications
 
 # The supervisor is an LLM node that decides what node to execute next - chore orchestrator
 def supervisor_node(state: AgentState) -> AgentState:
     print("\n=== SUPERVISOR NODE START ===")
-    
+
     if USE_DATABASE:
         user_id = state.get('user_id')
         user_data = "No previous building data"
@@ -100,11 +96,11 @@ def supervisor_node(state: AgentState) -> AgentState:
 
     messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
     response = llm.with_structured_output(SupervisorState).invoke(messages)
-    
-    next1 = response.next
-    if next1 == "FINISH":
-        next1 = END
 
+    next1 = response.next
+    # if next1 == "FINISH":
+    #     next1 = END
+    
     # Store building data in MongoDB if enabled
     if USE_DATABASE and state.get("user_id"):
         if next1 == "ashrae_lookup" or next1 == END:
@@ -116,11 +112,44 @@ def supervisor_node(state: AgentState) -> AgentState:
 
 def llm_node(state: AgentState) -> AgentState:
     """
-    General-purpose LLM agent for handling non-technical queries.
-    Only used when specific agent tasks are not required.
+    General-purpose LLM agent for handling non-technical queries and post-analysis conversation.
+    Provides answers about building performance based on state data.
     """
-    result = llm_agent.invoke(state) # We're passing the state to the "create_react_agent" 
-    return {"messages": [HumanMessage(content=result["messages"][-1].content, name="llm_node")]}
+    # Create a context with all the building data from the state
+    building_context = "Building Analysis Data:\n"
+    
+    # Dynamically add all relevant state data to the context
+    for key, value in state.items():
+        # Skip non-data fields and empty values
+        if key not in ["messages", "next"] and value is not None:
+            # Format the key for better readability
+            formatted_key = key.replace('_', ' ').title()
+            building_context += f"- {formatted_key}: {value}\n"
+
+    # Create enhanced system message with building context
+    enhanced_system_message = f"""You are a highly-trained building performance analyst. 
+    You can provide the user with information about their building's energy performance.
+    You have access to the following building data and analysis results:
+    {building_context}
+    Please keep the answer concise.
+    """
+    # print("ENHANCED SYSTEM MESSAGE", enhanced_system_message)
+    # Get the user's question from the state
+    user_question = state["messages"][-1].content
+    
+    # Create messages with enhanced system message
+    enhanced_messages = [{"role": "system", "content": enhanced_system_message}, 
+                         {"role": "user", "content": user_question}]
+
+    # Invoke the LLM with the enhanced context
+    result = llm_agent.invoke({"messages": enhanced_messages})
+    # print("LLM NODE RESPONSE", result["messages"][-1].content)
+
+    return {
+        "messages": [HumanMessage(content=result["messages"][-1].content, name="llm_node")],
+        "next": "FINISH"
+        }  
+   
 
 
 def input_validation_node(state: AgentState) -> AgentState:
@@ -260,6 +289,8 @@ cost = annual_cost(energy, {state["utility_rate"]})
         f"{key_prefix}_total_heat_gain": parsed_values["total_heat_gain"],
         f"{key_prefix}_cooling_energy": parsed_values["annual_energy"],
         f"{key_prefix}_cost": parsed_values["annual_cost"],
+        f"{key_prefix}_glass_heat_gain": parsed_values["glass_heat_gain"],
+        f"{key_prefix}_wall_heat_gain": parsed_values["wall_heat_gain"],
         "messages": [HumanMessage(content=result, name="calculation")]
     }
 
@@ -295,7 +326,7 @@ builder = StateGraph(AgentState)
 builder.add_node("supervisor", supervisor_node)
 builder.add_node("input_validation", input_validation_node)
 builder.add_node("ashrae_lookup", ashrae_lookup_node) # Energy Code Lookup
-builder.add_node("radiation_node", radiation_node) # Radiation table lookup
+builder.add_node("radiation_node", radiation_node) # "radiation" is already used as a key in the state
 builder.add_node("calculation", calculation_node)
 builder.add_node("recommendation", recommendation_node)
 builder.add_node("utility", utility_node)
@@ -358,6 +389,8 @@ def main_loop():
         print("* Wall u-value")
         print("* Building location (city)")
 
+    thread_id = str(uuid.uuid4())  
+    
     while True:
         user_input = input(">> ")
         if user_input.lower() in ["exit", "quit", "q"]:
@@ -365,7 +398,7 @@ def main_loop():
             break
 
         # Create new thread_id for processing each input
-        thread_id = str(uuid.uuid4())  
+        
         config = {"configurable": {"thread_id": thread_id}}   
 
         # Initialize the stream state with user input and user id
@@ -385,12 +418,18 @@ def main_loop():
             # Handle invalid input
             if 'input_validation' in state and "Valid input" not in state['input_validation']['messages'][0].content:
                 print("\n" + state['input_validation']['messages'][0].content + "\n")
+                # thread_id = str(uuid.uuid4())  # Reset thread_id for new input
                 break  # breaks stream, returns to input loop
 
             # Display recommendations at the end when available
             if 'recommendation' in state:
                 recs = json.loads(state['recommendation']['messages'][0].content)
                 print("\n" + "\n".join(recs['recommendations']) + "\n")
+                print("\nYou can now ask questions about your building's performance. Type 'exit', 'quit', or 'q' to quit.")
+
+            if "llm" in state:
+                print("BPA:", state["llm"]["messages"][0].content)
+                
 
 # Run the main loop
 if __name__ == "__main__":

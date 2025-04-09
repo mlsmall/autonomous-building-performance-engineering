@@ -1,1 +1,10 @@
-gAAAAABn41Q6lDZ28FlzY5yQhZsLIWQv1RBtAGlnindJ7t9rMlLG_IVBvjl0nGlhDLoGrsyp92kao7ul90K-JIkjO0I7VDn1qfXrUAQeiQkAXeUF52sGh3oAbEz_BMkA5ihzH9FIwhaNucSLO-In9oCVUWAA8jLHnqNx-IJrYCWwdyadaKOgcV6JRDMVR51JbSNB7ZPU2aACbZDewUZlMqHxSwUTaV_Tvtjd29RFWgSqcRveFNKW1WtI2yz78K0F3e6m3Rtrrz0fwV4FgdBaCeILb0w3Z1ReEOdNdOlIXo_CUl1JifzSTckzlwhXXJrQKY7nnPDGf_iX
+ASHRAE_VALUES = {
+    "Montreal": {
+        "To": 28,
+        "CDD10": 1192,
+        "zone": 6,
+        "glass_u_factor": 1.82,
+        "shgc": 0.40,
+        "wall_u_value": 0.453
+    }
+}

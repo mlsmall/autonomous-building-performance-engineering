@@ -8,10 +8,7 @@ llm = llm_gpt
 
 # Load the prompt
 prompt = hub.pull("rlm/rag-prompt")
-
-# Post-processing
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
+# print("--Prompt--", prompt)
 
 # Create the RAG Chain
 rag_chain = prompt | llm | StrOutputParser()

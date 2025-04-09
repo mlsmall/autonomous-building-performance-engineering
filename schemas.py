@@ -2,17 +2,18 @@ from langgraph.graph import MessagesState
 from pydantic import BaseModel, Field
 from typing import Literal
 
-# This agent state is the input to each node in the graph
-# Tracks all data through the process:
+# This agent state tracks the building data:
 class AgentState(MessagesState):
     # The 'next' field indicates where to route to next
     next: str
     # Input data
-    user_id: str = None 
+    user_id: str = None
     city: str = None
     window_area: float = None
     shgc: float = None
     glass_u_value: float = None
+    wall_area: float = None
+    wall_u_value: float = None
     # ASHRAE data
     ashrae_to: float = None
     ashrae_cdd: float = None
@@ -28,12 +29,13 @@ class AgentState(MessagesState):
     proposed_total_heat_gain: float = None
     proposed_cooling_energy: float = None
     proposed_cost: float = None
+    proposed_glass_heat_gain: float = None
+    proposed_wall_heat_gain: float = None
     baseline_total_heat_gain: float = None
     baseline_cooling_energy: float = None
-    wall_area: float = None # Add wall area
-    wall_u_value: float = None # Add wall u-value
-    wall_heat_gain: float = None # Add wall heat gain
     baseline_cost: float = None
+    baseline_glass_heat_gain: float = None
+    baseline_wall_heat_gain: float = None
 
 # Validates user input
 class BuildingInput(BaseModel):
@@ -80,6 +82,8 @@ members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommend
 options = members + ["FINISH"]
 
 # Our team supervisor is an LLM node. It picks the next agent to process and decides when the work is completed
+
+# """Worker to route to next. If no workers are needed, route to FINISH"""
 class SupervisorState(BaseModel): # This is a Pydantic class that returns a literal
-    """Worker to route to next. If no workers are needed, route to FINISH"""
+    """Worker to route to next."""
     next: Literal[*options] # type: ignore 

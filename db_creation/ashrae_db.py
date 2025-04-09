@@ -4,15 +4,14 @@ from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+# __import__('pysqlite3')
+# import sys
+# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-# from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 project_root = Path(__file__).parent.parent 
 sys.path.append(str(project_root))
@@ -21,7 +20,6 @@ from models import embedding_google
 import warnings
 warnings.filterwarnings("ignore")  # Suppress all warnings
 
-# embedding_google = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", task_type="retrieval_document")
 embedding = embedding_google
 
 vector_store = Chroma(
