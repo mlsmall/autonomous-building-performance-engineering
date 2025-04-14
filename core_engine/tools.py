@@ -11,12 +11,12 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_experimental.utilities import PythonREPL
 
 from schemas import BuildingInput
-from models import llm_gemini, llm_gpt, llm_cohere
+from models import llm_gemini_15, llm_gpt, llm_cohere
 from core_engine.ashrae_data import ASHRAE_VALUES
 from rag_corrective import retrieve, generate
 from rag_radiation import rad_generate, rad_retrieve
 
-llm = llm_cohere
+llm = llm_cohere # llm_gemini_15 recommended
 
 # Create a tool to call the LLM model
 @tool
@@ -161,7 +161,7 @@ def radiation_tool(city: Annotated[str, "Look up specific solar radiation data"]
     try:
         query = (
         f"What is the solar radiation for {city}? \
-        Please provide only the numeric value without any additional text."
+        Please provide only the numeric value WITHOUT any additional text or period at the end."
         ) 
         documents = rad_retrieve(query)
         result = rad_generate(query, documents)

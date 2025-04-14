@@ -268,7 +268,7 @@ if 'messages' not in st.session_state:
             margin: 0 0 0 0;
             box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);
             border: 1px solid rgba(26, 35, 126, 0.05);
-            border-left: 3px solid #1a237e; 
+            border-left: 2.5px solid #1a237e; 
             ">
             <p style="
                 color: #1a237e;
@@ -306,7 +306,7 @@ for message in st.session_state.messages:
 if 'show_form' not in st.session_state:
     st.session_state.show_form = True
 
-# Chat input box 
+# Chat input form 
 st.markdown("""
 <style>
     /* Remove number input spin buttons */
@@ -333,9 +333,32 @@ st.markdown("""
         margin-left: 17px !important;
         box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);
         border: 1px solid rgba(26, 35, 126, 0.05);
-        border-left: 3px solid #1a237e; 
-        
+        border-left: 2.5px solid #1a237e; 
     }
+                
+    /* Input box text - on focus */
+    div[data-baseweb="input"]:focus-within {
+        border-color: #1a237e !important;
+        box-shadow: 0 0 0 1px #1a237e !important;
+    }
+            
+    /* Input box numbers - on focus  */
+    div[data-testid="stNumberInputContainer"]:focus-within {
+        border-color: #1a237e !important;
+        box-shadow: 0 0 0 1px #1a237e !important;
+    }
+
+    /* Submit button - on hover */
+    button[data-testid="stBaseButton-secondaryFormSubmit"]:hover {
+        border-color: #1a237e !important;
+    }
+    
+    /* Submit text - on hover */
+    button[data-testid="stBaseButton-secondaryFormSubmit"]:hover div[data-testid="stMarkdownContainer"] {
+        color: #1a237e !important;
+    }
+
+
 </style>
 """, unsafe_allow_html=True)
 

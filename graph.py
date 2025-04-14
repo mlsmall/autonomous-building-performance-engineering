@@ -13,7 +13,7 @@ from langchain_core.messages import HumanMessage
 
 from agents import llm_agent, research_agent, ashrae_lookup_agent, recommendation_agent, input_validation_agent
 from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
-from models import llm_gemini, llm_gpt, llm_mistral, llm_gemini_20
+from models import llm_gpt, llm_mistral, llm_gemini_25
 from schemas import AgentState, Recommendation, SupervisorState, members
 from database import building_data, get_user_history
 
@@ -165,7 +165,7 @@ def input_validation_node(state: AgentState) -> AgentState:
         user_input = state["messages"][0].content
         # Extract and convert input values to appropriate types if necessary
         return {
-            "city": re.search(r'city\s*=\s*([^=\n]+?)(?=\s|$)', user_input).group(1).strip(),
+            "city": re.search(r'city\s*=\s*([^=\n]+?)(?=\s*(?:wall|window|shgc|u-value|$))', user_input).group(1).strip(),
             "window_area": int(re.search(r'window\s+area\s*=\s*([\d,]+)\s*ft2\b', user_input).group(1).replace(",", "")),
             "shgc": float(re.search(r'shgc\s*=\s*(\d*\.?\d+)', user_input).group(1)),
             "glass_u_value": float(re.search(r'glass\s+u-?value\s*=\s*(\d*\.?\d+)(?=\s|$)', user_input).group(1)),
@@ -196,7 +196,7 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
         return {
             "ashrae_to": float(tool_message.split("To=")[1].split("\n")[0].strip()),
             "ashrae_cdd": float(tool_message.split("CDD=")[1].split("\n")[0].strip()),
-            "ashrae_climate_zone": int(tool_message.split("Climate Zone=")[1].split("\n")[0].strip()),
+            "ashrae_climate_zone": tool_message.split("Climate Zone=")[1].split("\n")[0].strip(),
             "ashrae_glass_u": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
             "ashrae_shgc": float(tool_message.split("SHGC=")[1].split("\n")[0].strip()),
             "ashrae_wall_u": float(tool_message.split("Wall-U-Value=")[1].strip()),

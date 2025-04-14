@@ -9,11 +9,12 @@ class AgentState(MessagesState):
     # Input data
     user_id: str = None
     city: str = None
-    window_area: float = None
-    shgc: float = None
     glass_u_value: float = None
+    shgc: float = None
+    total_floor_area: float = None
     wall_area: float = None
     wall_u_value: float = None
+    window_area: float = None
     # ASHRAE data
     ashrae_to: float = None
     ashrae_cdd: float = None
