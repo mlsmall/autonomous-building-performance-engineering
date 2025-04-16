@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import streamlit as st
-
+from streamlit.components.v1 import html
 
 # # Decrypt and load core engine files
 # from cryptography.fernet import Fernet
@@ -53,8 +53,8 @@ def format_recommendation(data: dict) -> str:
     cost_diff = float(cost_line.split(":")[1].split()[0])
 
     return (
-        '<div style="font-family:\'Inter\',sans-serif;border-radius: 8px;border-left:3px solid #1a237e;padding:1rem;margin:1rem 0;background:#faffff;">'
-        '<div style="color:#1a237e;font-weight:600;font-size:1.1em;margin-bottom:1rem;">PERFORMANCE ANALYSIS</div>'
+        '<div style="font-family:\'Inter\',sans-serif;max-width: 600px;border-radius: 8px;box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);border-left:2.0px solid #1a237e;padding:1rem;margin:1rem 0;background:#ffffff;">'
+        '<div style="color:#1a237e;font-weight:600;font-size:1.1em;margin-bottom:1.1rem;">PERFORMANCE ANALYSIS</div>'
         f'<div style="margin:0.5rem 0;"><span style="display:inline-block;width:140px;">Peak Heat Gain</span>'
         f'<span style="color:{"#43a047" if heat_gain_diff < 0 else "#d32f2f"};">'
         f'{"✓" if heat_gain_diff < 0 else "↓"}</span> '
@@ -86,6 +86,7 @@ st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
     /* Main container styling */
+
     .main {
         background-color: #f8f9fa;
         padding: 2rem;
@@ -95,23 +96,28 @@ st.markdown("""
     [data-testid="stChatMessageAvatarUser"] {
         display: none !important;
     }
+            
     /* User chat message background */
     .stChatMessage.st-emotion-cache-1c7y2kd {
-        background-color: #f0f7ff !important;
-        width: 82% !important;
-        max-width: 82% !important;
+        margin-top: 2.0rem !important;
+        background-color: #DDEAF5 !important;
+        width: 72% !important;
+        max-width: 72% !important;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);
     }
-    
+             
     /* Raise Input Box */     
     [data-testid="stBottom"] {
-        height: 300px !important;
+        height: 100px !important;
     }
     
-    /* Chat input text area height */
+     /* Chat input text area height */
     .stChatInput textarea {
         height: 40px !important; 
-    }       
-    /* Input width adjustments */
+    }  
+            
+    /* Chat Input text area width */
     [data-baseweb="base-input"],
     .st-ae {
         width: 100% !important;
@@ -122,58 +128,20 @@ st.markdown("""
         width: 80% !important;
         max-width: 80% !important;
     }
-    [data-testid="stChatInputContainer"] {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-            
-    /* Remove input focus outline */
-    .st-c5, .st-c4, .st-c3, .st-c2 {
-        border-color: transparent !important;
-    }
-            
-    /* Chat input background, border, shadow */
-    [data-testid="stChatInput"] {
-        background-color: #ffffff !important;
-        border: 1px solid #c0c0c0 !important;
-        box-shadow: 6px 6px 6px rgba(0,0,0,0.03) !important;
-            
-    /* Form input styling */
-    .input-header {
-        font-family: 'Inter', sans-serif;
-        font-weight: 600;
-        color: #1a237e;
-        margin-bottom: -0.5rem;
-    }
-
-    div[data-baseweb="input"] {
-        margin-bottom: 1.2rem;
-    }
-
-    div[data-baseweb="input"] > div {
-        border-radius: 8px !important;
-        border: 1px solid #c0c0c0 !important;
-        padding: 8px 12px !important;
-    }
-
-    div[data-baseweb="input"]:has(> div:hover) {
-        border-color: #1a237e !important;
-    }
-
-    .invalid-input div[data-baseweb="input"] > div {
-        border-color: #d32f2f !important;
-        background: #fff5f5 !important;
-    }
-
-    button[kind="formSubmit"] {
-        background: #1a237e !important;
-        color: white !important;
-        font-weight: 500 !important;
+        
+    /* Remove auto-scroll iframe whitespace */
+    .stIFrame, [data-testid="stIFrame"] {
+        height: 20px !important;
         border: none !important;
-        margin-top: 1rem !important;
     }
-
-   
+            
+    /* Chat message text size */
+    [data-testid="stChatMessageContent"] p,
+    [data-testid="stChatMessageContent"] li {
+        font-size: 1.08rem;
+    }
+ 
+                
 </style>
 """, unsafe_allow_html=True)
 
@@ -241,6 +209,10 @@ with st.sidebar:
                                     st.session_state[key] = calc[key]
                             st.rerun()
 
+# Initialize thread ID at session start
+if 'thread_id' not in st.session_state:
+    st.session_state.thread_id = str(uuid.uuid4())  # Single thread per session
+
 # Initialize building data in session_state
 if 'building_data' not in st.session_state:
     st.session_state.building_data = {
@@ -254,13 +226,13 @@ if 'building_data' not in st.session_state:
 # Initialize messages with a welcome message and track conversation state
 if 'messages' not in st.session_state:
     st.session_state.messages = []
-    # For example, use a test user if no database is in use.
+    # Use a test user if no database is in use.
     st.session_state.user_id = None if USE_DATABASE else "test_user"
     
     premium_intro = """
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
         <div style="
-            max-width: 600px;
+            max-width: 650px;
             background: #FFFFFF;
             padding: 1rem 1rem;  
             font-family: 'Inter', sans-serif;
@@ -268,7 +240,7 @@ if 'messages' not in st.session_state:
             margin: 0 0 0 0;
             box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);
             border: 1px solid rgba(26, 35, 126, 0.05);
-            border-left: 2.5px solid #1a237e; 
+            border-left: 2.0px solid #1a237e; 
             ">
             <p style="
                 color: #1a237e;
@@ -281,7 +253,7 @@ if 'messages' not in st.session_state:
                 Energy Performance & Cost Modeling
             </p>
             <p style="
-                font-size: 0.93rem;
+                font-size: 1rem;
                 color: #444;
                 margin: 0;
                 line-height: 1.7;
@@ -305,6 +277,9 @@ for message in st.session_state.messages:
 # Initialize form visibility
 if 'show_form' not in st.session_state:
     st.session_state.show_form = True
+
+if 'show_chat' not in st.session_state:
+    st.session_state.show_chat = False
 
 # Chat input form 
 st.markdown("""
@@ -333,7 +308,7 @@ st.markdown("""
         margin-left: 17px !important;
         box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);
         border: 1px solid rgba(26, 35, 126, 0.05);
-        border-left: 2.5px solid #1a237e; 
+        border-left: 2.0px solid #1a237e; 
     }
                 
     /* Input box text - on focus */
@@ -399,7 +374,7 @@ if st.session_state.show_form:
                 f"glass u-value = {st.session_state.building_data['glass_u_value']} "
                 f"wall area = {int(st.session_state.building_data['wall_area'])} ft2 "
                 f"city = {st.session_state.building_data['city']} "
-+               f"wall u-value = {st.session_state.building_data['wall_u_value']} "
+                f"wall u-value = {st.session_state.building_data['wall_u_value']} "
             )
 
             with st.chat_message("assistant"):
@@ -410,7 +385,7 @@ if st.session_state.show_form:
                         "next": "",
                         "user_id": st.session_state.user_id,
                         "existing_data": None
-                    }, config={"configurable": {"thread_id": str(uuid.uuid4())}}):
+                    }, config={"configurable": {"thread_id": st.session_state.thread_id}}):
                         st.write(state)
 
                         # Validate input
@@ -420,7 +395,7 @@ if st.session_state.show_form:
                                 
                                 # Display building inputs in formatted box
                                 formatted_list = """
-                                <div style='background-color: #faffff; padding: 1.1rem; border-radius: 8px; border-left: 2.5px solid #1a237e; margin: 1rem 0; width: 52%; max-width: 52%;'>
+                                <div style='background-color: #ffffff; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 20px rgba(26, 35, 126, 0.06);border-left: 2.0px solid #1a237e; margin: 1rem 0; width: 52%; max-width: 52%;'>
                                     <div style='font-size: 1.1em; font-weight: 500; color: #1a237e; margin-bottom: 0.8rem;'>
                                         Your Proposed Building Inputs
                                     </div>
@@ -466,6 +441,7 @@ if st.session_state.show_form:
                                     "role": "assistant",
                                     "content": state['input_validation']['messages'][0].content
                                 })
+                                st.session_state.thread_id = str(uuid.uuid4())  # Reset thread ID for new input
                                 st.rerun()
 
                         # Collect ASHRAE lookup data if present
@@ -491,7 +467,17 @@ if st.session_state.show_form:
                                     'baseline_cooling_energy': state['calculation'].get('baseline_cooling_energy'),
                                     'baseline_cost': state['calculation'].get('baseline_cost')
                                 })
-
+                        # Trigger a scroll to bottom of the chat
+                        html(
+                            """
+                            <div id="div" />
+                            <script>
+                                // Scroll the div into view smoothly
+                                var div = document.getElementById('div');
+                                div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                            </script>
+                            """
+                        )
                         # Handle agent recommendations and update UI
                         if 'recommendation' in state:
                             try:
@@ -502,30 +488,17 @@ if st.session_state.show_form:
                                     "content": styled_html
                                 }) 
                                 st.session_state.show_form = False # Hide form after recommendation
+                                st.session_state.show_chat = True  # Enable chat interface
                                 
                                 st.rerun()
                                 
                             except Exception as e:
                                 st.error(f"Error formatting recommendation: {str(e)}")
-                # # Reset state data for the new analysis
-                # st.session_state.building_data = {
-                #     'window_area': None,
-                #     'shgc': None,
-                #     'u_value': None,
-                #     'city': None
-                # }
-                # st.session_state.current_input = 'window_area'
-                # st.session_state.messages.append({
-                #     "role": "assistant",
-                #     "content": "Enter your window area (ft²) for a new analysis:"
-                # })
 
-
+# =============================================================================
 # If the last_state with validated values is present, show button for generating final PDF report
-# =============================================================================
-# FINAL ELEMENT IN SCRIPT
-# =============================================================================
-if 'last_state' in st.session_state:  # Custom styling for report download button
+# But only if we haven't already shown it in the current chat session
+if 'last_state' in st.session_state and 'report_generated' not in st.session_state: # Custom styling for report download button
     st.markdown("""
         <style>
         div[data-testid="stButton"] button {
@@ -541,6 +514,7 @@ if 'last_state' in st.session_state:  # Custom styling for report download butto
             color: #e8eaf6 !important; 
             background-color: #1a237e !important;
         }
+        
         </style>
     """, unsafe_allow_html=True)
 
@@ -548,12 +522,66 @@ if 'last_state' in st.session_state:  # Custom styling for report download butto
     if st.button("Generate Report", key="generate_report"):
         with st.spinner("Generating report..."):  
             try:
+                # Mark that we've displayed and processed the report button
+                st.session_state.report_generated = True
+
                 pdf_data = generate_performance_report(st.session_state.last_state)
                 st.download_button(
                     "Download PDF",
                     pdf_data,
                     "BPA_Analysis_Report.pdf",
                     "application/pdf"
-                )
+                )     
+
             except Exception as e:
                 st.error(f"Error generating PDF: {str(e)}")
+
+
+
+# Chat interface for asking questions after analysis
+if not st.session_state.show_form and 'show_chat' in st.session_state and st.session_state.show_chat:
+    # Display a text input for questions
+    user_question = st.chat_input("You can ask any question about your building's performance...")
+    
+    if user_question:
+        # Add user question to messages
+        st.session_state.messages.append({
+            "role": "user",
+            "content": user_question
+        })
+        
+        # Display the new user message
+        with st.chat_message("user"):
+            st.markdown(user_question)
+        
+        # Process through graph with LLM node
+        with st.chat_message("assistant"):
+            with st.spinner("Analyzing your question..."):
+                for state in graph.stream({
+                    "messages": [("user", user_question)],
+                    "next": "llm",
+                    "user_id": st.session_state.user_id,
+                    "existing_data": None,
+                    # Pass all the relevant building data from session_state
+                    **{k: v for k, v in st.session_state.last_state.items() if k not in ["messages", "next"]}
+                }, config={"configurable": {"thread_id":  st.session_state.thread_id}}):
+                    
+                    # Look for LLM response
+                    if "llm" in state:
+                        llm_response = state["llm"]["messages"][0].content
+                        st.write(llm_response)
+                        
+                        # Save to conversation history
+                        st.session_state.messages.append({
+                            "role": "assistant",
+                            "content": llm_response
+                        })
+    # Trigger a scroll to bottom of the chat
+    html("""
+        <div id="div" />
+        <script>
+            // Scroll the div into view smoothly
+            var div = document.getElementById('div');
+            div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        </script>
+        """)

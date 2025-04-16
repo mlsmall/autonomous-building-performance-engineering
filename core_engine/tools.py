@@ -78,82 +78,82 @@ def input_validation_tool(query: Annotated[str, "Check if all required inputs ar
     except Exception as e:
         return f"Error in validation: {str(e)}"
     
-# @tool
-# def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):
-#     """No matter what city is input. Returns ASHRAE values for Montreal."""
-#     data = ASHRAE_VALUES["Montreal"]
-#     return f"To={data['To']}\nCDD={data['CDD10']}\nClimate Zone={data['zone']}\nnGlass-U-value={data['glass_u_factor']}\nSHGC={data['shgc']}\nWall-U-Value={data['wall_u_value']}"
-
 @tool
-def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
-    """Uses RAG to find ASHRAE information from validated input"""
-    try:
-        print("City:", city)
-        # Use the existing retrieve and generate functions directly
-        # 1. Temperature and CDD lookup
-        climate_query = (
-        f"What is the cooling design temperature (To) and cooling degree days (CDD10) \
-        in {city} according to ASHRAE Table D Climate Design Data? \
-        Please provide only the numeric values in the format: \
-        To = [value] \
-        CDD10 = [value]"
-        )
+def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):
+    """No matter what city is input. Returns ASHRAE values for Montreal."""
+    data = ASHRAE_VALUES["Montreal"]
+    return f"To={data['To']}\nCDD={data['CDD10']}\nClimate Zone={data['zone']}\nnGlass-U-value={data['glass_u_factor']}\nSHGC={data['shgc']}\nWall-U-Value={data['wall_u_value']}"
 
-        state = {"question": climate_query}
-        climate_result = generate(retrieve(state))
-        to_value = climate_result['generation'].split('To =')[1].split('\n')[0].strip()
-        cdd_value = climate_result['generation'].split('CDD10 =')[1].strip()
-        print("To:", to_value)
-        print("CDD:", cdd_value)
+# @tool
+# def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
+#     """Uses RAG to find ASHRAE information from validated input"""
+#     try:
+#         print("City:", city)
+#         # Use the existing retrieve and generate functions directly
+#         # 1. Temperature and CDD lookup
+#         climate_query = (
+#         f"What is the cooling design temperature (To) and cooling degree days (CDD10) \
+#         in {city} according to ASHRAE Table D Climate Design Data? \
+#         Please provide only the numeric values in the format: \
+#         To = [value] \
+#         CDD10 = [value]"
+#         )
 
-        # 2. Climate Zone lookup
-        climate_zone_query = (
-        f"In Table B1 International Climate Zone Definitions, what is the climate zone number for {city}? \
-        Please provide only the numeric climate zone value without any additional text."
-        )
-        state = {"question": climate_zone_query}
-        zone_result = generate(retrieve(state))
-        # Extract just the number from something like "Montreal Dorval International A is climate zone 6"
-        zone_number = zone_result['generation'].split("zone")[-1].strip().rstrip('.')
-        print("ZONE RESULT:", zone_number)
+#         state = {"question": climate_query}
+#         climate_result = generate(retrieve(state))
+#         to_value = climate_result['generation'].split('To =')[1].split('\n')[0].strip()
+#         cdd_value = climate_result['generation'].split('CDD10 =')[1].strip()
+#         print("To:", to_value)
+#         print("CDD:", cdd_value)
 
-        # 3. glass_ufactor_query lookup
-        glass_ufactor_query = (
-        f"What is the U-factor for Vertical Fenestration 0%–40% of Wall for Nonmetal framing, all \
-        in climate zone {zone_number} according to Table Building Envelope Requirements? \
-        Please provide only the numeric U-factor value without any additional text."
-        )
-        state = {"question": glass_ufactor_query}
-        glass_ufactor_result = generate(retrieve(state))
-        glass_u_value = glass_ufactor_result['generation']
-        print("GLASS U-FACTOR:", glass_u_value)
+#         # 2. Climate Zone lookup
+#         climate_zone_query = (
+#         f"In Table B1 International Climate Zone Definitions, what is the climate zone number for {city}? \
+#         Please provide only the numeric climate zone value without any additional text."
+#         )
+#         state = {"question": climate_zone_query}
+#         zone_result = generate(retrieve(state))
+#         # Extract just the number from something like "Montreal Dorval International A is climate zone 6"
+#         zone_number = zone_result['generation'].split("zone")[-1].strip().rstrip('.')
+#         print("ZONE RESULT:", zone_number)
 
-        # 4. wall_ufactor_query lookup
-        wall_ufactor_query = (
-        f"What is the U-factor for Nonresidential Mass Walls \
-        in climate zone {zone_number} according to Building Envelope Requirements? \
-        Please provide only the numeric U-factor value without any additional text."
-        )
-        state = {"question": wall_ufactor_query}
-        wall_ufactor_result = generate(retrieve(state))
-        wall_u_value = wall_ufactor_result['generation']
-        print("WALL U-FACTOR:", wall_u_value)
+#         # 3. glass_ufactor_query lookup
+#         glass_ufactor_query = (
+#         f"What is the U-factor for Vertical Fenestration 0%–40% of Wall for Nonmetal framing, all \
+#         in climate zone {zone_number} according to Table Building Envelope Requirements? \
+#         Please provide only the numeric U-factor value without any additional text."
+#         )
+#         state = {"question": glass_ufactor_query}
+#         glass_ufactor_result = generate(retrieve(state))
+#         glass_u_value = glass_ufactor_result['generation']
+#         print("GLASS U-FACTOR:", glass_u_value)
 
-        # 5. SHGC_query lookup
-        shgc_query = (
-        f"What is the SHGC for Vertical Fenestration 0%–40% of Wall (for all frame types) \
-        in climate zone {zone_number} according to Building Envelope Requirements? \
-        Please provide only the numeric SHGC value without any additional text."
-        )
-        state = {"question": shgc_query}
-        shgc_result = generate(retrieve(state))
-        shgc_value = shgc_result['generation']
-        print("SHGC:", shgc_value)
+#         # 4. wall_ufactor_query lookup
+#         wall_ufactor_query = (
+#         f"What is the U-factor for Nonresidential Mass Walls \
+#         in climate zone {zone_number} according to Building Envelope Requirements? \
+#         Please provide only the numeric U-factor value without any additional text."
+#         )
+#         state = {"question": wall_ufactor_query}
+#         wall_ufactor_result = generate(retrieve(state))
+#         wall_u_value = wall_ufactor_result['generation']
+#         print("WALL U-FACTOR:", wall_u_value)
 
-        return f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_number}\nGlass-U-value={glass_u_value}\nSHGC={shgc_value}\nWall-U-Value={wall_u_value}"
+#         # 5. SHGC_query lookup
+#         shgc_query = (
+#         f"What is the SHGC for Vertical Fenestration 0%–40% of Wall (for all frame types) \
+#         in climate zone {zone_number} according to Building Envelope Requirements? \
+#         Please provide only the numeric SHGC value without any additional text."
+#         )
+#         state = {"question": shgc_query}
+#         shgc_result = generate(retrieve(state))
+#         shgc_value = shgc_result['generation']
+#         print("SHGC:", shgc_value)
 
-    except Exception as e:
-        return f"Error in ASHRAE lookup: {str(e)}"
+#         return f"To={to_value}\nCDD={cdd_value}\nClimate Zone={zone_number}\nGlass-U-value={glass_u_value}\nSHGC={shgc_value}\nWall-U-Value={wall_u_value}"
+
+#     except Exception as e:
+#         return f"Error in ASHRAE lookup: {str(e)}"
 
 @tool
 def radiation_tool(city: Annotated[str, "Look up specific solar radiation data"]):

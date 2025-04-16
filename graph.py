@@ -157,6 +157,9 @@ def input_validation_node(state: AgentState) -> AgentState:
     Validates building input data against the rules specified in the class BuildingInput.
     Returns error state if validation fails, which triggers the user to re-input values.
     """
+    if 'proposed_cost' in state:  # Prevent re-validation after analysis
+        return {"next": "llm"}
+    
     result = input_validation_agent.invoke({"messages": state['messages'][-1].content})
     print("AGENT VALIDATION SAID", result["messages"][-1].content)
     
