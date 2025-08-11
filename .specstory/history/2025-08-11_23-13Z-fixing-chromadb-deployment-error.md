@@ -357,3 +357,133 @@ llm_agent = create_react_agent(
 
 ---
 
+_**User**_
+
+/mount/src/autonomous-building-performance-engineering/agents.py:17 in        
+
+  <module>                                                                      
+
+                                                                                
+
+    14 llm = llm_gemini_15 # llm_gemini recommended                             
+
+    15                                                                          
+
+    16 # General-purpose LLM agent for non-technical queries                    
+
+  ❱ 17 llm_agent = create_react_agent(                                          
+
+    18 │   llm, tools=[llm_tool],                                               
+
+    19 │   system_message="You are a highly-trained research analyst and can p  
+
+    20 │   │   You are tasked with finding the answer to the user's question w  
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/langgraph/prebuilt/chat_ag  
+
+  ent_executor.py:477 in create_react_agent                                     
+
+                                                                                
+
+    474 │   │   │   context_schema = config_schema                              
+
+    475 │                                                                       
+
+    476 │   if len(deprecated_kwargs) > 0:                                      
+
+  ❱ 477 │   │   raise TypeError(                                                
+
+    478 │   │   │   f"create_react_agent() got unexpected keyword arguments: {  
+
+    479 │   │   )                                                               
+
+    480                                                                         
+
+────────────────────────────────────────────────────────────────────────────────
+
+TypeError: create_react_agent() got unexpected keyword arguments: 
+
+{'system_message': "You are a highly-trained research analyst and can provide 
+
+the user with the information they need.        You are tasked with finding the 
+
+answer to the user's question without using any tools.        Answer the user's 
+
+question to the best of your ability."}
+
+2025-08-11 23:37:28.470 503 GET /script-health-check (127.0.0.1) 1219.34ms
+
+────────────────────── Traceback (most recent call last) ───────────────────────
+
+---
+
+_**Assistant**_
+
+Your error message:
+```
+TypeError: create_react_agent() got unexpected keyword arguments: {'system_message': ...}
+```
+means that **`create_react_agent` does not accept `system_message`** in your installed version of `langgraph`.
+
+---
+
+## What does this mean?
+
+- Your version of `langgraph`'s `create_react_agent` only accepts a very limited set of arguments: probably just the LLM and the tools.
+- There is **no direct way to pass a system prompt** to the agent via `create_react_agent` in your version.
+
+---
+
+## How to set a system prompt in this case?
+
+You have two main options:
+
+---
+
+### **Option 1: Pass the system prompt to the LLM itself**
+
+If your LLM class (e.g., `ChatOpenAI`, `ChatGoogle`, etc.) supports a `system_message` or `system_prompt` argument, set it there when you instantiate the LLM.
+
+**Example:**
+```python
+llm = ChatOpenAI(
+    model="gpt-4",
+    temperature=0,
+    system_message="You are a highly-trained research analyst and can provide the user with the information they need. ..."
+)
+llm_agent = create_react_agent(
+    llm,
+    tools=[llm_tool]
+)
+```
+- If your LLM does **not** support `system_message`, you may need to use `prefix_messages` or similar, depending on the LLM class.
+
+---
+
+### **Option 2: Upgrade your `langgraph`/`langchain` version**
+
+- Newer versions of `langgraph` and `langchain` support passing a system prompt directly to the agent.
+- If you control your environment, you can upgrade:
+  ```sh
+  pip install --upgrade langgraph langchain
+  ```
+- Then, try using `system_message` or `system_prompt` again.
+
+---
+
+### **Option 3: Manually prepend a system message to the conversation**
+
+If neither of the above works, you can **prepend a system message** to the user messages before passing them to the agent, e.g.:
+```python
+messages = [
+    {"role": "system", "content": "You are a highly-trained research analyst ..."},
+    {"role": "user", "content": user_input}
+]
+# Pass messages to the agent/LLM
+```
+But this is more of a workaround and may require
+
+---
+

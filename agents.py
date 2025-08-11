@@ -3,7 +3,7 @@ Agent definitions and configurations.
 Sets up specialized ReAct agents for different system tasks.
 """
 
-from langgraph.prebuilt import create_react_agent
+from langchain.agents.react.agent import create_react_agent
 from schemas import BuildingInput
 
 from core_engine.tools import tavily_tool, input_validation_tool, ashrae_lookup_tool, recommendation_tool, llm_tool
