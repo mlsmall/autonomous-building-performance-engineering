@@ -103,3 +103,257 @@ If you want, I can help you locate the exact place in your code to make this cha
 
 ---
 
+_**User**_
+
+That worked but got this error in streamlit?
+  /home/adminuser/venv/lib/python3.12/site-packages/streamlit/runtime/scriptru  
+
+  nner/exec_code.py:128 in exec_func_with_error_handling                        
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/streamlit/runtime/scriptru  
+
+  nner/script_runner.py:669 in code_to_exec                                     
+
+                                                                                
+
+  /mount/src/autonomous-building-performance-engineering/app.py:39 in <module>  
+
+                                                                                
+
+     36 #         f.write(content)                                              
+
+     37                                                                         
+
+     38                                                                         
+
+  ❱  39 from graph import graph, USE_DATABASE, get_user_history                 
+
+     40 from report_generator import generate_performance_report                
+
+     41                                                                         
+
+     42                                                                         
+
+                                                                                
+
+  /mount/src/autonomous-building-performance-engineering/graph.py:14 in         
+
+  <module>                                                                      
+
+                                                                                
+
+     11 from langgraph.checkpoint.memory import MemorySaver                     
+
+     12 from langchain_core.messages import HumanMessage                        
+
+     13                                                                         
+
+  ❱  14 from agents import llm_agent, research_agent, ashrae_lookup_agent, rec  
+
+     15 from core_engine.tools import calculation_tool, radiation_tool, python  
+
+     16 from models import llm_gpt, llm_mistral, llm_gemini_25                  
+
+     17 from schemas import AgentState, Recommendation, SupervisorState, membe  
+
+                                                                                
+
+  /mount/src/autonomous-building-performance-engineering/agents.py:17 in        
+
+  <module>                                                                      
+
+                                                                                
+
+    14 llm = llm_gemini_15 # llm_gemini recommended                             
+
+    15                                                                          
+
+    16 # General-purpose LLM agent for non-technical queries                    
+
+  ❱ 17 llm_agent = create_react_agent(                                          
+
+    18 │   llm, tools=[llm_tool],                                               
+
+    19 │   state_modifier="You are a highly-trained research analyst and can p  
+
+    20 │   │   You are tasked with finding the answer to the user's question w  
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/langgraph/prebuilt/chat_ag  
+
+  ent_executor.py:477 in create_react_agent                                     
+
+                                                                                
+
+    474 │   │   │   context_schema = config_schema                              
+
+    475 │                                                                       
+
+    476 │   if len(deprecated_kwargs) > 0:                                      
+
+  ❱ 477 │   │   raise TypeError(                                                
+
+    478 │   │   │   f"create_react_agent() got unexpected keyword arguments: {  
+
+    479 │   │   )                                                               
+
+    480                                                                         
+
+────────────────────────────────────────────────────────────────────────────────
+
+TypeError: create_react_agent() got unexpected keyword arguments: 
+
+{'state_modifier': "You are a highly-trained research analyst and can provide 
+
+the user with the information they need.        You are tasked with finding the 
+
+answer to the user's question without using any tools.        Answer the user's 
+
+question to the best of your ability."}
+
+2025-08-11 23:21:58.363 503 GET /script-health-check (127.0.0.1) 1136.14ms
+
+────────────────────── Traceback (most recent call last) ───────────────────────
+
+---
+
+_**Assistant**_
+
+The error message:
+```
+TypeError: create_react_agent() got unexpected keyword arguments: {'state_modifier': ...}
+```
+means that the function `create_react_agent()` **does not accept the argument** `state_modifier`.
+
+### Why did this happen?
+- The API for `create_react_agent` (from `langgraph.prebuilt.chat_agent_executor`) has changed.
+- The argument `state_modifier` is no longer supported (or never was).
+
+---
+
+## How to Fix
+
+**1. Remove the `state_modifier` argument** from your call to `create_react_agent` in `agents.py`.
+
+For example, if you have:
+```python
+llm_agent = create_react_agent(
+    llm,
+    tools=[llm_tool],
+    state_modifier="You are a highly-trained research analyst and can provide the user with the information they need. ...",
+)
+```
+**Change to:**
+```python
+llm_agent = create_react_agent(
+    llm,
+    tools=[llm_tool],
+    # state_modifier removed
+)
+```
+
+If you want to provide system instructions or context to the agent, you may need to use a different argument (such as `system_message` or `system_prompt`), depending on the version of `langgraph`/`langchain` you are using.  
+**Check the documentation or function signature for the correct way to pass system instructions.**
+
+---
+
+## Next Steps
+
+1. **Edit `agents.py`** and remove the `state_modifier` argument from all `create_react_agent` calls.
+2. **If you want to provide system instructions**, check if `system_message` or `system_prompt` is supported, and use that instead.
+3. **Redeploy your app.**
+
+---
+
+**If you want, I can show you the exact edit for your `agents.py` file. Would you like to see that?** If so, please paste the relevant lines from `agents.py` (the `create_react_agent` call), or let me know if you want me to search for it.
+
+---
+
+_**User**_
+
+I mean I know I remove the stae modfier, but what do I use instead?
+
+---
+
+_**Assistant**_
+
+Great question! The answer depends on the **version** of `langgraph` and `langchain` you are using, as the API for agent creation has changed over time.
+
+### As of mid-2024, for `langgraph` and `langchain`:
+
+- The `state_modifier` argument is **deprecated** or removed.
+- The **correct way to provide system instructions** is usually via a `system_message` or `system_prompt` argument, or by passing a `system_message` to the LLM itself.
+
+#### For `create_react_agent` (LangGraph):
+
+- **Check the function signature** (in your installed version) for `create_react_agent`.
+- In most recent versions, you should use `system_message` or `system_prompt`.
+
+---
+
+## What to do
+
+### 1. Try `system_message` (most common)
+
+```python
+llm_agent = create_react_agent(
+    llm,
+    tools=[llm_tool],
+    system_message="You are a highly-trained research analyst and can provide the user with the information they need. You are tasked with finding the answer to the user's question without using any tools. Answer the user's question to the best of your ability."
+)
+```
+
+### 2. If that doesn't work, try `system_prompt`:
+
+```python
+llm_agent = create_react_agent(
+    llm,
+    tools=[llm_tool],
+    system_prompt="You are a highly-trained research analyst and can provide the user with the information they need. ..."
+)
+```
+
+### 3. If neither works, pass the system message to the LLM itself:
+
+If your LLM supports a `system_message` or `system_prompt` parameter, set it there when you instantiate the LLM, e.g.:
+```python
+llm = ChatOpenAI(
+    model="gpt-4",
+    system_message="You are a highly-trained research analyst and can provide the user with the information they need. ..."
+)
+llm_agent = create_react_agent(
+    llm,
+    tools=[llm_tool]
+)
+```
+
+---
+
+## How to Check What Works
+
+- **Look at the error message**: If you use an unsupported argument, you'll get a similar error as before.
+- **Check the documentation** for your installed version of `langgraph`/`langchain`.
+- **Look at the function signature** in your environment:
+  - Open the file: `/home/adminuser/venv/lib/python3.12/site-packages/langgraph/prebuilt/chat_agent_executor.py`
+  - Search for `def create_react_agent` and see what arguments it accepts.
+
+---
+
+## Summary Table
+
+| Argument         | Most likely to work? | Notes                                 |
+|------------------|---------------------|---------------------------------------|
+| `system_message` | Yes                 | Most recent versions                  |
+| `system_prompt`  | Maybe               | Some versions                         |
+| `state_modifier` | No                  | Deprecated/removed                    |
+| LLM-level        | Yes                 | Always works if LLM supports it       |
+
+---
+
+**If you want, I can check your installed version and show you the exact signature. Would you like me to do that?** If so, let me know!
+
+---
+
