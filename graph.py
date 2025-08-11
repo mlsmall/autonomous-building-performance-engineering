@@ -15,7 +15,15 @@ from agents import llm_agent, research_agent, ashrae_lookup_agent, recommendatio
 from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
 from models import llm_gpt, llm_mistral, llm_gemini_25
 from schemas import AgentState, Recommendation, SupervisorState, members
-from database import building_data, get_user_history
+
+USE_DATABASE = False  # Or True if you want to use the database
+
+if USE_DATABASE:
+    from database import building_data, get_user_history
+else:
+    building_data = None
+    def get_user_history(*args, **kwargs):
+        return None
 
 llm = llm_gpt # llm_gpt preferred
 
@@ -356,7 +364,6 @@ graph = builder.compile(checkpointer=memory)
 #graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
 
 # Database configuration and main loop
-USE_DATABASE = False  # Toggle to True/False for database functionality
 def main_loop():
     """
     Main interaction loop for command-line interface.

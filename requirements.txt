@@ -48,3 +48,4 @@ streamlit-vertical-slider
 cryptography
 langchain_mistralai
 pysqlite3-binary
+onnxruntime
