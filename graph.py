@@ -157,7 +157,7 @@ def llm_node(state: AgentState) -> AgentState:
 
     # Invoke the LLM with the enhanced context
     # ReAct agents expect a single string input and may use intermediate_steps
-    result = llm_executor.invoke({"input": user_question, "intermediate_steps": []})
+    result = llm_executor.invoke({"input": user_question})
     llm_output = result.get("output", "")
 
     return {
@@ -176,7 +176,7 @@ def input_validation_node(state: AgentState) -> AgentState:
         return {"next": "llm"}
     
     validation_input = state['messages'][-1].content
-    result = input_validation_executor.invoke({"input": validation_input, "intermediate_steps": []})
+    result = input_validation_executor.invoke({"input": validation_input})
     # AgentExecutor returns dict with 'output'
     print("AGENT VALIDATION SAID", result.get("output"))
     
@@ -207,7 +207,7 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
     Returns climate zone, baseline U-value, and SHGC requirements.
     """
     city = state["city"]
-    result = ashrae_lookup_executor.invoke({"input": city, "intermediate_steps": []})
+    result = ashrae_lookup_executor.invoke({"input": city})
     tool_message = result.get("output", "")
 
     # Validate and extract ASHRAE values
@@ -239,11 +239,15 @@ def radiation_node(state: AgentState) -> AgentState:
     """
     city = state["city"]
     result = radiation_tool.invoke(city)
+    # Robust numeric parsing
+    import re as _re
+    match = _re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", str(result))
+    radiation_value = float(match.group(0)) if match else 0.0
 
     print("RADIATION NODE RESULT", result)
     return {
-        "radiation": float(result),
-        "messages": [HumanMessage(content=str(result), name="radiation")]
+        "radiation": radiation_value,
+        "messages": [HumanMessage(content=str(radiation_value), name="radiation")]
     }
 
 
@@ -257,8 +261,12 @@ def utility_node(state: AgentState) -> AgentState:
     query = f"Find an estimated value for the commercial utility rates ($/kWh) in {city}. \
         Please provide only a numeric estimated utility rate value without any additional text. \
         If no utility rate is available, please return '0.1'."
-    result = research_executor.invoke({"input": query, "intermediate_steps": []})
-    content = str(result.get("output", "0.1")).strip()
+    result = research_executor.invoke({"input": query})
+    content_raw = str(result.get("output", "0.1")).strip()
+    # Extract first numeric value
+    import re as _re
+    match = _re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", content_raw)
+    content = match.group(0) if match else "0.1"
     return {
         "utility_rate": float(content),
         "messages": [HumanMessage(content=content, name="utility")]
@@ -330,7 +338,7 @@ def recommendation_node(state: AgentState) -> AgentState:
     """
 
     # Get recommendations and format response based on the Recommendation class
-    result = recommendation_executor.invoke({"input": message, "intermediate_steps": []})
+    result = recommendation_executor.invoke({"input": message})
     agent_response = result.get("output", "{}")
     # print("RECOMMENDATION AGENT RESPONSE BEFORE LLM:", agent_response)
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])

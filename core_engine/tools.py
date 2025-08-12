@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,6 +13,12 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_experimental.utilities import PythonREPL
 
 from schemas import BuildingInput
+
+# Ensure project root is importable in Streamlit/namespace package contexts
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from models import llm_gemini_15, llm_gpt, llm_cohere
 from core_engine.ashrae_data import ASHRAE_VALUES
 from rag_corrective import retrieve, generate
@@ -82,7 +90,14 @@ def input_validation_tool(query: Annotated[str, "Check if all required inputs ar
 def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):
     """No matter what city is input. Returns ASHRAE values for Montreal."""
     data = ASHRAE_VALUES["Montreal"]
-    return f"To={data['To']}\nCDD={data['CDD10']}\nClimate Zone={data['zone']}\nnGlass-U-value={data['glass_u_factor']}\nSHGC={data['shgc']}\nWall-U-Value={data['wall_u_value']}"
+    return (
+        f"To={data['To']}\n"
+        f"CDD={data['CDD10']}\n"
+        f"Climate Zone={data['zone']}\n"
+        f"U-value={data['glass_u_factor']}\n"
+        f"SHGC={data['shgc']}\n"
+        f"Wall-U-Value={data['wall_u_value']}"
+    )
 
 # @tool
 # def ashrae_lookup_tool(city: Annotated[str, "Look up specific ASHRAE data"]):
