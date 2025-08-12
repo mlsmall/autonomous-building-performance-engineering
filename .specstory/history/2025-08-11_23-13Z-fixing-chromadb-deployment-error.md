@@ -1499,3 +1499,42 @@ You can now safely deploy and use both vector stores in your app! If you have mo
 
 ---
 
+_**User**_
+
+should I still delete both db's made?
+
+---
+
+_**Assistant**_
+
+**You do NOT need to manually delete the old DB folders (`ashrae_vector_db`, `rad_vector_db`) on your local machine or in your repo for Streamlit Cloud to work correctly.**
+
+### Here’s why:
+
+- **Streamlit Cloud** does not use your local runtime-generated DB files. It only uses what’s in your repo, and creates new runtime files in its own ephemeral filesystem.
+- With the new code, both vector stores are created in `/tmp/ashrae_vector_db` and `/tmp/radiation_vector_db` on Streamlit Cloud, which are always empty at app start.
+- **Deleting the old folders locally is optional** and only helps keep your local workspace tidy. It has no effect on Streamlit Cloud.
+
+---
+
+## **Summary Table**
+
+| Location         | Should you delete? | Why?                                      |
+|------------------|:------------------:|--------------------------------------------|
+| Your local PC    | Optional           | Only for tidiness; not used by Streamlit   |
+| Your repo        | Optional           | Not needed by Streamlit; not tracked by git|
+| Streamlit Cloud  | Not possible       | Files are ephemeral, reset on each run     |
+
+---
+
+## **Best Practice**
+- You can delete `ashrae_vector_db` and `rad_vector_db` locally if you want to free up space or avoid confusion, but it’s not required for your app to work on Streamlit Cloud.
+
+---
+
+**TL;DR:**  
+You do NOT need to delete the old DBs for Streamlit Cloud.  
+If you want a clean local workspace, you can delete them locally, but it’s not required.
+
+---
+

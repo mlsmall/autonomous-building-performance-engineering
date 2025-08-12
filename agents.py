@@ -4,6 +4,7 @@ Sets up specialized ReAct agents for different system tasks.
 """
 
 from langchain.agents.react.agent import create_react_agent
+from langchain.agents import AgentExecutor
 from schemas import BuildingInput
 from langchain.prompts import PromptTemplate
 
@@ -32,6 +33,12 @@ llm_agent = create_react_agent(
     tools=[llm_tool],
     prompt=llm_agent_prompt
 )
+llm_executor = AgentExecutor(
+    agent=llm_agent,
+    tools=[llm_tool],
+    handle_parsing_errors=True,
+    verbose=False,
+)
 
 # Research agent for utility rate and other web search queries
 research_agent_prompt = PromptTemplate(
@@ -49,6 +56,12 @@ research_agent = create_react_agent(
     llm,
     tools=[tavily_tool],
     prompt=research_agent_prompt
+)
+research_executor = AgentExecutor(
+    agent=research_agent,
+    tools=[tavily_tool],
+    handle_parsing_errors=True,
+    verbose=False,
 )
 
 # Input validation agent using BuildingInput schema
@@ -69,6 +82,12 @@ input_validation_agent = create_react_agent(
     tools=[input_validation_tool],
     prompt=input_validation_agent_prompt
 )
+input_validation_executor = AgentExecutor(
+    agent=input_validation_agent,
+    tools=[input_validation_tool],
+    handle_parsing_errors=True,
+    verbose=False,
+)
 
 # ASHRAE standards lookup agent using RAG tool
 ashrae_lookup_agent_prompt = PromptTemplate(
@@ -86,6 +105,13 @@ ashrae_lookup_agent = create_react_agent(
     tools=[ashrae_lookup_tool],
     prompt=ashrae_lookup_agent_prompt
 )
+ashrae_lookup_executor = AgentExecutor(
+    agent=ashrae_lookup_agent,
+    tools=[ashrae_lookup_tool],
+    handle_parsing_errors=True,
+    return_intermediate_steps=True,
+    verbose=False,
+)
 
 # Performance analysis and recommendation agent
 recommendation_agent_prompt = PromptTemplate(
@@ -102,4 +128,10 @@ recommendation_agent = create_react_agent(
     llm,
     tools=[recommendation_tool],
     prompt=recommendation_agent_prompt
+)
+recommendation_executor = AgentExecutor(
+    agent=recommendation_agent,
+    tools=[recommendation_tool],
+    handle_parsing_errors=True,
+    verbose=False,
 )

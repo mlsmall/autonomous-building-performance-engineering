@@ -11,7 +11,13 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
-from agents import llm_agent, research_agent, ashrae_lookup_agent, recommendation_agent, input_validation_agent
+from agents import (
+    llm_executor,
+    research_executor,
+    ashrae_lookup_executor,
+    recommendation_executor,
+    input_validation_executor,
+)
 from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
 from models import llm_gpt, llm_mistral, llm_gemini_25
 from schemas import AgentState, Recommendation, SupervisorState, members
@@ -150,11 +156,12 @@ def llm_node(state: AgentState) -> AgentState:
                          {"role": "user", "content": user_question}]
 
     # Invoke the LLM with the enhanced context
-    result = llm_agent.invoke({"messages": enhanced_messages})
-    # print("LLM NODE RESPONSE", result["messages"][-1].content)
+    # ReAct agents expect a single string input and may use intermediate_steps
+    result = llm_executor.invoke({"input": user_question, "intermediate_steps": []})
+    llm_output = result.get("output", "")
 
     return {
-        "messages": [HumanMessage(content=result["messages"][-1].content, name="llm_node")],
+        "messages": [HumanMessage(content=llm_output, name="llm_node")],
         "next": "FINISH"
         }  
    
@@ -168,11 +175,13 @@ def input_validation_node(state: AgentState) -> AgentState:
     if 'proposed_cost' in state:  # Prevent re-validation after analysis
         return {"next": "llm"}
     
-    result = input_validation_agent.invoke({"messages": state['messages'][-1].content})
-    print("AGENT VALIDATION SAID", result["messages"][-1].content)
+    validation_input = state['messages'][-1].content
+    result = input_validation_executor.invoke({"input": validation_input, "intermediate_steps": []})
+    # AgentExecutor returns dict with 'output'
+    print("AGENT VALIDATION SAID", result.get("output"))
     
     # Check if validation result is valid and and parse input
-    if "Valid input" in result["messages"][-1].content:
+    if "Valid input" in result.get("output", ""):
         user_input = state["messages"][0].content
         # Extract and convert input values to appropriate types if necessary
         return {
@@ -182,11 +191,11 @@ def input_validation_node(state: AgentState) -> AgentState:
             "glass_u_value": float(re.search(r'glass\s+u-?value\s*=\s*(\d*\.?\d+)(?=\s|$)', user_input).group(1)),
             "wall_area": int(re.search(r'wall\s+area\s*=\s*([\d,]+)\s*ft2\b', user_input).group(1).replace(",", "")),
             "wall_u_value": float(re.search(r'wall\s+u-?value\s*=\s*(\d*\.?\d+)', user_input).group(1)),
-            "messages": [HumanMessage(content=result["messages"][-1].content, name="input_validation")]
+            "messages": [HumanMessage(content=result.get("output", ""), name="input_validation")]
         }
                             
     else:
-        error_message = f'{result["messages"][-1].content}  \nPlease enter it again:'
+        error_message = f'{result.get("output", "Invalid input")}  \nPlease enter it again:'
         return {
             "messages": [HumanMessage(content=error_message, name="input_validation")],
             "next": START
@@ -198,9 +207,8 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
     Returns climate zone, baseline U-value, and SHGC requirements.
     """
     city = state["city"]
-    result = ashrae_lookup_agent.invoke({"messages": [HumanMessage(content=city)]})
-    # Parse ASHRAE data from tool response
-    tool_message = result["messages"][2].content  # 0 - HumanMessage, 1 - AIMessage, 2 - ToolMessage
+    result = ashrae_lookup_executor.invoke({"input": city, "intermediate_steps": []})
+    tool_message = result.get("output", "")
 
     # Validate and extract ASHRAE values
     if "To=" in tool_message  and "CDD=" in tool_message :
@@ -211,7 +219,7 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
             "ashrae_glass_u": float(tool_message.split("U-value=")[1].split("\n")[0].strip()),
             "ashrae_shgc": float(tool_message.split("SHGC=")[1].split("\n")[0].strip()),
             "ashrae_wall_u": float(tool_message.split("Wall-U-Value=")[1].strip()),
-            "messages": [HumanMessage(content=result["messages"][-1].content, name="ashrae_lookup")]
+            "messages": [HumanMessage(content=tool_message, name="ashrae_lookup")]
         }
     
     else:
@@ -249,10 +257,11 @@ def utility_node(state: AgentState) -> AgentState:
     query = f"Find an estimated value for the commercial utility rates ($/kWh) in {city}. \
         Please provide only a numeric estimated utility rate value without any additional text. \
         If no utility rate is available, please return '0.1'."
-    result = research_agent.invoke({"messages": [HumanMessage(content=query)]})
+    result = research_executor.invoke({"input": query, "intermediate_steps": []})
+    content = str(result.get("output", "0.1")).strip()
     return {
-        "utility_rate": float(result["messages"][-1].content),
-        "messages": [HumanMessage(content=result["messages"][-1].content, name="utility")]
+        "utility_rate": float(content),
+        "messages": [HumanMessage(content=content, name="utility")]
     }
 
 def calculation_node(state: AgentState) -> AgentState:
@@ -321,8 +330,8 @@ def recommendation_node(state: AgentState) -> AgentState:
     """
 
     # Get recommendations and format response based on the Recommendation class
-    result = recommendation_agent.invoke({"messages": [("user", message)]})
-    agent_response = result["messages"][-1].content
+    result = recommendation_executor.invoke({"input": message, "intermediate_steps": []})
+    agent_response = result.get("output", "{}")
     # print("RECOMMENDATION AGENT RESPONSE BEFORE LLM:", agent_response)
     recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
     # print("LLM WITH STRUCTURED OUTPUT RECOMMENDATION:", recommendation.model_dump_json())
