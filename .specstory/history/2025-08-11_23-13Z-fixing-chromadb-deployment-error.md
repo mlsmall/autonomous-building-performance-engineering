@@ -483,7 +483,186 @@ messages = [
 ]
 # Pass messages to the agent/LLM
 ```
-But this is more of a workaround and may require
+But this is more of a workaround and may require modifying how you call the agent.
+
+---
+
+## **Summary Table**
+
+| Method                        | Works in your version? | How to do it                                  |
+|-------------------------------|------------------------|------------------------------------------------|
+| `state_modifier`              | ❌                     | Deprecated/removed                             |
+| `system_message`/`system_prompt` in agent | ❌          | Not supported in your version                  |
+| System prompt in LLM          | ✅ (if LLM supports)   | Set when you instantiate the LLM               |
+| Upgrade `langgraph`/`langchain` | ✅                    | Then use `system_message` in agent             |
+| Prepend system message manually| ✅ (workaround)        | Add to messages list before user message       |
+
+---
+
+## **What should you do?**
+
+1. **Try setting the system prompt when you instantiate your LLM** (Option 1).
+2. If that doesn't work, **consider upgrading your libraries** (Option 2).
+3. If you can't upgrade, **manually prepend a system message** (Option 3).
+
+---
+
+**If you show me how you instantiate your LLM (e.g., `llm_gemini_15`), I can give you the exact code to set the system prompt!** Would you like to do that?
+
+---
+
+_**User**_
+
+Look can you fix my code for this new format?
+What fucking good are you???
+
+  /mount/src/autonomous-building-performance-engineering/agents.py:17 in        
+
+  <module>                                                                      
+
+                                                                                
+
+    14 llm = llm_gemini_15 # llm_gemini recommended                             
+
+    15                                                                          
+
+    16 # General-purpose LLM agent for non-technical queries                    
+
+  ❱ 17 llm_agent = create_react_agent(                                          
+
+    18 │   llm, tools=[llm_tool],                                               
+
+    19 │   prompt="You are a highly-trained research analyst and can provide t  
+
+    20 │   │   You are tasked with finding the answer to the user's question w  
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/langchain/agents/react/age  
+
+  nt.py:121 in create_react_agent                                               
+
+                                                                                
+
+    118 │   │   │   prompt = PromptTemplate.from_template(template)             
+
+    119 │   """  # noqa: E501                                                   
+
+    120 │   missing_vars = {"tools", "tool_names", "agent_scratchpad"}.differe  
+
+  ❱ 121 │   │   prompt.input_variables + list(prompt.partial_variables),        
+
+    122 │   )                                                                   
+
+    123 │   if missing_vars:                                                    
+
+    124 │   │   msg = f"Prompt missing required variables: {missing_vars}"      
+
+────────────────────────────────────────────────────────────────────────────────
+
+AttributeError: 'str' object has no attribute 'input_variables'
+
+2025-08-11 23:51:58.558 503 GET /script-health-check (127.0.0.1) 1302.56ms
+
+---
+
+_**Assistant**_
+
+Thank you for sharing your code and the error.  
+**You are using the `langchain.agents.react.agent.create_react_agent` function, which expects a `PromptTemplate` (not a string) for the `prompt` argument.**  
+Passing a plain string causes the error:  
+```
+AttributeError: 'str' object has no attribute 'input_variables'
+```
+
+---
+
+## **How to Fix**
+
+You need to:
+1. **Import** `PromptTemplate` from `langchain.prompts`.
+2. **Create a PromptTemplate** with the correct variables.
+3. **Pass the PromptTemplate** to `create_react_agent`.
+
+---
+
+### **What variables does the ReAct agent expect?**
+
+The ReAct agent expects a prompt with these variables:
+- `tools`
+- `tool_names`
+- `agent_scratchpad`
+- (sometimes `input`)
+
+**You must include these in your template.**
+
+---
+
+## **Here’s how to fix your code:**
+
+Add this at the top:
+```python
+from langchain.prompts import PromptTemplate
+```
+
+Then, for your general-purpose agent, replace:
+```python
+llm_agent = create_react_agent(
+    llm, tools=[llm_tool], 
+    prompt="You are a highly-trained research analyst and can provide the user with the information they need.\
+        You are tasked with finding the answer to the user's question without using any tools.\
+        Answer the user's question to the best of your ability."
+)
+```
+**with:**
+```python
+llm_agent_prompt = PromptTemplate(
+    input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
+    template=(
+        "You are a highly-trained research analyst and can provide the user with the information they need.\n"
+        "You are tasked with finding the answer to the user's question without using any tools.\n"
+        "Answer the user's question to the best of your ability.\n\n"
+        "Tools available: {tools}\n"
+        "Tool names: {tool_names}\n"
+        "Previous work: {agent_scratchpad}\n"
+        "User input: {input}\n"
+    )
+)
+llm_agent = create_react_agent(
+    llm,
+    tools=[llm_tool],
+    prompt=llm_agent_prompt
+)
+```
+
+---
+
+**Repeat this pattern for your other agents** if you want to customize their prompts.  
+If you want, I can rewrite all your agent definitions for you—just say the word!
+
+---
+
+## **Summary**
+
+- `prompt` must be a `PromptTemplate`, not a string.
+- The template must include the variables: `input`, `agent_scratchpad`, `tools`, `tool_names`.
+- Import `PromptTemplate` from `langchain.prompts`.
+
+---
+
+Would you like me to rewrite all your agent definitions in this file for you?
+
+---
+
+_**User**_
+
+FIX ALL OF THEM STUPID. THE WHOL;E FILE
+
+---
+
+_**Assistant**_
+
+
 
 ---
 
