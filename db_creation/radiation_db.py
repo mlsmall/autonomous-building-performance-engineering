@@ -18,10 +18,13 @@ import warnings
 warnings.filterwarnings("ignore")  # Suppress all warnings
 embedding = embedding_google
 
+# Ensure the /tmp/radiation_vector_db directory exists for Streamlit Cloud compatibility
+os.makedirs("/tmp/radiation_vector_db", exist_ok=True)
+
 vector_store = Chroma(
     collection_name="rag-chroma",
     embedding_function=embedding,
-    persist_directory="./rad_vector_db"
+    persist_directory="/tmp/radiation_vector_db"
 )
 
 rad_retriever = vector_store.as_retriever(search_kwargs={"k": 3})

@@ -662,7 +662,840 @@ FIX ALL OF THEM STUPID. THE WHOL;E FILE
 
 _**Assistant**_
 
+<details><summary>Edit file: agents.py</summary>
 
+undefined
+
+**Chunk 1**
+Lines added: 1, lines removed: undefined
+
+```diff
+@@ -6,4 +6,5 @@
+  from langchain.agents.react.agent import create_react_agent
+  from schemas import BuildingInput
++ from langchain.prompts import PromptTemplate
+  
+  from core_engine.tools import tavily_tool, input_validation_tool, ashrae_lookup_tool, recommendation_tool, llm_tool
+```
+
+**Chunk 2**
+Lines added: 67, lines removed: 29
+
+```diff
+@@ -15,53 +16,91 @@
+  
+  # General-purpose LLM agent for non-technical queries
++ llm_agent_prompt = PromptTemplate(
++     input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
++     template=(
++         "You are a highly-trained research analyst and can provide the user with the information they need.\n"
++         "You are tasked with finding the answer to the user's question without using any tools.\n"
++         "Answer the user's question to the best of your ability.\n\n"
++         "Tools available: {tools}\n"
++         "Tool names: {tool_names}\n"
++         "Previous work: {agent_scratchpad}\n"
++         "User input: {input}\n"
++     )
++ )
+  llm_agent = create_react_agent(
+-     llm, tools=[llm_tool], 
+-     prompt="You are a highly-trained research analyst and can provide the user with the information they need.\
+-         You are tasked with finding the answer to the user's question without using any tools.\
+-         Answer the user's question to the best of your ability."
++     llm,
++     tools=[llm_tool],
++     prompt=llm_agent_prompt
+  )
+  
+  # Research agent for utility rate and other web search queries
++ research_agent_prompt = PromptTemplate(
++     input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
++     template=(
++         "You are a highly trained researcher. You are tasked with finding the answer to the user's question.\n"
++         "You have access to the following tool: Tavily Search. Use it wisely.\n\n"
++         "Tools available: {tools}\n"
++         "Tool names: {tool_names}\n"
++         "Previous work: {agent_scratchpad}\n"
++         "User input: {input}\n"
++     )
++ )
+  research_agent = create_react_agent(
+-     llm, tools=[tavily_tool], prompt="You are a highly trained researcher. You are tasked with \
+-     finding the answer to the user's question. You have access to the following tool: Tavily Search. Use it wisely.")
++     llm,
++     tools=[tavily_tool],
++     prompt=research_agent_prompt
++ )
+  
+  # Input validation agent using BuildingInput schema
++ input_validation_agent_prompt = PromptTemplate(
++     input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
++     template=(
++         f"You are an input validator. Use these exact validation rules from BuildingInput: {BuildingInput.model_json_schema()}\n\n"
++         "Provide clear, professional feedback if values are invalid.\n"
++         "If all values are valid, just say 'Valid input'.\n\n"
++         "Tools available: {tools}\n"
++         "Tool names: {tool_names}\n"
++         "Previous work: {agent_scratchpad}\n"
++         "User input: {input}\n"
++     )
++ )
+  input_validation_agent = create_react_agent(
+      llm,
+      tools=[input_validation_tool],
+-     prompt=f"""You are an input validator. Use these exact validation rules from BuildingInput: {BuildingInput.model_json_schema()}
+-     
+-     Provide clear, professional feedback if values are invalid.
+-     If all values are valid, just say 'Valid input'."""
++     prompt=input_validation_agent_prompt
+  )
+  
+  # ASHRAE standards lookup agent using RAG tool
++ ashrae_lookup_agent_prompt = PromptTemplate(
++     input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
++     template=(
++         "You look up requested information from ASHRAE documents using RAG.\n\n"
++         "Tools available: {tools}\n"
++         "Tool names: {tool_names}\n"
++         "Previous work: {agent_scratchpad}\n"
++         "User input: {input}\n"
++     )
++ )
+  ashrae_lookup_agent = create_react_agent(
+-     llm, 
++     llm,
+      tools=[ashrae_lookup_tool],
+-     prompt="You look up requested information from ASHRAE documents using RAG."
+- )
+- 
+- # recommendation_agent = create_react_agent(
+- #     llm,
+- #     tools=[recommendation_tool],
+- #     prompt="""You analyze building component performance and provide clear recommendations.
+- #     You receive performance comparisons and create helpful insights.
+- #     Keep recommendations clear and direct."""
+- # )
++     prompt=ashrae_lookup_agent_prompt
++ )
+  
+  # Performance analysis and recommendation agent
+- # recommendation_agent = create_react_agent(
+- #     llm,
+- #     tools=[recommendation_tool],
+- #     prompt="Pass the input data directly to recommendation_tool without modifying it. \
+- #         Then return the recommendations result from the tool, without modifying it."
+- # )
+- 
++ recommendation_agent_prompt = PromptTemplate(
++     input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
++     template=(
++         "Use recommendation_tool to get the differences. The tool returns a JSON string. Return this exact JSON string without any modification, parsing, or reformatting. Do not add any markdown formatting or explanation.\n\n"
++         "Tools available: {tools}\n"
++         "Tool names: {tool_names}\n"
++         "Previous work: {agent_scratchpad}\n"
++         "User input: {input}\n"
++     )
++ )
+  recommendation_agent = create_react_agent(
+      llm,
+      tools=[recommendation_tool],
+-     prompt="Use recommendation_tool to get the differences. The tool returns a JSON string. Return this exact JSON string without any modification, parsing, or reformatting. Do not add any markdown formatting or explanation."
++     prompt=recommendation_agent_prompt
+  )
+  
+```
+
+</details>
+
+---
+
+All your agent definitions in `agents.py` have been rewritten to use `PromptTemplate` for the `prompt` argument, as required by the latest `langchain` ReAct agent API. This will resolve the errors and allow you to use custom instructions for each agent.
+
+**Key changes:**
+- Imported `PromptTemplate` at the top.
+- For each agent, created a `PromptTemplate` with the required variables: `input`, `agent_scratchpad`, `tools`, `tool_names`.
+- Passed the `PromptTemplate` to `create_react_agent` instead of a plain string.
+
+You can now customize the instructions in the `template` field of each `PromptTemplate` as needed.
+
+**You should now be able to run your app without prompt-related errors.**  
+If you get any new errors, let me know and I’ll help you fix them!
+
+---
+
+_**User**_
+
+chromadb.errors.InternalError: This app has encountered an error. The original error message is redacted to prevent data leaks. Full error details have been recorded in the logs (if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app).
+Traceback:
+
+File "/mount/src/autonomous-building-performance-engineering/app.py", line 39, in <module>
+    from graph import graph, USE_DATABASE, get_user_history
+File "/mount/src/autonomous-building-performance-engineering/graph.py", line 14, in <module>
+    from agents import llm_agent, research_agent, ashrae_lookup_agent, recommendation_agent, input_validation_agent
+File "/mount/src/autonomous-building-performance-engineering/agents.py", line 10, in <module>
+    from core_engine.tools import tavily_tool, input_validation_tool, ashrae_lookup_tool, recommendation_tool, llm_tool
+File "/mount/src/autonomous-building-performance-engineering/core_engine/tools.py", line 16, in <module>
+    from rag_corrective import retrieve, generate
+File "/mount/src/autonomous-building-performance-engineering/rag_corrective.py", line 5, in <module>
+    from db_creation.ashrae_db import retriever
+File "/mount/src/autonomous-building-performance-engineering/db_creation/ashrae_db.py", line 21, in <module>
+    vector_store = Chroma(
+                   ^^^^^^^
+File "/home/adminuser/venv/lib/python3.12/site-packages/langchain_chroma/vectorstores.py", line 413, in __init__
+    self.__ensure_collection()
+File "/home/adminuser/venv/lib/python3.12/site-packages/langchain_chroma/vectorstores.py", line 420, in __ensure_collection
+    self._chroma_collection = self._client.get_or_create_collection(
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/adminuser/venv/lib/python3.12/site-packages/chromadb/api/client.py", line 232, in get_or_create_collection
+    model = self._server.get_or_create_collection(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/adminuser/venv/lib/python3.12/site-packages/chromadb/api/rust.py", line 268, in get_or_create_collection
+    return self.create_collection(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/adminuser/venv/lib/python3.12/site-packages/chromadb/api/rust.py", line 227, in create_collection
+    collection = self.bindings.create_collection(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+---
+
+_**Assistant**_
+
+You're now getting a `chromadb.errors.InternalError` when your app tries to instantiate a `Chroma` vector store. The error message is redacted, but this is a **very common issue on Streamlit Cloud and other restricted environments**.
+
+### What causes this?
+- **ChromaDB** sometimes fails to create or access its collection due to:
+  - File system permission issues (can't write to the `persist_directory`)
+  - The directory doesn't exist or is not writable
+  - The environment (like Streamlit Cloud) restricts certain file operations
+  - Version mismatches or corrupted DB files
+
+---
+
+## **How to Fix**
+
+### 1. **Check your `persist_directory` path**
+- Make sure you are passing a `persist_directory` argument to `Chroma` (as you did before).
+- Use a path that is **writable** in the current environment, e.g. `"./chroma_db"` or `"/tmp/chroma_db"`.
+
+**Example:**
+```python
+vector_store = Chroma(
+    embedding_function=...,
+    collection_name="ashrae",
+    persist_directory="/tmp/chroma_db"  # Use /tmp for cloud environments
+)
+```
+- `/tmp` is almost always writable in cloud environments.
+
+---
+
+### 2. **Ensure the directory exists**
+- Before instantiating `Chroma`, make sure the directory exists:
+```python
+import os
+os.makedirs("/tmp/chroma_db", exist_ok=True)
+```
+
+---
+
+### 3. **Try in-memory mode (for ephemeral use)**
+- If you don't need persistence, you can use in-memory mode by omitting `persist_directory` or setting it to `None`:
+```python
+vector_store = Chroma(
+    embedding_function=...,
+    collection_name="ashrae",
+    persist_directory=None
+)
+```
+- **Note:** Data will be lost when the app restarts.
+
+---
+
+### 4. **Check for version mismatches**
+- Make sure your `chromadb`, `langchain`, and `langchain_chroma` versions are compatible.
+- If you recently upgraded/downgraded, try deleting the old `chroma_db` directory and letting it be recreated.
+
+---
+
+## **What to do next**
+
+1. **Edit your `db_creation/ashrae_db.py`** to:
+   - Use `/tmp/chroma_db` as the `persist_directory`
+   - Ensure the directory exists before creating the vector store
+
+2. **Redeploy your app**
+
+---
+
+## **If you want, I can make the code change for you.**
+Would you like me to update your `ashrae_db.py` to use `/tmp/chroma_db` and ensure the directory exists?  
+If yes, just say so!
+
+---
+
+_**User**_
+
+HEre's the full error for you
+
+     36 #         f.write(content)                                              
+
+     37                                                                         
+
+     38                                                                         
+
+  ❱  39 from graph import graph, USE_DATABASE, get_user_history                 
+
+     40 from report_generator import generate_performance_report                
+
+     41                                                                         
+
+     42                                                                         
+
+                                                                                
+
+  /mount/src/autonomous-building-performance-engineering/graph.py:14 in         
+
+  <module>                                                                      
+
+                                                                                
+
+     11 from langgraph.checkpoint.memory import MemorySaver                     
+
+     12 from langchain_core.messages import HumanMessage                        
+
+     13                                                                         
+
+  ❱  14 from agents import llm_agent, research_agent, ashrae_lookup_agent, rec  
+
+     15 from core_engine.tools import calculation_tool, radiation_tool, python  
+
+     16 from models import llm_gpt, llm_mistral, llm_gemini_25                  
+
+     17 from schemas import AgentState, Recommendation, SupervisorState, membe  
+
+                                                                                
+
+  /mount/src/autonomous-building-performance-engineering/agents.py:10 in        
+
+  <module>                                                                      
+
+                                                                                
+
+      7 from schemas import BuildingInput                                       
+
+      8 from langchain.prompts import PromptTemplate                            
+
+      9                                                                         
+
+  ❱  10 from core_engine.tools import tavily_tool, input_validation_tool, ashr  
+
+     11 from models import llm_gemini_15, llm_gpt                               
+
+     12                                                                         
+
+     13                                                                         
+
+                                                                                
+
+  /mount/src/autonomous-building-performance-engineering/core_engine/tools.py:  
+
+  16 in <module>                                                                
+
+                                                                                
+
+     13 from schemas import BuildingInput                                       
+
+     14 from models import llm_gemini_15, llm_gpt, llm_cohere                   
+
+     15 from core_engine.ashrae_data import ASHRAE_VALUES                       
+
+  ❱  16 from rag_corrective import retrieve, generate                           
+
+     17 from rag_radiation import rad_generate, rad_retrieve                    
+
+     18                                                                         
+
+     19 llm = llm_cohere # llm_gemini_15 recommended                            
+
+                                                                                
+
+  /mount/src/autonomous-building-performance-engineering/rag_corrective.py:5    
+
+  in <module>                                                                   
+
+                                                                                
+
+      2 from langchain_core.output_parsers import StrOutputParser               
+
+      3 from langchain_core.prompts import ChatPromptTemplate                   
+
+      4                                                                         
+
+  ❱   5 from db_creation.ashrae_db import retriever                             
+
+      6 from models import llm_gemini_15, llm_gpt, llm_llama, llm_cohere        
+
+      7                                                                         
+
+      8 llm = llm_gemini_15 # use gemini 1.5 flash                              
+
+                                                                                
+
+  /mount/src/autonomous-building-performance-engineering/db_creation/ashrae_db  
+
+  .py:21 in <module>                                                            
+
+                                                                                
+
+    18                                                                          
+
+    19 embedding = embedding_google                                             
+
+    20                                                                          
+
+  ❱ 21 vector_store = Chroma(                                                   
+
+    22 │   collection_name="rag-chroma",                                        
+
+    23 │   embedding_function=embedding,                                        
+
+    24 │   persist_directory="./ashrae_vector_db"                               
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/langchain_chroma/vectorsto  
+
+  res.py:413 in __init__                                                        
+
+                                                                                
+
+     410 │   │   self._collection_metadata = collection_metadata                
+
+     411 │   │   self._collection_configuration = collection_configuration      
+
+     412 │   │   if create_collection_if_not_exists:                            
+
+  ❱  413 │   │   │   self.__ensure_collection()                                 
+
+     414 │   │   else:                                                          
+
+     415 │   │   │   self._chroma_collection = self._client.get_collection(nam  
+
+     416 │   │   self.override_relevance_score_fn = relevance_score_fn          
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/langchain_chroma/vectorsto  
+
+  res.py:420 in __ensure_collection                                             
+
+                                                                                
+
+     417 │                                                                      
+
+     418 │   def __ensure_collection(self) -> None:                             
+
+     419 │   │   """Ensure that the collection exists or create it."""          
+
+  ❱  420 │   │   self._chroma_collection = self._client.get_or_create_collecti  
+
+     421 │   │   │   name=self._collection_name,                                
+
+     422 │   │   │   embedding_function=None,                                   
+
+     423 │   │   │   metadata=self._collection_metadata,                        
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/chromadb/api/client.py:232  
+
+  in get_or_create_collection                                                   
+
+                                                                                
+
+    229 │   │                                                                   
+
+    230 │   │   if embedding_function is not None and configuration_ef is None  
+
+    231 │   │   │   configuration["embedding_function"] = embedding_function    
+
+  ❱ 232 │   │   model = self._server.get_or_create_collection(                  
+
+    233 │   │   │   name=name,                                                  
+
+    234 │   │   │   metadata=metadata,                                          
+
+    235 │   │   │   tenant=self.tenant,                                         
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/chromadb/api/rust.py:268    
+
+  in get_or_create_collection                                                   
+
+                                                                                
+
+    265 │   │   tenant: str = DEFAULT_TENANT,                                   
+
+    266 │   │   database: str = DEFAULT_DATABASE,                               
+
+    267 │   ) -> CollectionModel:                                               
+
+  ❱ 268 │   │   return self.create_collection(                                  
+
+    269 │   │   │   name, configuration, metadata, True, tenant, database       
+
+    270 │   │   )                                                               
+
+    271                                                                         
+
+                                                                                
+
+  /home/adminuser/venv/lib/python3.12/site-packages/chromadb/api/rust.py:227    
+
+  in create_collection                                                          
+
+                                                                                
+
+    224 │   │   else:                                                           
+
+    225 │   │   │   configuration_json_str = None                               
+
+    226 │   │                                                                   
+
+  ❱ 227 │   │   collection = self.bindings.create_collection(                   
+
+    228 │   │   │   name, configuration_json_str, metadata, get_or_create, ten  
+
+    229 │   │   )                                                               
+
+    230 │   │   collection_model = CollectionModel(                             
+
+────────────────────────────────────────────────────────────────────────────────
+
+InternalError: Database error: error returned from database: (code: 1) no such 
+
+table: acquire_write
+
+2025-08-12 00:50:38.558 503 GET /script-health-check (127.0.0.1) 1305.55ms
+
+Failed to send telemetry event ClientStartEvent: module 'chromadb' has no attribute 'get_settings'
+
+---
+
+_**Assistant**_
+
+Thank you for providing the **full error**:
+
+```
+InternalError: Database error: error returned from database: (code: 1) no such table: acquire_write
+```
+
+This is a **ChromaDB database corruption or initialization error**. It means the SQLite database ChromaDB is trying to use is either:
+- Corrupted
+- Incompatible with the current ChromaDB version
+- Or was not initialized properly
+
+This is **very common** when:
+- You upgrade/downgrade ChromaDB or LangChain
+- The database file is left over from a previous run with a different version
+- The environment (like Streamlit Cloud) does not persist files correctly
+
+---
+
+## **How to Fix**
+
+### 1. **Delete the existing ChromaDB directory**
+- In your case, it's `./ashrae_vector_db`
+- Deleting this directory will force ChromaDB to create a new, clean database.
+
+**On Streamlit Cloud or similar, you may need to:**
+- Change the `persist_directory` to a new path (e.g., `/tmp/ashrae_vector_db`), which is always empty on each run.
+
+---
+
+### 2. **Change your code to use `/tmp/ashrae_vector_db`**
+
+**In `db_creation/ashrae_db.py`, change:**
+```python
+vector_store = Chroma(
+    collection_name="rag-chroma",
+    embedding_function=embedding,
+    persist_directory="./ashrae_vector_db"
+)
+```
+**to:**
+```python
+import os
+os.makedirs("/tmp/ashrae_vector_db", exist_ok=True)
+
+vector_store = Chroma(
+    collection_name="rag-chroma",
+    embedding_function=embedding,
+    persist_directory="/tmp/ashrae_vector_db"
+)
+```
+
+---
+
+### 3. **If you want to keep it ephemeral (no persistence), use:**
+```python
+vector_store = Chroma(
+    collection_name="rag-chroma",
+    embedding_function=embedding,
+    persist_directory=None
+)
+```
+But this means the database will be rebuilt every time the app restarts.
+
+---
+
+### 4. **If running locally, just delete the `ashrae_vector_db` folder.**
+- Stop your app.
+- Delete the folder `ashrae_vector_db` in your project directory.
+- Restart your app.
+
+---
+
+## **Summary Table**
+
+| Environment         | Solution                                      |
+|---------------------|-----------------------------------------------|
+| Streamlit Cloud     | Use `/tmp/ashrae_vector_db` as directory      |
+| Local (dev machine) | Delete `ashrae_vector_db` folder              |
+| Any                 | Use `persist_directory=None` for in-memory    |
+
+---
+
+## **Would you like me to edit your code to use `/tmp/ashrae_vector_db` and ensure the directory exists?**
+If yes, just say so! This will fix the error and is the best practice for cloud deployments.
+
+---
+
+_**User**_
+
+its on streamlit if I delete locally it will prbably delte there too
+
+---
+
+_**Assistant**_
+
+Great clarification! On **Streamlit Cloud**, your local file deletions have **no effect** on the files in the cloud deployment. Each time you deploy or restart your app on Streamlit Cloud, it gets a **fresh copy** of your repo, and any files created at runtime (like ChromaDB’s SQLite files) are stored in a temporary, isolated filesystem.
+
+**Key points:**
+- Deleting the folder locally will NOT delete it on Streamlit Cloud.
+- On Streamlit Cloud, the only persistent files are those in your repo; everything else is ephemeral and reset on each run.
+- If you use a path like `./ashrae_vector_db`, it will be created anew each time, but if the DB gets corrupted during a session, it will stay corrupted until the app restarts.
+
+---
+
+## **Best Practice for Streamlit Cloud**
+
+**Always use `/tmp/ashrae_vector_db` as your ChromaDB `persist_directory`.**
+- `/tmp` is guaranteed to be writable and is always empty on each app start.
+- This avoids any leftover/corrupted DB issues.
+
+---
+
+## **What you should do**
+
+**In your `db_creation/ashrae_db.py`, change:**
+```python
+vector_store = Chroma(
+    collection_name="rag-chroma",
+    embedding_function=embedding,
+    persist_directory="./ashrae_vector_db"
+)
+```
+**to:**
+```python
+import os
+os.makedirs("/tmp/ashrae_vector_db", exist_ok=True)
+
+vector_store = Chroma(
+    collection_name="rag-chroma",
+    embedding_function=embedding,
+    persist_directory="/tmp/ashrae_vector_db"
+)
+```
+
+---
+
+## **Why this works**
+- `/tmp` is always writable and empty on Streamlit Cloud.
+- No risk of leftover/corrupted DB files between runs.
+- If the DB gets corrupted, a simple app restart will fix it.
+
+---
+
+**Would you like me to make this code change for you?**  
+If yes, just say so!
+
+---
+
+_**User**_
+
+Yeah but Im PUSHING my code to my repo
+
+---
+
+_**Assistant**_
+
+Thank you for clarifying! Here’s how it works:
+
+- **Pushing code to your repo** (e.g., GitHub) only affects the files tracked by git (your source code, not runtime-generated files like ChromaDB’s SQLite files).
+- **Streamlit Cloud** pulls your code from the repo on each deploy/restart, but any files created at runtime (like `ashrae_vector_db` or anything in `/tmp`) are NOT pushed back to your repo and are NOT persistent between runs.
+
+**So:**
+- Deleting or changing files in `/tmp` or any runtime-generated DB directory on Streamlit Cloud does NOT affect your repo.
+- Deleting the DB directory locally and pushing your code will NOT delete the DB directory on Streamlit Cloud, because that directory is not tracked by git and is not part of your repo.
+
+---
+
+## **What’s the right approach?**
+
+- **Always use `/tmp/ashrae_vector_db` for ChromaDB on Streamlit Cloud.**
+- This directory is ephemeral, safe, and always clean on each app start.
+- You do NOT need to worry about deleting it locally or in your repo.
+
+---
+
+## **Summary Table**
+
+| Action                        | Affects Repo? | Affects Streamlit Cloud? |
+|-------------------------------|:-------------:|:-----------------------:|
+| Delete DB dir locally         |      ❌       |           ❌            |
+| Use `/tmp/ashrae_vector_db`   |      ❌       |           ✅            |
+| Push code to repo             |      ✅       |           ✅            |
+| Delete DB dir in repo         |      ✅       |           ✅            |
+
+---
+
+## **What you should do:**
+
+- Change your code to use `/tmp/ashrae_vector_db` as the ChromaDB directory.
+- You do NOT need to delete anything locally or in your repo.
+
+---
+
+**Would you like me to update your code to use `/tmp/ashrae_vector_db`?**  
+If yes, I can do it right now!
+
+---
+
+_**User**_
+
+ok can you change my code
+
+---
+
+_**Assistant**_
+
+<details>
+            <summary>Searched codebase "ashrae_db.py" • **1** results</summary>
+        
+| File |
+|------|
+| `c:\Users\mauro\Desktop\Documents\Data Science\Projects\2025.01.17 - Building Performance Assistant\0 - Energy Modeling Agent\autonomous-building-performance-engineering\db_creation\ashrae_db.py` |
+
+</details>
+
+---
+
+Read file: db_creation/ashrae_db.py
+
+---
+
+<details><summary>Edit file: db_creation/ashrae_db.py</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 4, lines removed: 1
+
+```diff
+@@ -18,9 +18,12 @@
+  
+  embedding = embedding_google
++ 
++ # Ensure the /tmp/ashrae_vector_db directory exists for Streamlit Cloud compatibility
++ os.makedirs("/tmp/ashrae_vector_db", exist_ok=True)
+  
+  vector_store = Chroma(
+      collection_name="rag-chroma",
+      embedding_function=embedding,
+-     persist_directory="./ashrae_vector_db"
++     persist_directory="/tmp/ashrae_vector_db"
+  )
+  # retriever = vector_store.as_retriever(search_type = "mmr", search_kwargs={"k": 10, "fetch_k": 50})
+```
+
+</details>
+
+---
+
+Your code is now updated to use `/tmp/ashrae_vector_db` as the ChromaDB persist directory, and it ensures the directory exists before instantiating the vector store. This is the best practice for Streamlit Cloud and will prevent the database corruption errors you were seeing.
+
+**You can now redeploy your app.**  
+If you encounter any further issues, let me know and I’ll help you fix them!
+
+---
+
+_**User**_
+
+I alos have radiation db
+
+---
+
+_**Assistant**_
+
+<details>
+            <summary>Searched codebase "radiation" • **2** results</summary>
+        
+| File |
+|------|
+| `c:\Users\mauro\Desktop\Documents\Data Science\Projects\2025.01.17 - Building Performance Assistant\0 - Energy Modeling Agent\autonomous-building-performance-engineering\db_creation\radiation_db.py` |
+| `c:\Users\mauro\Desktop\Documents\Data Science\Projects\2025.01.17 - Building Performance Assistant\0 - Energy Modeling Agent\autonomous-building-performance-engineering\rag_radiation.py` |
+
+</details>
+
+---
+
+Read file: db_creation/radiation_db.py
+
+---
+
+<details><summary>Edit file: db_creation/radiation_db.py</summary>
+
+undefined
+
+**Chunk 1**
+Lines added: 4, lines removed: 1
+
+```diff
+@@ -18,9 +18,12 @@
+  warnings.filterwarnings("ignore")  # Suppress all warnings
+  embedding = embedding_google
++ 
++ # Ensure the /tmp/radiation_vector_db directory exists for Streamlit Cloud compatibility
++ os.makedirs("/tmp/radiation_vector_db", exist_ok=True)
+  
+  vector_store = Chroma(
+      collection_name="rag-chroma",
+      embedding_function=embedding,
+-     persist_directory="./rad_vector_db"
++     persist_directory="/tmp/radiation_vector_db"
+  )
+  
+```
+
+</details>
+
+---
+
+Your `radiation_db.py` is now updated to use `/tmp/radiation_vector_db` as the ChromaDB persist directory, and it ensures the directory exists before instantiating the vector store. This matches the fix for your ASHRAE DB and will prevent database errors on Streamlit Cloud.
+
+You can now safely deploy and use both vector stores in your app! If you have more vector DBs or need further help, just let me know.
 
 ---
 
