@@ -14,7 +14,7 @@ from langchain_core.messages import HumanMessage
 # Removed unused ReAct agent imports
 from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
 from models import llm_gpt, llm_mistral, llm_gemini_25, llm_gemini_20
-from schemas import AgentState, Recommendation, SupervisorState, members, BuildingInput
+from schemas import AgentState, SupervisorState, members, BuildingInput
 
 USE_DATABASE = False  # Or True if you want to use the database
 
@@ -152,7 +152,6 @@ def llm_node(state: AgentState) -> AgentState:
         "next": "FINISH"
         }  
    
-
 
 def input_validation_node(state: AgentState) -> AgentState:
     """

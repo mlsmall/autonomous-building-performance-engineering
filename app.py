@@ -134,9 +134,6 @@ with st.sidebar:
     st.markdown("### Quick Guide")
     st.markdown("Enter each building detail.\nTry these sample values:")
     st.code("window area = 10000 ft2\nshgc = 0.40\nu-value = 0.9\ncity = Montreal")
-    # st.markdown("<div style='margin: 0.5rem 0 0 0;'><hr style='margin: 8px 0;'></div>", unsafe_allow_html=True)
-    # st.markdown("<p style='margin: 0.5rem 0 0.5rem 0; font-size: 0.9em;'>Made with ❤️ by Kalevi Productions</p>", unsafe_allow_html=True)
-    # st.markdown("<div style='margin: 0 0 0.5rem 0;'><hr style='margin: 8px 0;'></div>", unsafe_allow_html=True)
     st.markdown("<div style='margin-top: -0.5rem;'>", unsafe_allow_html=True)
     
     # Methodology expander

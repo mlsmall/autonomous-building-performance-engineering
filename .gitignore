@@ -28,6 +28,7 @@ encrypt.py
 backup files/
 working_app*.py
 CONVENTIONS.md
+draw_graph.py
 
 # Data
 data/

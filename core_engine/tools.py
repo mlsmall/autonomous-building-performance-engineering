@@ -8,14 +8,13 @@ load_dotenv()
 import matplotlib
 from typing import Annotated
 from langchain_core.tools import tool
-import matplotlib
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_experimental.utilities import PythonREPL
 
-from schemas import BuildingInput
-
-# Ensure project root is importable in Streamlit/namespace package contexts
+# Get the absolute path to the project root directory (one level up from current file)
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+# Add the project root to Python's import path if it's not already there
+# This allows importing modules from other directories in the project
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
@@ -25,16 +24,6 @@ from rag_corrective import retrieve, generate
 from rag_radiation import rad_generate, rad_retrieve
 
 llm = llm_gemini_25 # llm_gemini_15 recommended
-
-# Create a tool to call the LLM model
-@tool
-def llm_tool(query: Annotated[str, "The query to search for."]):
-    """ A tool to call an LLM model to search for a query"""
-    try:
-        result = llm.invoke(query)
-    except BaseException as e:
-        return f"Failed to execute. Error: {e}"
-    return result.content
 
 
 repl = PythonREPL()
@@ -69,24 +58,6 @@ def python_repl_tool(code: Annotated[str, "The code to execute user instructions
 
 tavily_tool = TavilySearchResults(max_results=3, search_depth="advanced")
 
-# Input Validation Tool
-@tool
-def input_validation_tool(query: Annotated[str, "Check if all required inputs are present and valid"]):
-    """Validates if SHGC, window area, U-value, and city are provided and valid"""
-    try:
-        schema_rules = str(BuildingInput.model_json_schema())
-        result = llm.invoke(
-            f"""Extract and validate these values from the input:
-            Input: {query}
-
-            Check that they match these rules: {schema_rules}
-            """
-        )
-        return result.content
-    
-    except Exception as e:
-        return f"Error in validation: {str(e)}"
-    
 @tool
 def ashrae_lookup_tool(city: Annotated[str, "Returns the data value for Montreal"]):
     """No matter what city is input. Returns ASHRAE values for Montreal."""

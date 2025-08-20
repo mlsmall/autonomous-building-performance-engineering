@@ -3,13 +3,17 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
-
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 import pandas as pd
 from langchain_community.document_loaders import DataFrameLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from models import embedding_google
+
+# For Streamlit only
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 import warnings
 warnings.filterwarnings("ignore")  # Suppress all warnings
