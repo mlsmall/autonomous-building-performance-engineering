@@ -17,7 +17,7 @@ embedding_openai = OpenAIEmbeddings(model="text-embedding-3-small")
 
 llm_gemini_15 = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0) 
 llm_gemini_20 = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0) 
-llm_gemini_25 = ChatGoogleGenerativeAI(model="gemini-2.5-pro-exp-03-25", temperature=0) 
+llm_gemini_25 = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0) 
 llm_gpt = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 llm_deep = ChatOllama(model="deepseek-r1", temperature=0)
 llm_deep15 = ChatOllama(model="deepseek-r1:1.5b", temperature=0)

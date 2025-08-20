@@ -11,16 +11,10 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
-from agents import (
-    llm_executor,
-    research_executor,
-    ashrae_lookup_executor,
-    recommendation_executor,
-    input_validation_executor,
-)
+# Removed unused ReAct agent imports
 from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
-from models import llm_gpt, llm_mistral, llm_gemini_25
-from schemas import AgentState, Recommendation, SupervisorState, members
+from models import llm_gpt, llm_mistral, llm_gemini_25, llm_gemini_20
+from schemas import AgentState, Recommendation, SupervisorState, members, BuildingInput
 
 USE_DATABASE = False  # Or True if you want to use the database
 
@@ -31,7 +25,7 @@ else:
     def get_user_history(*args, **kwargs):
         return None
 
-llm = llm_gpt # llm_gpt preferred
+llm = llm_gemini_25 # llm_gpt preferred
 
 # Supervisor agent system prompt
 # Controls workflow between agents based on input state
@@ -57,17 +51,17 @@ If user_data indicates no previous building data exists:
         - Wall U-value
         - City
 
-    2. After validation, send validated input to ashrae_lookup
-        - When you see ashrae_data in the state, route to utility to get local electricity rates
-        - After getting local electricity rates, route to radiation_node to get the solar radiation value
+    2. If you see "Valid input" message from input_validation, route to ashrae_lookup
+        - When you see ashrae_to in the state, route to utility to get local electricity rates
+        - When you see utility_rate in the state, route to radiation_node to get the solar radiation value
 
-    3. After utility rates and solar radiation values are found:
-        - First route to calculation for proposed calculations (using user's U-value and SHGC)
-        - Then route to calculation again for baseline calculations (using ASHRAE U-value and SHGC)
-        - Proposed AND Baseline calculations must be complete before proceeding
+    3. When you see radiation in the state:
+        - If proposed_total_heat_gain is NOT in state, route to calculation for proposed calculations
+        - If proposed_total_heat_gain is in state but baseline_total_heat_gain is NOT in state, route to calculation for baseline calculations
+        - If BOTH proposed_total_heat_gain AND baseline_total_heat_gain are in state, route to recommendation
 
-    4. Only after BOTH Proposed AND Baseline calculations are complete:
-        - Route to recommendation for comparison
+    4. After recommendation is complete:
+        - Route to FINISH
 
     5. After recommendations are shown:
         - STOP
@@ -84,18 +78,17 @@ If user_data indicates no previous building data exists:
 
 # The supervisor is an LLM node that decides what node to execute next - chore orchestrator
 def supervisor_node(state: AgentState) -> AgentState:
-    print("\n=== SUPERVISOR NODE START ===")
+    print("SUPERVISOR SEES:", {k: v for k, v in state.items() if k not in ['messages', 'next', 'user_id']})
 
     if USE_DATABASE:
         user_id = state.get('user_id')
         user_data = "No previous building data"
 
-        # Create user_data string if we building data from the user exists
-        if any(key in state for key in ['city', 'window_area', 'shgc', 'u_value']):
-            user_data = "Building data in state:\n"
-            for key in ['city', 'window_area', 'shgc', 'u_value', 'baseline_cost', 'proposed_cost']:
-                if key in state:
-                    user_data += f"- {key}: {state[key]}\n"        
+        # Create user_data string with ALL state data (except messages and next)
+        user_data = "Current state data:\n"
+        for key, value in state.items():
+            if key not in ['messages', 'next', 'user_id']:
+                user_data += f"- {key}: {value}\n"        
         
         formatted_prompt = system_prompt.format(
             user_id=user_id,
@@ -109,6 +102,9 @@ def supervisor_node(state: AgentState) -> AgentState:
         )
 
     messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
+    print("=== SUPERVISOR ACTUAL PROMPT ===")
+    print(formatted_prompt)
+    print("=== END SUPERVISOR PROMPT ===")
     response = llm.with_structured_output(SupervisorState).invoke(messages)
 
     next1 = response.next
@@ -155,10 +151,9 @@ def llm_node(state: AgentState) -> AgentState:
     enhanced_messages = [{"role": "system", "content": enhanced_system_message}, 
                          {"role": "user", "content": user_question}]
 
-    # Invoke the LLM with the enhanced context
-    # ReAct agents expect a single string input and may use intermediate_steps
-    result = llm_executor.invoke({"input": user_question})
-    llm_output = result.get("output", "")
+    # Direct LLM call without ReAct agent
+    result = llm.invoke(enhanced_messages)
+    llm_output = result.content
 
     return {
         "messages": [HumanMessage(content=llm_output, name="llm_node")],
@@ -176,9 +171,32 @@ def input_validation_node(state: AgentState) -> AgentState:
         return {"next": "llm"}
     
     validation_input = state['messages'][-1].content
-    result = input_validation_executor.invoke({"input": validation_input})
-    # AgentExecutor returns dict with 'output'
-    print("AGENT VALIDATION SAID", result.get("output"))
+    print("INPUT VALIDATION RECEIVED:", validation_input)
+    
+    # Direct LLM validation
+    import json
+    schema = BuildingInput.model_json_schema()
+    schema_str = json.dumps(schema, indent=2)
+    
+    prompt = f"""You are an input validator. Check if this input is valid:
+
+Input: {validation_input}
+
+Validation schema:
+{schema_str}
+
+If all values are valid, respond with exactly: "Valid input"
+If any values are invalid, respond with: "Invalid input: [specific reason]"
+
+Be precise and check the actual numbers against the schema rules."""
+
+    # print("=== Validation PROMPT SENT TO LLM ===")
+    # print(prompt)
+    # print("=== END PROMPT ===")
+    
+    validation_result = llm.invoke(prompt)
+    result = {"output": validation_result.content}
+    print("VALIDATION NODE OUTPUT SAID", result.get("output"))
     
     # Check if validation result is valid and and parse input
     if "Valid input" in result.get("output", ""):
@@ -207,8 +225,17 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
     Returns climate zone, baseline U-value, and SHGC requirements.
     """
     city = state["city"]
-    result = ashrae_lookup_executor.invoke({"input": city})
-    tool_message = result.get("output", "")
+    # Direct ASHRAE data lookup - no ReAct agent needed
+    from core_engine.ashrae_data import ASHRAE_VALUES
+    data = ASHRAE_VALUES["Montreal"]  # Using Montreal data for all cities for now
+    tool_message = (
+        f"To={data['To']}\n"
+        f"CDD={data['CDD10']}\n"
+        f"Climate Zone={data['zone']}\n"
+        f"U-value={data['glass_u_factor']}\n"
+        f"SHGC={data['shgc']}\n"
+        f"Wall-U-Value={data['wall_u_value']}"
+    )
 
     # Validate and extract ASHRAE values
     if "To=" in tool_message  and "CDD=" in tool_message :
@@ -254,15 +281,11 @@ def radiation_node(state: AgentState) -> AgentState:
 def utility_node(state: AgentState) -> AgentState:
     """
     Gets local utility rates for cost calculations.
-    Uses research agent and Tavily to search current commercial rates.
+    Uses direct web search without ReAct agent.
     """
     city = state["city"]
-    # Format query to get only numeric rate value
-    query = f"Find an estimated value for the commercial utility rates ($/kWh) in {city}. \
-        Please provide only a numeric estimated utility rate value without any additional text. \
-        If no utility rate is available, please return '0.1'."
-    result = research_executor.invoke({"input": query})
-    content_raw = str(result.get("output", "0.1")).strip()
+    # Direct utility rate lookup - simplified
+    content_raw = "0.1"  # Default rate for now
     # Extract first numeric value
     import re as _re
     match = _re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", content_raw)
@@ -327,23 +350,26 @@ def recommendation_node(state: AgentState) -> AgentState:
     Analyzes performance differences between proposed and baseline values
     Generates and returns formatted recommendations based on energy and cost comparisons.
     """
+    # Direct calculation without ReAct agent
+    import json
+    
+    # Calculate differences as (Proposed - Baseline)
+    heat_gain_diff = state['proposed_total_heat_gain'] - state['baseline_total_heat_gain']
+    energy_diff = state['proposed_cooling_energy'] - state['baseline_cooling_energy']
+    cost_diff = state['proposed_cost'] - state['baseline_cost']
+    performance_delta = ((state['proposed_cost'] - state['baseline_cost']) / state['baseline_cost']) * 100
 
-    # Format data to send to recommendation agent
-    message = f"""proposed_total_heat_gain: {state['proposed_total_heat_gain']}
-    baseline_total_heat_gain: {state['baseline_total_heat_gain']}
-    proposed_cooling_energy: {state['proposed_cooling_energy']}
-    baseline_cooling_energy: {state['baseline_cooling_energy']}
-    proposed_cost: {state['proposed_cost']}
-    baseline_cost: {state['baseline_cost']}
-    """
-
-    # Get recommendations and format response based on the Recommendation class
-    result = recommendation_executor.invoke({"input": message})
-    agent_response = result.get("output", "{}")
-    # print("RECOMMENDATION AGENT RESPONSE BEFORE LLM:", agent_response)
-    recommendation = llm.with_structured_output(Recommendation).invoke([HumanMessage(content=agent_response)])
-    # print("LLM WITH STRUCTURED OUTPUT RECOMMENDATION:", recommendation.model_dump_json())
-    return {"messages": [HumanMessage(content=recommendation.model_dump_json(), name="recommendation")]}
+    # Create recommendation JSON directly
+    recommendation_data = {
+        "performance_delta": performance_delta,
+        "recommendations": [
+            f"heat_gain_diff: {heat_gain_diff}",
+            f"energy_diff: {energy_diff}", 
+            f"cost_diff: {cost_diff}"
+        ]
+    }
+    
+    return {"messages": [HumanMessage(content=json.dumps(recommendation_data), name="recommendation")]}
 
 
 # Graph construction and workflow definition

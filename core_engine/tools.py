@@ -19,12 +19,12 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from models import llm_gemini_15, llm_gpt, llm_cohere
+from models import llm_gemini_15, llm_gpt, llm_cohere, llm_gemini_25
 from core_engine.ashrae_data import ASHRAE_VALUES
 from rag_corrective import retrieve, generate
 from rag_radiation import rad_generate, rad_retrieve
 
-llm = llm_cohere # llm_gemini_15 recommended
+llm = llm_gemini_25 # llm_gemini_15 recommended
 
 # Create a tool to call the LLM model
 @tool
@@ -74,11 +74,12 @@ tavily_tool = TavilySearchResults(max_results=3, search_depth="advanced")
 def input_validation_tool(query: Annotated[str, "Check if all required inputs are present and valid"]):
     """Validates if SHGC, window area, U-value, and city are provided and valid"""
     try:
+        schema_rules = str(BuildingInput.model_json_schema())
         result = llm.invoke(
             f"""Extract and validate these values from the input:
             Input: {query}
 
-            Check that they match these rules: {BuildingInput.model_json_schema()}
+            Check that they match these rules: {schema_rules}
             """
         )
         return result.content

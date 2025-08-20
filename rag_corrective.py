@@ -3,9 +3,9 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from db_creation.ashrae_db import retriever
-from models import llm_gemini_15, llm_gpt, llm_llama, llm_cohere
+from models import llm_gemini_15, llm_gpt, llm_llama, llm_cohere, llm_gemini_25
 
-llm = llm_gemini_15 # use gemini 1.5 flash
+llm = llm_gemini_25 # use gemini 1.5 flash
 
 # Load the prompt
 prompt = hub.pull("rlm/rag-prompt")

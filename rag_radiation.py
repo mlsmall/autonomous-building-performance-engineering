@@ -2,9 +2,9 @@ from langchain import hub
 from langchain_core.output_parsers import StrOutputParser
 
 from db_creation.radiation_db import rad_retriever
-from models import llm_gemini_15, llm_gpt, llm_llama, llm_cohere
+from models import llm_gemini_15, llm_gpt, llm_llama, llm_cohere, llm_gemini_25
 
-llm = llm_cohere
+llm = llm_gemini_25
 
 # Load the prompt
 prompt = hub.pull("rlm/rag-prompt")

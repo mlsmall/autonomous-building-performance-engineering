@@ -9,11 +9,11 @@ from schemas import BuildingInput
 from langchain.prompts import PromptTemplate
 
 from core_engine.tools import tavily_tool, input_validation_tool, ashrae_lookup_tool, recommendation_tool, llm_tool
-from models import llm_gemini_15, llm_gpt
+from models import llm_gemini_15, llm_gpt, llm_gemini_25
 
 
 # Set primary LLM for agent interactions
-llm = llm_gemini_15 # llm_gemini recommended
+llm = llm_gemini_25 # llm_gemini recommended
 
 # General-purpose LLM agent for non-technical queries
 llm_agent_prompt = PromptTemplate(
@@ -65,10 +65,11 @@ research_executor = AgentExecutor(
 )
 
 # Input validation agent using BuildingInput schema
+schema_rules = str(BuildingInput.model_json_schema())
 input_validation_agent_prompt = PromptTemplate(
     input_variables=["input", "agent_scratchpad", "tools", "tool_names"],
     template=(
-        f"You are an input validator. Use these exact validation rules from BuildingInput: {BuildingInput.model_json_schema()}\n\n"
+        f"You are an input validator. Use these exact validation rules from BuildingInput: {schema_rules}\n\n"
         "Provide clear, professional feedback if values are invalid.\n"
         "If all values are valid, just say 'Valid input'.\n\n"
         "Tools available: {tools}\n"
