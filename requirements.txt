@@ -8,7 +8,7 @@ cohere==5.14.0
 
 # Vector Database & ML Runtime
 chromadb==0.6.3
-pysqlite3-binary==0.5.2
+pysqlite3-binary
 onnxruntime==1.22.1
 
 # Document Processing
