@@ -12,11 +12,6 @@ from models import embedding_google
 import warnings
 warnings.filterwarnings("ignore")  # Suppress all warnings
 
-# For Streamlit only
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 embedding = embedding_google
 
 # Ensure the /tmp/ashrae_vector_db directory exists for Streamlit Cloud compatibility

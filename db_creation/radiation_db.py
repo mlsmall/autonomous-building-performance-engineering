@@ -10,11 +10,6 @@ from langchain_community.document_loaders import DataFrameLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from models import embedding_google
 
-# For Streamlit only
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import warnings
 warnings.filterwarnings("ignore")  # Suppress all warnings
 embedding = embedding_google
