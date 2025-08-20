@@ -78,28 +78,22 @@ If user_data indicates no previous building data exists:
 
 # The supervisor is an LLM node that decides what node to execute next - chore orchestrator
 def supervisor_node(state: AgentState) -> AgentState:
-    print("SUPERVISOR SEES:", {k: v for k, v in state.items() if k not in ['messages', 'next', 'user_id']})
-
+    #  user_data string with current state data
+    user_data = "Current state data:\n"
+    for key, value in state.items():
+        if key not in ['messages', 'next', 'user_id']:
+            user_data += f"- {key}: {value}\n"
+    
     if USE_DATABASE:
         user_id = state.get('user_id')
-        user_data = "No previous building data"
-
-        # Create user_data string with ALL state data (except messages and next)
-        user_data = "Current state data:\n"
-        for key, value in state.items():
-            if key not in ['messages', 'next', 'user_id']:
-                user_data += f"- {key}: {value}\n"        
-        
-        formatted_prompt = system_prompt.format(
-            user_id=user_id,
-            user_data=user_data
-        )
-
     else:
-        formatted_prompt = system_prompt.format(
-            user_id="N/A",
-            user_data="No previous building data available."
-        )
+        user_id = "N/A"
+    
+    # Always pass the actual state data to the supervisor
+    formatted_prompt = system_prompt.format(
+        user_id=user_id,
+        user_data=user_data if user_data != "Current state data:\n" else "No previous building data available."
+    )
 
     messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
     print("=== SUPERVISOR ACTUAL PROMPT ===")
@@ -108,8 +102,6 @@ def supervisor_node(state: AgentState) -> AgentState:
     response = llm.with_structured_output(SupervisorState).invoke(messages)
 
     next1 = response.next
-    # if next1 == "FINISH":
-    #     next1 = END
     
     # Store building data in MongoDB if enabled
     if USE_DATABASE and state.get("user_id"):
