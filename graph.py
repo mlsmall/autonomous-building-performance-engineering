@@ -11,7 +11,6 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
-# Removed unused ReAct agent imports
 from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
 from models import llm_gpt, llm_mistral, llm_gemini_25, llm_gemini_20
 from schemas import AgentState, SupervisorState, members, BuildingInput
@@ -25,11 +24,10 @@ else:
     def get_user_history(*args, **kwargs):
         return None
 
-llm = llm_gemini_25 # llm_gpt preferred
+llm = llm_gemini_25 
 
 # Supervisor agent system prompt
-# Controls workflow between agents based on input state
-system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}. ask
+system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}.
 
 For User ID: {{user_id}}
 {{user_data}}
@@ -96,9 +94,9 @@ def supervisor_node(state: AgentState) -> AgentState:
     )
 
     messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
-    print("=== SUPERVISOR ACTUAL PROMPT ===")
-    print(formatted_prompt)
-    print("=== END SUPERVISOR PROMPT ===")
+    # print("=== SUPERVISOR ACTUAL PROMPT ===")
+    # print(formatted_prompt)
+    # print("=== END SUPERVISOR PROMPT ===")
     response = llm.with_structured_output(SupervisorState).invoke(messages)
 
     next1 = response.next
