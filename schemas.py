@@ -58,6 +58,6 @@ class Recommendation(BaseModel):
     
 members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility", "radiation_node"] # Current Agents
 options = members + ["FINISH"]
-class SupervisorState(BaseModel): # This is a Pydantic class that returns a literal
+class SupervisorState(BaseModel): # Pydantic class that returns a literal
     """Worker to route to next."""
     next: Literal[*options] # type: ignore 

@@ -13,8 +13,6 @@ from langchain_experimental.utilities import PythonREPL
 
 # Get the absolute path to the project root directory (one level up from current file)
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-# Add the project root to Python's import path if it's not already there
-# This allows importing modules from other directories in the project
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
@@ -29,23 +27,13 @@ llm = llm_gemini_25
 repl = PythonREPL()
 @tool
 def python_repl_tool(code: Annotated[str, "The code to execute user instructions such as perform calculations or create charts"]):
-    """Use this tool to execute Python code and do math. If you want to see the output of a value,
-    you should print it out with 'print(...)'. This is visible to the user.""
-    If you need to save a plot, you should save it to the ./ folder. Assume default values for charts and plots.
-    If the user has not indicated a preference, make an assumption and create the plot. Do no use a sandboxed environment.
-    Write the files to the ./ folder residing in the current folder.
+    """Use this tool to execute Python code for building energy calculations. If you want to see the output of a value,
+    you should print it out with 'print(...)'. This is visible to the user.
     
-    Clean the data provided before plotting a chart. If arrays are of unequal length, substitute missing data points with 0
-    or the average of the array.
-    
-    Example:
-    Do not save the plot to (sandbox:/plot.png) but to (./plot.png)
-
-    Example:
-    ``` 
-    from matplotlib import pyplot as plt
-    plt.savefig("./data/foo.png")
-    ```
+    The tool is primarily used for:
+    1. Running building energy formulas and calculations
+    2. Computing heat gain, energy usage, and cost values
+    3. Displaying calculation results through print statements
     """
     try:
         matplotlib.use('agg')
@@ -203,31 +191,7 @@ print(f"wall_heat_gain={{wall_heat_gain}}")
     
     except Exception as e:
         return f"Error in calculations: {str(e)}"
-    
-# @tool
-# def recommendation_tool(query: Annotated[str, "Compare building performance and provide recommendations"]):
-#     """Analyzes performance differences between proposed and baseline values"""
-#     try:
-#         return f"""
-#         Based on the analysis of:
-
-#         Proposed vs Baseline:
-#         Heat Gain: {query["proposed_heat_gain"]} vs {query["baseline_heat_gain"]} BTU/hr
-#         Annual Energy: {query["proposed_cooling_energy"]} vs {query["baseline_cooling_energy"]} kWh/year
-#         Annual Cost: ${query["proposed_cost"]} vs {query["baseline_cost"]}
-
-#         ASHRAE Requirements:
-#         SHGC: {query["shgc"]} vs required {query["ashrae_shgc"]}
-#         U-Factor: {query["glass_u_value"]} vs required {query["ashrae_glass_u"]}
-
-#         Calculate percentage differences between proposed and baseline values.
-#         Analyze ASHRAE compliance and provide specific recommendations for improvement.
-#         """
-    
-#     except Exception as e:
-#         return f"Error formatting data: {str(e)}"
-
-
+  
 
 @tool
 def recommendation_tool(query: Annotated[str, "Compare building performance and provide recommendations"]):
@@ -239,11 +203,6 @@ def recommendation_tool(query: Annotated[str, "Compare building performance and 
         for line in lines:
             key, value = line.strip().split(': ')
             data[key] = float(value)
-        
-        # heat_gain_diff = data['baseline_heat_gain'] - data['proposed_heat_gain']
-        # energy_diff = data['baseline_cooling_energy'] - data['proposed_cooling_energy']
-        # cost_diff = data['baseline_cost'] - data['proposed_cost']
-        # performance_delta = ((data['baseline_cost'] - data['proposed_cost']) / data['baseline_cost']) * 100
 
         # Calculate differences as (Proposed - Baseline)
         heat_gain_diff = data['proposed_total_heat_gain'] - data['baseline_total_heat_gain']
