@@ -2,6 +2,12 @@
 langchain==0.3.21
 langchain-core==0.3.58
 langchain-community==0.3.20
+langchain-google-genai==2.0.10
+langchain-openai==0.3.9
+langchain-ollama==0.3.0
+langchain-cohere==0.4.3
+langchain-mistralai==0.2.9
+langchain-experimental==0.3.4
 langgraph==0.3.18
 openai==1.70.0
 google-generativeai==0.8.4
@@ -27,8 +33,11 @@ matplotlib==3.10.1
 # Database
 pymongo==4.11.3
 
-# Utils
-pydantic==2.11.2
-numpy==1.26.4
+# Data Processing & Analysis
 pandas==2.2.3
+numpy==1.26.4
+
+# Models & Types
+pydantic==2.11.2
+pydantic_core==2.33.1  # Required by pydantic
 uuid==1.30
