@@ -64,16 +64,19 @@ If user_data indicates no previous building data exists:
     5. After recommendations are shown:
         - STOP
         - Wait for the user to write a message or question
-        - ONLY AFTER a user writes a message or route to llm_node to answer questions or messages
-        - Do not route to llm_node until last message is a user message
-        - Only route to `input_validation` if new building data is provided (contains "=")
+        - Route to llm to answer questions or messages
+        - After llm responds, route to END and wait for user input again
 """
 
 # The supervisor decides what node to execute next - orchestrator
 def supervisor_node(state: AgentState) -> AgentState:
+     # Check if we just came from llm - if so, wait for user input
+    if len(state["messages"]) > 0 and state["messages"][-1].name == "llm":
+        return {"next": END}  # Wait for user input after answering a question
     
+    # Force baseline calculation if proposed exists
     if 'proposed_total_heat_gain' in state and 'baseline_total_heat_gain' not in state:
-        return {"next": "calculation"}  # Force baseline calculation if proposed exists
+        return {"next": "calculation"}  
     
     #  user_data string with current state data
     user_data = "Current state data:\n"
@@ -111,44 +114,6 @@ def supervisor_node(state: AgentState) -> AgentState:
     print("=== SUPERVISOR NODE END ===\n")
     return {"next": next1}
 
-def llm_node(state: AgentState) -> AgentState:
-    """
-    General-purpose LLM agent for handling non-technical queries and post-analysis conversation.
-    Provides answers about building performance based on state data.
-    """
-    # Create a context with all the building data from the state
-    building_context = "Building Analysis Data:\n"
-    
-    # Dynamically add all relevant state data to the context
-    for key, value in state.items():
-        # Skip non-data fields and empty values
-        if key not in ["messages", "next"] and value is not None:
-            # Format the key for better readability
-            formatted_key = key.replace('_', ' ').title()
-            building_context += f"- {formatted_key}: {value}\n"
-
-    # Create enhanced system message with building context
-    enhanced_system_message = f"""You are a highly-trained building performance analyst. 
-    You can provide the user with information about their building's energy performance.
-    You have access to the following building data and analysis results:
-    {building_context}
-    Please keep the answer concise.
-    """
-    # print("ENHANCED SYSTEM MESSAGE", enhanced_system_message)
-    user_question = state["messages"][-1].content
-    print("USER QUESTION:", user_question)
-    
-    enhanced_messages = [{"role": "system", "content": enhanced_system_message}, 
-                         {"role": "user", "content": user_question}]
-
-    result = llm.invoke(enhanced_messages)
-    llm_output = result.content
-
-    return {
-        "messages": [HumanMessage(content=llm_output, name="llm_node")],
-        "next": END
-        }  
-   
 
 def input_validation_node(state: AgentState) -> AgentState:
     """
@@ -363,8 +328,48 @@ def recommendation_node(state: AgentState) -> AgentState:
         ]
     }
     
-    return {"messages": [HumanMessage(content=json.dumps(recommendation_data), name="recommendation")]}
+    return {
+        "messages": [HumanMessage(content=json.dumps(recommendation_data), name="recommendation")]
+        }
 
+def llm_node(state: AgentState) -> AgentState:
+    """
+    General-purpose LLM agent for handling non-technical queries and post-analysis conversation.
+    Provides answers about building performance based on state data.
+    """
+    # Create a context with all the building data from the state
+    building_context = "Building Analysis Data:\n"
+    
+    # Dynamically add all relevant state data to the context
+    for key, value in state.items():
+        # Skip non-data fields and empty values
+        if key not in ["messages", "next"] and value is not None:
+            # Format the key for better readability
+            formatted_key = key.replace('_', ' ').title()
+            building_context += f"- {formatted_key}: {value}\n"
+
+    # Create enhanced system message with building context
+    enhanced_system_message = f"""You are a highly-trained building performance analyst. 
+    You can provide the user with information about their building's energy performance.
+    You have access to the following building data and analysis results:
+    {building_context}
+    Please keep the answer concise.
+    """
+    # print("ENHANCED SYSTEM MESSAGE", enhanced_system_message)
+    user_question = state["messages"][-1].content
+    print("USER QUESTION:", user_question)
+    
+    enhanced_messages = [{"role": "system", "content": enhanced_system_message}, 
+                         {"role": "user", "content": user_question}]
+
+    result = llm.invoke(enhanced_messages)
+    llm_output = result.content
+
+    return {
+        "messages": [HumanMessage(content=llm_output, name="llm")],
+        "next": END 
+        }  
+   
 
 # StateGraph manages agent workflow and routing
 builder = StateGraph(AgentState)
