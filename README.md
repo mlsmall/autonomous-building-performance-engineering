@@ -8,7 +8,7 @@ This isn't just another:
 - Static building energy calculator 
 - Basic performance metrics tool
 
-## Try It Now
+## Try It Now (Work in Progess)
 🚀 [Building Performance Assistant Demo](https://building-performance-assistant.streamlit.app/)
 
 > ⚠️ **Development Notice**: This demo is currently in active development and may experience intermittent issues. It represents only the initial phase of a comprehensive building performance engineering system.
