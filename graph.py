@@ -11,8 +11,8 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 
-from core_engine.tools import calculation_tool, radiation_tool, python_repl_tool
-from models import llm_gpt, llm_mistral, llm_gemini_25, llm_gemini_20
+from core_engine.tools import calculation_tool, radiation_tool, ashrae_lookup_tool, tavily_tool, ASHRAE_VALUES
+from models import llm_gpt_4o, llm_mistral, llm_gemini_25, llm_gemini_20
 from schemas import AgentState, SupervisorState, members, BuildingInput
 
 USE_DATABASE = False  # Or True if you want to use the database
@@ -24,7 +24,7 @@ else:
     def get_user_history(*args, **kwargs):
         return None
 
-llm = llm_gemini_25 
+llm = llm_gpt_4o
 
 # Supervisor agent system prompt
 system_prompt = f"""You are a supervisor tasked with managing a conversation between the following workers: {members}.
@@ -33,7 +33,7 @@ For User ID: {{user_id}}
 {{user_data}}
 
 Given the following user request, respond with the worker to act next. Each worker will perform a task and respond 
-with their results and status. When finished, respond with FINISH.
+with their results and status. When finished, respond with END.
 
 If user_data contains building information:
     - Use those values for calculations
@@ -59,7 +59,7 @@ If user_data indicates no previous building data exists:
         - If BOTH proposed_total_heat_gain AND baseline_total_heat_gain are in state, route to recommendation
 
     4. After recommendation is complete:
-        - Route to FINISH
+        - Route to END
 
     5. After recommendations are shown:
         - STOP
@@ -68,14 +68,13 @@ If user_data indicates no previous building data exists:
         - Do not route to llm_node until last message is a user message
         - Only route to `input_validation` if new building data is provided (contains "=")
 """
-# Route to llm for:
-#     - General building questions
-#     - Questions about the building's performance after analysis is complete
-#     - Questions about the calculated values and recommendations
-#     - Any user messages after the initial analysis is complete that don't contain new building specifications
 
-# The supervisor is an LLM node that decides what node to execute next - chore orchestrator
+# The supervisor decides what node to execute next - orchestrator
 def supervisor_node(state: AgentState) -> AgentState:
+    
+    if 'proposed_total_heat_gain' in state and 'baseline_total_heat_gain' not in state:
+        return {"next": "calculation"}  # Force baseline calculation if proposed exists
+    
     #  user_data string with current state data
     user_data = "Current state data:\n"
     for key, value in state.items():
@@ -87,16 +86,18 @@ def supervisor_node(state: AgentState) -> AgentState:
     else:
         user_id = "N/A"
     
-    # Always pass the actual state data to the supervisor
-    formatted_prompt = system_prompt.format(
+    # Feed dynamic data to the system prompt
+    user_data_prompt = system_prompt.format(
         user_id=user_id,
         user_data=user_data if user_data != "Current state data:\n" else "No previous building data available."
     )
 
-    messages = [{"role": "system", "content": formatted_prompt}] + state["messages"]
     # print("=== SUPERVISOR ACTUAL PROMPT ===")
     # print(formatted_prompt)
     # print("=== END SUPERVISOR PROMPT ===")
+
+    # Pass the state data to the supervisor
+    messages = [{"role": "system", "content": user_data_prompt}] + state["messages"]
     response = llm.with_structured_output(SupervisorState).invoke(messages)
 
     next1 = response.next
@@ -134,20 +135,18 @@ def llm_node(state: AgentState) -> AgentState:
     Please keep the answer concise.
     """
     # print("ENHANCED SYSTEM MESSAGE", enhanced_system_message)
-    # Get the user's question from the state
     user_question = state["messages"][-1].content
+    print("USER QUESTION:", user_question)
     
-    # Create messages with enhanced system message
     enhanced_messages = [{"role": "system", "content": enhanced_system_message}, 
                          {"role": "user", "content": user_question}]
 
-    # Direct LLM call without ReAct agent
     result = llm.invoke(enhanced_messages)
     llm_output = result.content
 
     return {
         "messages": [HumanMessage(content=llm_output, name="llm_node")],
-        "next": "FINISH"
+        "next": END
         }  
    
 
@@ -185,9 +184,9 @@ Be precise and check the actual numbers against the schema rules."""
     
     validation_result = llm.invoke(prompt)
     result = {"output": validation_result.content}
-    print("VALIDATION NODE OUTPUT SAID", result.get("output"))
+    # print("VALIDATION NODE OUTPUT", result.get("output"))
     
-    # Check if validation result is valid and and parse input
+
     if "Valid input" in result.get("output", ""):
         user_input = state["messages"][0].content
         # Extract and convert input values to appropriate types if necessary
@@ -214,9 +213,9 @@ def ashrae_lookup_node(state: AgentState) -> AgentState:
     Returns climate zone, baseline U-value, and SHGC requirements.
     """
     city = state["city"]
-    # Direct ASHRAE data lookup - no ReAct agent needed
-    from core_engine.ashrae_data import ASHRAE_VALUES
-    data = ASHRAE_VALUES["Montreal"]  # Using Montreal data for all cities for now
+    # tool_message = ashrae_lookup_tool.invoke(city)
+
+    data = ASHRAE_VALUES["Montreal"]  # Hardcoded data for testing
     tool_message = (
         f"To={data['To']}\n"
         f"CDD={data['CDD10']}\n"
@@ -255,9 +254,8 @@ def radiation_node(state: AgentState) -> AgentState:
     """
     city = state["city"]
     result = radiation_tool.invoke(city)
-    # Robust numeric parsing
-    import re as _re
-    match = _re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", str(result))
+    
+    match = re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", str(result))
     radiation_value = float(match.group(0)) if match else 0.0
 
     print("RADIATION NODE RESULT", result)
@@ -270,15 +268,22 @@ def radiation_node(state: AgentState) -> AgentState:
 def utility_node(state: AgentState) -> AgentState:
     """
     Gets local utility rates for cost calculations.
-    Uses direct web search without ReAct agent.
     """
     city = state["city"]
-    # Direct utility rate lookup - simplified
-    content_raw = "0.1"  # Default rate for now
+
+    # Format query to get only numeric rate value
+    query = f"Find an estimated value for the commercial utility rates ($/kWh) in {city}. \
+        Please provide only a numeric estimated utility rate value without any additional text. \
+        If no utility rate is available, please return '0.1'."
+    
+    # result = tavily_tool.invoke(input_value={"messages": [HumanMessage(content=query)]}, input_type=dict)
+
+    content_raw = "0.1"  # Hardcoded for testing
+    
     # Extract first numeric value
-    import re as _re
-    match = _re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", content_raw)
+    match = re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", content_raw)
     content = match.group(0) if match else "0.1"
+
     return {
         "utility_rate": float(content),
         "messages": [HumanMessage(content=content, name="utility")]
@@ -361,15 +366,14 @@ def recommendation_node(state: AgentState) -> AgentState:
     return {"messages": [HumanMessage(content=json.dumps(recommendation_data), name="recommendation")]}
 
 
-# Graph construction and workflow definition
 # StateGraph manages agent workflow and routing
 builder = StateGraph(AgentState)
 
 # Register all agent nodes
 builder.add_node("supervisor", supervisor_node)
 builder.add_node("input_validation", input_validation_node)
-builder.add_node("ashrae_lookup", ashrae_lookup_node) # Energy Code Lookup
-builder.add_node("radiation_node", radiation_node) # "radiation" is already used as a key in the state
+builder.add_node("ashrae_lookup", ashrae_lookup_node) # Energy code Lookup
+builder.add_node("radiation_node", radiation_node) # Radiation data lookup
 builder.add_node("calculation", calculation_node)
 builder.add_node("recommendation", recommendation_node)
 builder.add_node("utility", utility_node)
@@ -380,20 +384,17 @@ builder.add_node("llm", llm_node)
 builder.add_edge(START, "supervisor") # All workflows start at supervisor
 
 # Each agent reports back to the supervisor after completion
-for member in members: 
+for member in members:
     builder.add_edge(member, "supervisor")
 
 # The supervisor populates the "next" field in the graph states which either routes to a node or finishes based on the state
 builder.add_conditional_edges("supervisor", lambda state: state["next"]) # Pass the state and returns the key of the next state
 
 # MemorySaver maintains data between agent calls (# Short-term memory)
-memory = MemorySaver() # Keeps track of building data and calculation results
+memory = MemorySaver()
 
 # Compile graph with memory integration
 graph = builder.compile(checkpointer=memory) 
-
-# Draw a graph
-#graph.get_graph(xray=True).draw_mermaid_png(output_file_path="graph.png")
 
 # Database configuration and main loop
 def main_loop():
@@ -406,6 +407,7 @@ def main_loop():
         print("Welcome! Please enter your user ID")
         user_id = input("User ID: ")
         user_data = get_user_history(user_id)
+
     else:
         user_id = "test_user"
         user_data = None
@@ -440,7 +442,6 @@ def main_loop():
             break
 
         # Create new thread_id for processing each input
-        
         config = {"configurable": {"thread_id": thread_id}}   
 
         # Initialize the stream state with user input and user id

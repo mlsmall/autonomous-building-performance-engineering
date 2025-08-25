@@ -1,4 +1,4 @@
-from langgraph.graph import MessagesState
+from langgraph.graph import MessagesState, END
 from pydantic import BaseModel, Field
 from typing import Literal
 
@@ -15,7 +15,7 @@ class AgentState(MessagesState):
     wall_area: float = None
     wall_u_value: float = None
     window_area: float = None
-    # ASHRAE data
+    # ASHRAE energy data
     ashrae_to: float = None
     ashrae_cdd: float = None
     ashrae_climate_zone: int = None
@@ -57,7 +57,8 @@ class Recommendation(BaseModel):
     cost_diff: float = Field(description="Proposed - Baseline cost difference")""")
     
 members = ["llm", "input_validation", "ashrae_lookup", "calculation", "recommendation", "utility", "radiation_node"] # Current Agents
-options = members + ["FINISH"]
+options = members + [END]
+
 class SupervisorState(BaseModel): # Pydantic class that returns a literal
     """Worker to route to next."""
     next: Literal[*options] # type: ignore 

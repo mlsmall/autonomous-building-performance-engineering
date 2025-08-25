@@ -4,14 +4,14 @@ import os
 # Get base graph
 base_graph = graph.get_graph(xray=True).draw_mermaid()
 
-# Clean up the graph - remove subgraphs AND their end statements
+
 cleaned_lines = []
 skip_section = False
 for line in base_graph.split('\n'):
     if 'subgraph' in line:
         skip_section = True
         continue
-    if 'end' in line and not '__end__' in line:  # Keep __end__ node but remove subgraph ends
+    if 'end' in line and not '__end__' in line: 
         skip_section = False
         continue
     if not skip_section:

@@ -138,9 +138,11 @@ def radiation_tool(city: Annotated[str, "Look up specific solar radiation data"]
         f"What is the solar radiation for {city}? \
         Please provide only the numeric value WITHOUT any additional text or period at the end."
         ) 
+        print("City for radiation lookup:", city)
         documents = rad_retrieve(query)
+        # print(f"Documents retrieved RADIATION: {len(documents)}")
         result = rad_generate(query, documents)
-        
+        # print('RAG RADIATION', result)
         return result
 
     except Exception as e:
