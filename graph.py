@@ -70,6 +70,11 @@ If user_data indicates no previous building data exists:
 
 # The supervisor decides what node to execute next - orchestrator
 def supervisor_node(state: AgentState) -> AgentState:
+    
+    # Stop after recommendation
+    if len(state["messages"]) > 0 and state["messages"][-1].name == "recommendation":
+        return {"next": END}
+    
      # Check if we just came from llm - if so, wait for user input
     if len(state["messages"]) > 0 and state["messages"][-1].name == "llm":
         return {"next": END}  # Wait for user input after answering a question
