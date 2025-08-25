@@ -103,6 +103,10 @@ def supervisor_node(state: AgentState) -> AgentState:
     messages = [{"role": "system", "content": user_data_prompt}] + state["messages"]
     response = llm.with_structured_output(SupervisorState).invoke(messages)
 
+    if response is None:
+    # Fallback: assume free-form user question-> send to LLM node
+        return {"next": "llm"}
+
     next1 = response.next
     
     # Store building data in MongoDB if enabled
